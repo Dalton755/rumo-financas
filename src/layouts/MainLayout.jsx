@@ -1,69 +1,120 @@
-  import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { useState } from 'react'
 
-  function MainLayout({ children }) {
+import {
+  Menu,
+  X
+} from 'lucide-react'
 
-    return (
-      <div className="container-fluid">
+function MainLayout({ children }) {
+  const [menuAberto, setMenuAberto] = useState(false)
 
-        <div className="row">
+  return (
+    <div className="container-fluid">
 
-          <div
-            className="col-md-2 bg-dark text-white min-vh-100 p-3"
-          >
+      <div className="d-md-none p-2">
 
-            <div className="text-center mb-4">
+        <button
+          className="btn btn-dark"
+          onClick={() => setMenuAberto(!menuAberto)}
+        >
 
-    <h2 className="fw-bold text-success">
-      ↗ Rumo
-    </h2>
+          {
+            menuAberto
+              ? <X size={20} />
+              : <Menu size={20} />
+          }
 
-    <small className="text-light">
-      Veja para onde seu dinheiro
-      está levando você
-    </small>
+        </button>
 
-  </div>
+      </div>
 
-            <hr />
+      <div className="row">
 
-            <div className="d-grid gap-2">
+        <div
+          className={`
+    col-md-2
+    bg-dark
+    text-white
+    min-vh-100
+    p-3
+    ${menuAberto ? 'd-block' : 'd-none'}
+    d-md-block
+  `}
+        >
 
+          <div className="text-center mb-4">
+
+            <h2 className="fw-bold text-success">
+              ↗ Rumo
+            </h2>
+
+            <small className="text-light">
+              Veja para onde seu dinheiro
+              está levando você
+            </small>
+
+          </div>
+
+          <hr />
+
+          <div className="d-grid gap-2">
+
+            <Link
+              to="/dashboard"
+              className="btn btn-outline-light"
+            >
+              Dashboard
+            </Link>
+
+            <Link
+              to="/contas"
+              className="btn btn-outline-light"
+            >
+              Contas
+            </Link>
+
+            <Link
+              to="/movimentacoes"
+              className="btn btn-outline-light"
+            >
+              Movimentações
+            </Link>
+            <button
+              className="btn btn-danger mt-3"
+            >
               <Link
-                to="/dashboard"
+                to="/relatorios"
                 className="btn btn-outline-light"
               >
-                Dashboard
+                Relatórios
               </Link>
 
-              <Link
-                to="/contas"
-                className="btn btn-outline-light"
-              >
-                Contas
-              </Link>
+              Sair
+            </button>
 
-              <Link
-                to="/movimentacoes"
-                className="btn btn-outline-light"
-              >
-                Movimentações
-              </Link>
-
-            </div>
 
           </div>
 
-          <div className="col-md-10 p-4">
 
-            {children}
 
-          </div>
+        </div>
+
+
+
+        <div className="col-md-10 p-4">
+
+          {children}
+
+
 
         </div>
 
       </div>
-    )
 
-  }
+    </div>
+  )
 
-  export default MainLayout
+}
+
+export default MainLayout

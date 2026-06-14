@@ -1,28 +1,37 @@
 function CardResumo({
   titulo,
-  valor
+  valor,
+  icone
 }) {
+
   return (
-    <div className="col-md-3 mb-3">
 
-      <div className="card shadow border-0 h-100">
+    <div className="col-md-6 col-lg-3 mb-3">
 
-        <div className="card-body">
+      <div className="card shadow-sm border-0 h-100">
 
-          <h6 className="text-muted">
+        <div className="card-body text-center py-4">
+
+          <div className="mb-3">
+            {icone}
+          </div>
+
+          <h6 className="text-uppercase text-muted mb-3">
             {titulo}
           </h6>
 
-          <h3 className="fw-bold">
+          <h4 className="fw-bold text-nowrap">
             {valor}
-          </h3>
+          </h4>
 
         </div>
 
       </div>
 
     </div>
+
   )
+
 }
 
 export default CardResumo
