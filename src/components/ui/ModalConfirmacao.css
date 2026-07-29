@@ -1,0 +1,123 @@
+.item-mov{
+
+    display:grid;
+
+    grid-template-columns:
+    60px
+    1.8fr
+    1fr
+    120px
+    150px
+    50px;
+
+    align-items:center;
+
+    gap:20px;
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:22px;
+
+    margin-bottom:16px;
+
+    box-shadow:0 15px 40px rgba(30,40,60,.08);
+
+}
+
+.item-icon{
+
+    width:52px;
+
+    height:52px;
+
+    border-radius:16px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:white;
+
+}
+
+.item-icon.receita{
+
+    background:#22C55E;
+
+}
+
+.item-icon.despesa{
+
+    background:#EF4444;
+
+}
+
+.item-info h4{
+
+    margin:0;
+
+    font-size:20px;
+
+    font-weight:700;
+
+    color:#1E293B;
+
+}
+
+.item-info span{
+
+    color:#64748B;
+
+    font-size:15px;
+
+}
+
+.item-conta{
+
+    color:#475569;
+
+    font-weight:600;
+
+}
+
+.item-data{
+
+    color:#64748B;
+
+}
+
+.item-valor{
+
+    font-size:22px;
+
+    font-weight:800;
+
+    text-align:right;
+
+}
+
+.item-valor.receita{
+
+    color:#22C55E;
+
+}
+
+.item-valor.despesa{
+
+    color:#EF4444;
+
+}
+
+.item-menu{
+
+    border:none;
+
+    background:transparent;
+
+    cursor:pointer;
+
+}

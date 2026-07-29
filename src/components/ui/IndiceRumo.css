@@ -1,0 +1,111 @@
+.indice-rumo {
+
+    position: relative;
+
+    width: 170px;
+
+    height: 120px;
+
+    margin: 10px auto 0;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: flex-start;
+
+}
+
+.indice-svg {
+
+    width: 170px;
+
+    height: 120px;
+
+}
+
+.indice-bg {
+
+    fill: none;
+
+    stroke: rgba(255,255,255,.22);
+
+    stroke-width: 10;
+
+    stroke-linecap: round;
+
+}
+
+.indice-progress {
+
+    fill: none;
+
+    stroke-width: 10;
+
+    stroke-linecap: round;
+
+    transition: stroke-dashoffset .8s ease;
+
+}
+
+.indice-centro {
+
+    position: absolute;
+
+    top: 12px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    text-align: center;
+
+}
+
+.indice-centro h2 {
+
+    margin: 0;
+
+    font-size: 36px;
+
+    font-weight: 800;
+
+    line-height: 1;
+
+    color: #fff;
+
+}
+
+.indice-centro strong {
+
+    margin-top: 6px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color: #fff;
+
+}
+
+.indice-centro span {
+
+    margin-top: 4px;
+
+    width: 110px;
+
+    font-size: 10px;
+
+    line-height: 1.2;
+
+    color: rgba(255,255,255,.92);
+
+}

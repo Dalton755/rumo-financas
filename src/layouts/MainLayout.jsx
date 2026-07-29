@@ -1,13 +1,26 @@
-import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { NavLink } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import "./MainLayout.css";
+import IndiceRumo from "../components/ui/IndiceRumo";
+import { useDashboard } from "../context/DashboardContext";
 
 import {
   Menu,
-  X
-} from 'lucide-react'
+  X,
+  LayoutDashboard,
+  WalletCards,
+  ArrowLeftRight,
+  BarChart3,
+  LogOut
+} from "lucide-react";
 
 function MainLayout({ children }) {
   const [menuAberto, setMenuAberto] = useState(false)
+  const { dashboard } = useDashboard();
+
+
+
+
 
   return (
     <div className="container-fluid">
@@ -33,66 +46,90 @@ function MainLayout({ children }) {
 
         <div
           className={`
-    col-md-2
-    bg-dark
-    text-white
-    min-vh-100
-    p-3
-    ${menuAberto ? 'd-block' : 'd-none'}
-    d-md-block
-  `}
+          col-md-2
+          rumo-sidebar
+          ${menuAberto ? "d-block" : "d-none"}
+          d-md-block
+          `}
         >
 
-          <div className="text-center mb-4">
+          <div className="rumo-logo">
 
-            <h2 className="fw-bold text-success">
+            <h2>
+
               ↗ Rumo
+
             </h2>
 
-            <small className="text-light">
-              Veja para onde seu dinheiro
-              está levando você
-            </small>
+            <p className="sidebar-subtitle">
+              Veja para onde seu dinheiro está levando você.
+            </p>
 
           </div>
 
           <hr />
 
-          <div className="d-grid gap-2">
+          <div className="rumo-sidebar-menu">
 
-            <Link
+            <NavLink
               to="/dashboard"
-              className="btn btn-outline-light"
+              className={({ isActive }) =>
+                isActive
+                  ? "rumo-sidebar-item active"
+                  : "rumo-sidebar-item"
+              }
             >
-              Dashboard
-            </Link>
+              <LayoutDashboard size={20} />
+              <span>Dashboard</span>
+            </NavLink>
 
-            <Link
+            <NavLink
               to="/contas"
-              className="btn btn-outline-light"
+              className="rumo-sidebar-item"
             >
-              Contas
-            </Link>
+              <WalletCards size={20} />
+              <span>Contas</span>
+            </NavLink>
 
-            <Link
+            <NavLink
               to="/movimentacoes"
-              className="btn btn-outline-light"
+              className="rumo-sidebar-item"
             >
-              Movimentações
-            </Link>
-            <button
-              className="btn btn-danger mt-3"
-            >
-              <Link
-                to="/relatorios"
-                className="btn btn-outline-light"
-              >
-                Relatórios
-              </Link>
+              <ArrowLeftRight size={20} />
+              <span>Movimentações</span>
+            </NavLink>
 
-              Sair
+            <NavLink
+              to="/relatorios"
+              className="rumo-sidebar-item"
+            >
+              <BarChart3 size={20} />
+              <span>Relatórios</span>
+            </NavLink>
+
+            <div className="indice-card">
+
+              <small>
+
+                ÍNDICE DE RUMO
+
+              </small>
+
+              <IndiceRumo
+
+                valor={dashboard?.indice_rumo ?? 0}
+
+              />
+
+            </div>
+
+            <button className="rumo-sidebar-logout">
+
+              <LogOut size={20} />
+
+              <span>Sair</span>
+
             </button>
-
 
           </div>
 

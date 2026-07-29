@@ -1,0 +1,45 @@
+.contas-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+
+    gap: 24px;
+
+    margin-top: 30px;
+
+}
+
+.btn-nova-conta {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    border: none;
+
+    background: linear-gradient(135deg, #48D6E8, #32C3D8);
+
+    color: #FFF;
+
+    padding: 16px 28px;
+
+    border-radius: 18px;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    box-shadow: 0 15px 35px rgba(59, 201, 219, .35);
+
+    transition: .25s;
+
+}
+
+.btn-nova-conta:hover {
+
+    transform: translateY(-2px);
+
+}

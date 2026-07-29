@@ -1,14 +1,23 @@
 import { useEffect, useState } from 'react'
+import { useDashboard } from "../context/DashboardContext";
 import { supabase } from '../services/supabase'
 import MainLayout from '../layouts/MainLayout'
-import CardResumo from '../components/CardResumo'
+import CardResumo from '../components/ui/CardResumo'
 import GraficoResumo from '../components/GraficoResumo'
+import "./Dashboard.css";
+import PageHeader from '../components/ui/PageHeader'
+import CardMovimentacoes from "../components/ui/CardMovimentacoes";
+import ItemMovimentacao from "../components/ui/ItemMovimentacao";
+import CardFluxoMes from "../components/ui/CardFluxoMes";
+import MesFiltro from "../components/ui/MesFiltro";
 import {
     Wallet,
     ArrowUpRight,
     ArrowDownRight,
-    Compass
+    Compass,
+    Bell
 } from 'lucide-react'
+import IndiceRumo from "../components/ui/IndiceRumo";
 
 
 function formatarMoeda(valor) {
@@ -25,14 +34,130 @@ function formatarMoeda(valor) {
 
 }
 
+function obterSaudacao() {
+
+    const hora = new Date().getHours();
+
+    if (hora < 12) {
+
+        return "🌅 Bom dia";
+
+    }
+
+    if (hora < 18) {
+
+        return "☀️ Boa tarde";
+
+    }
+
+    return "🌙 Boa noite";
+
+}
+
 function Dashboard() {
 
     console.log('DASHBOARD CARREGOU')
 
+
+    const {
+
+        dashboard,
+        setDashboard,
+
+        periodos,
+        setPeriodos,
+
+        periodoSelecionado,
+        setPeriodoSelecionado
+
+    } = useDashboard();
     const [usuario, setUsuario] = useState(null)
-    const [dashboard, setDashboard] = useState(null)
     const [movimentacoes, setMovimentacoes] = useState([])
-    console.log('ESTADO DASHBOARD:', dashboard)
+    const saudacao = obterSaudacao();
+
+
+    async function carregarDashboard(
+
+        userId,
+
+        periodo
+
+    ) {
+
+        const { data, error } = await supabase.rpc(
+            "obter_dashboard",
+            {
+                p_usuario_id: userId,
+                p_ano: periodo.ano,
+                p_mes: periodo.mes
+            }
+        );
+
+        console.log("DASHBOARD:", data);
+        console.log("ERRO:", error);
+
+        if (!error && data.length > 0) {
+
+            setDashboard(data[0]);
+
+        }
+
+    }
+
+    async function carregarMovimentacoes(
+
+        userId,
+
+        periodo
+
+    ) {
+        const { data, error } = await supabase.rpc(
+            "obter_movimentacoes_dashboard",
+            {
+                p_usuario_id: userId,
+                p_ano: periodo.ano,
+                p_mes: periodo.mes
+            }
+        );
+
+        console.log("MOVIMENTACOES:", data);
+        console.log("ERRO:", error);
+
+        if (!error) {
+
+            setMovimentacoes(data);
+
+        }
+
+    }
+
+    async function carregarPeriodos(userId) {
+
+        const { data, error } = await supabase.rpc(
+            "listar_periodos_dashboard",
+            {
+                p_usuario_id: userId
+            }
+        );
+
+        if (!error && data) {
+
+            console.log("PERIODOS:", data)
+            console.log("ERRO:", error)
+
+            setPeriodos(data);
+
+            if (data.length > 0) {
+
+                setPeriodoSelecionado(data[0]);
+
+            }
+
+        }
+
+    }
+
+
 
     useEffect(() => {
 
@@ -44,16 +169,9 @@ function Dashboard() {
 
             setUsuario(user)
 
-            setUsuario(user)
-
-            console.log('USER:', user)
-
             if (user) {
 
-                console.log('USER ID:', user.id)
-
-                carregarDashboard(user.id)
-                carregarMovimentacoes(user.id)
+                carregarPeriodos(user.id)
 
             }
 
@@ -61,51 +179,31 @@ function Dashboard() {
 
         carregarUsuario()
 
-        async function carregarDashboard(userId) {
-
-            const { data, error } = await supabase
-                .from('vw_dashboard')
-                .select('*')
-                .eq('usuario_id', userId)
-                .single()
-
-            console.log('DATA:', data)
-            console.log('ERROR:', error)
-
-
-            if (!error) {
-                setDashboard(data)
-            }
-
-        }
-
-        async function carregarMovimentacoes(userId) {
-            console.log('CARREGANDO MOVIMENTACOES')
-
-            const { data, error } = await supabase
-                .from('movimentacoes')
-                .select(`
-            descricao,
-            valor,
-            tipo,
-            data_movimentacao
-        `)
-                .eq('usuario_id', userId)
-                .order('data_movimentacao', {
-                    ascending: false
-                })
-                .limit(5)
-
-            console.log('MOV DATA:', data)
-            console.log('MOV ERROR:', error)
-
-            if (!error) {
-                setMovimentacoes(data)
-            }
-
-        }
-
     }, [])
+
+    useEffect(() => {
+
+        if (!usuario) return;
+
+        if (!periodoSelecionado) return;
+
+        carregarDashboard(
+            usuario.id,
+            periodoSelecionado
+        );
+
+        carregarMovimentacoes(
+            usuario.id,
+            periodoSelecionado
+        );
+
+    }, [
+
+        usuario,
+
+        periodoSelecionado
+
+    ]);
 
     async function sair() {
 
@@ -119,170 +217,126 @@ function Dashboard() {
         <MainLayout>
 
 
-            <hr />
 
-            <div className="mb-4">
+            <PageHeader
 
-                <h2 className="fw-bold">
-                    Olá, Dalton 👋
-                </h2>
+                titulo={`${saudacao}, ${usuario?.user_metadata?.nome || "Dalton"}`}
 
-                <p className="text-muted">
-                    Veja para onde seu dinheiro
-                    está levando você.
-                </p>
+                subtitulo="Veja para onde seu dinheiro está levando você."
 
-            </div>
+            >
 
-            <br />
+                <div className="dashboard-header-actions">
 
-            <hr />
+                    <MesFiltro
 
-            <div className="row">
+                        periodos={periodos}
+
+                        periodoSelecionado={periodoSelecionado}
+
+                        onSelecionar={setPeriodoSelecionado}
+
+                    />
+
+                    <button className="dashboard-notificacao">
+
+                        <Bell size={20} />
+
+                    </button>
+
+                </div>
+
+            </PageHeader>
+
+            <div className="dashboard-cards">
 
                 <CardResumo
                     titulo="Saldo Atual"
+                    subtitulo="Saldo disponível"
                     valor={formatarMoeda(dashboard?.saldo_total)}
-                    icone={<Wallet size={32} className="text-success" />}
+                    badge="Atualizado agora"
+                    cor="blue"
+                    icone={<Wallet size={30} />}
                 />
 
                 <CardResumo
-                    titulo="Receitas do Mês"
+                    titulo="Receitas"
+                    subtitulo="Entradas do mês"
                     valor={formatarMoeda(dashboard?.receitas_mes)}
-                    icone={<ArrowUpRight size={32} className="text-primary" />}
+                    cor="green"
+                    icone={<ArrowUpRight size={30} />}
                 />
 
                 <CardResumo
-                    titulo="Despesas do Mês"
+                    titulo="Despesas"
+                    subtitulo="Saídas do mês"
                     valor={formatarMoeda(dashboard?.despesas_mes)}
-                    icone={<ArrowDownRight size={32} className="text-danger" />}
+                    cor="red"
+                    icone={<ArrowDownRight size={30} />}
                 />
 
                 <CardResumo
                     titulo="Índice de Rumo"
+                    subtitulo="Sua saúde financeira"
                     valor={dashboard?.indice_rumo ?? 0}
-                    icone={
-                        <Compass
-                            size={32}
-                            style={{ color: '#6f42c1' }}
-                        />
-                    }
+                    cor="purple"
+                    icone={<Compass size={30} />}
                 />
 
             </div>
 
-            <div className="mt-3">
+            <CardMovimentacoes>
 
-                <h4 className="fw-bold text-center mb-3">
-                    Últimas Movimentações
-                </h4>
+                {
+                    movimentacoes.map((mov, index) => (
 
-                <div className="card shadow-sm border-0">
+                        <ItemMovimentacao
 
-                    <div className="card-body">
+                            key={index}
 
-                        {
-                            movimentacoes.map(
-                                (mov, index) => (
+                            titulo={mov.descricao}
 
-                                    <div
-                                        key={index}
-                                        className="
-                d-flex
-                justify-content-between
-                align-items-center
-                border-bottom
-                py-3
-              "
-                                    >
-                                        <div>
+                            descricao={
+                                mov.tipo === "receita"
+                                    ? "Receita • Conta Principal"
+                                    : "Despesa • Conta Principal"
+                            }
 
-                                            <div className="d-flex align-items-center gap-2">
+                            data={
+                                new Date(
+                                    mov.data_movimentacao
+                                ).toLocaleDateString("pt-BR")
+                            }
 
-                                                {
-                                                    mov.tipo === 'receita'
-                                                        ? (
-                                                            <ArrowUpRight
-                                                                size={18}
-                                                                className="text-success"
-                                                            />
-                                                        )
-                                                        : (
-                                                            <ArrowDownRight
-                                                                size={18}
-                                                                className="text-danger"
-                                                            />
-                                                        )
-                                                }
+                            valor={formatarMoeda(mov.valor)}
 
-                                                <strong>
-                                                    {mov.descricao}
-                                                </strong>
+                            tipo={mov.tipo}
 
-                                            </div>
+                            icone={
+                                mov.tipo === "receita"
 
-                                            <small className="text-muted d-block">
+                                    ? <ArrowUpRight size={20} />
 
-                                                {
-                                                    new Date(
-                                                        mov.data_movimentacao
-                                                    ).toLocaleDateString(
-                                                        'pt-BR'
-                                                    )
-                                                }
+                                    : <ArrowDownRight size={20} />
+                            }
 
-                                            </small>
+                        />
 
-                                            <small className="text-muted">
-
-                                                {
-                                                    mov.tipo === 'receita'
-                                                        ? 'Receita'
-                                                        : 'Despesa'
-                                                }
-
-                                            </small>
-
-                                        </div>
-
-                                        <div
-                                            className={
-                                                mov.tipo === 'receita'
-                                                    ? 'text-success fw-bold'
-                                                    : 'text-danger fw-bold'
-                                            }
-                                        >
-
-                                            {
-                                                formatarMoeda(
-                                                    mov.valor
-                                                )
-                                            }
-
-                                        </div>
-
-                                    </div>
-
-                                )
-                            )
-                        }
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <GraficoResumo
-                receitas={
-                    dashboard?.receitas_mes || 0
+                    ))
                 }
-                despesas={
-                    dashboard?.despesas_mes || 0
-                }
+
+            </CardMovimentacoes>
+
+            <CardFluxoMes
+
+                receitas={dashboard?.receitas_mes || 0}
+
+                despesas={dashboard?.despesas_mes || 0}
+
             />
 
-            <hr />
+            
+
 
 
 

@@ -59,7 +59,7 @@ function GraficoResumo({
                         <Bar
                             dataKey="valor"
                             radius={[8, 8, 0, 0]}
-                            
+
                         >
                             <Cell fill="#198754" />
 

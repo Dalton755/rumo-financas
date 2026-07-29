@@ -1,0 +1,173 @@
+.card-conta {
+
+    background: #fff;
+
+    border-radius: 24px;
+
+    padding: 24px;
+
+    box-shadow: 0 10px 35px rgba(0, 0, 0, .06);
+
+    transition: .25s;
+
+    position: relative;
+
+    overflow: hidden;
+
+    margin-bottom: 20px;
+
+    position: relative;
+
+    overflow: visible;
+
+}
+
+.card-conta:hover {
+
+    transform: translateY(-4px);
+
+}
+
+.card-conta-faixa {
+
+    position: absolute;
+
+    left: 0;
+
+    top: 0;
+
+    width: 6px;
+
+    height: 100%;
+
+}
+
+.card-conta-topo {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+}
+
+.card-conta-topo h3 {
+
+    margin: 0;
+
+    font-size: 24px;
+
+    font-weight: 700;
+
+}
+
+.card-conta-topo span {
+
+    color: #7B8191;
+
+    text-transform: capitalize;
+
+}
+
+.card-conta-menu {
+
+    border: none;
+
+    background: none;
+
+    cursor: pointer;
+
+}
+
+.card-conta-saldo {
+
+    margin-top: 26px;
+
+    font-size: 32px;
+
+    font-weight: 800;
+
+    color: #1F2937;
+
+}
+
+.card-dropdown {
+
+    position: absolute;
+
+    top: 42px;
+
+    right: 0;
+
+    background: #fff;
+
+    border-radius: 14px;
+
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .15);
+
+    overflow: hidden;
+
+    min-width: 170px;
+
+    z-index: 999;
+
+    animation: abrirMenu .18s ease;
+
+    transform-origin: top right;
+
+}
+
+.card-dropdown button {
+
+    width: 100%;
+
+    border: none;
+
+    background: #fff;
+
+    padding: 14px 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    transition: .2s;
+
+}
+
+.card-dropdown button:hover {
+
+    background: #F5F7FB;
+
+}
+
+.card-dropdown button:last-child {
+
+    color: #EF4444;
+
+}
+
+@keyframes abrirMenu {
+
+    from {
+
+        opacity: 0;
+        transform: scale(.92);
+
+    }
+
+    to {
+
+        opacity: 1;
+        transform: scale(1);
+
+    }
+
+}

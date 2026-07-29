@@ -1,0 +1,67 @@
+:root {
+
+    /*====================================
+      CORES
+    ====================================*/
+
+    --primary: #35C8E8;
+    --primary-dark: #18B8D4;
+
+    --secondary: #57DDD6;
+
+    --background: #F5FBFD;
+
+    --surface: #FFFFFF;
+
+    --text: #1F2937;
+
+    --text-light: #6B7280;
+
+    --border: #E8EEF3;
+
+    --success: #22C55E;
+
+    --danger: #EF4444;
+
+    --warning: #F59E0B;
+
+    --rumo-gradient:
+        linear-gradient(135deg,
+            #35C8E8,
+            #57DDD6);
+
+    --rumo-gradient-soft:
+        linear-gradient(180deg,
+            #FFFFFF,
+            #FCFEFF);
+
+    /*====================================
+      SOMBRAS
+    ====================================*/
+
+    --shadow-sm:
+        0 8px 20px rgba(15, 23, 42, .05);
+
+    --shadow-md:
+        0 15px 40px rgba(15, 23, 42, .08);
+
+    --shadow-lg:
+        0 25px 60px rgba(15, 23, 42, .12);
+
+    /*====================================
+      RAIOS
+    ====================================*/
+
+    --radius-sm: 12px;
+
+    --radius-md: 20px;
+
+    --radius-lg: 28px;
+
+    /*====================================
+      ANIMAÇÃO
+    ====================================*/
+
+    --transition: .28s cubic-bezier(.4, 0, .2, 1);
+
+}

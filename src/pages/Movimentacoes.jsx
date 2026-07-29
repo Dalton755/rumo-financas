@@ -1,169 +1,200 @@
-import { useEffect, useState } from 'react'
-import { supabase } from '../services/supabase'
-import MainLayout from '../layouts/MainLayout'
+import { useState } from "react";
+import MainLayout from "../layouts/MainLayout";
+import PageHeader from "../components/ui/PageHeader";
+import {
+  Wallet,
+  ArrowUpRight,
+  ArrowDownRight,
+  List
+} from "lucide-react";
+import CardResumo from "../components/ui/CardResumo";
+import ItemMovimentacao from "../components/ui/ItemMovimentacao";
+import ModalNovaMovimentacao from "../components/ui/ModalNovaMovimentacao";
+import { useEffect } from "react";
+import { supabase } from "../services/supabase";
+import { listarMovimentacoes } from "../services/movimentacoes";
+
+import "./Movimentacoes.css";
 
 function Movimentacoes() {
 
-  const [contas, setContas] = useState([])
-  const [categorias, setCategorias] = useState([])
-
-  const [contaId, setContaId] = useState('')
-  const [categoriaId, setCategoriaId] = useState('')
-
-  const [descricao, setDescricao] = useState('')
-  const [valor, setValor] = useState('')
-  const [dataMovimentacao, setDataMovimentacao] = useState('')
+  const [modalAberto, setModalAberto] = useState(false);
+  const [movimentacoes, setMovimentacoes] = useState([]);
 
   useEffect(() => {
-    carregarDados()
-  }, [])
 
-  async function carregarDados() {
+    carregarMovimentacoes();
 
-    const {
-      data: { user }
-    } = await supabase.auth.getUser()
+  }, []);
 
-    const { data: contasData } = await supabase
-      .from('contas')
-      .select('*')
-      .eq('usuario_id', user.id)
-      .order('nome')
-
-    const { data: categoriasData } = await supabase
-      .from('categorias')
-      .select('*')
-      .eq('usuario_id', user.id)
-      .order('nome')
-
-    setContas(contasData || [])
-    setCategorias(categoriasData || [])
-
-  }
-
-  async function salvarMovimentacao() {
+  async function carregarMovimentacoes() {
 
     const {
+
       data: { user }
-    } = await supabase.auth.getUser()
 
-    const categoriaSelecionada =
-      categorias.find(
-        c => c.id === categoriaId
-      )
+    } = await supabase.auth.getUser();
 
-    const tipo = categoriaSelecionada?.tipo
+    if (!user) return;
 
-    const { error } = await supabase
-      .from('movimentacoes')
-      .insert([
-        {
-          usuario_id: user.id,
-          conta_id: contaId,
-          categoria_id: categoriaId,
-          descricao,
-          valor: Number(valor),
-          tipo,
-          data_movimentacao: dataMovimentacao
-        }
-      ])
+    const dados = await listarMovimentacoes(
 
-    if (error) {
-      alert(error.message)
-      return
-    }
+      user.id
 
-    alert('Movimentação salva com sucesso!')
+    );
 
-    setDescricao('')
-    setValor('')
-    setDataMovimentacao('')
+    setMovimentacoes(
+
+      dados
+
+    );
 
   }
 
   return (
+
     <MainLayout>
 
-      <h1>Movimentações</h1>
+      <PageHeader
 
-      <br />
+        titulo="Movimentações"
 
-      <select
-        value={contaId}
-        onChange={(e) => setContaId(e.target.value)}
+        subtitulo="Gerencie todas as suas receitas e despesas."
+
       >
-        <option value="">
-          Selecione uma conta
-        </option>
 
-        {contas.map(conta => (
-          <option
-            key={conta.id}
-            value={conta.id}
-          >
-            {conta.nome}
-          </option>
-        ))}
-      </select>
+        <button
+          className="btn-nova-movimentacao"
+          onClick={() => setModalAberto(true)}
+        >
+          + Nova Movimentação
+        </button>
 
-      <br />
-      <br />
+      </PageHeader>
 
-      <select
-        value={categoriaId}
-        onChange={(e) => setCategoriaId(e.target.value)}
-      >
-        <option value="">
-          Selecione uma categoria
-        </option>
+      <div className="dashboard-cards">
 
-        {categorias.map(categoria => (
-          <option
-            key={categoria.id}
-            value={categoria.id}
-          >
-            {categoria.nome}
-          </option>
-        ))}
-      </select>
+        <CardResumo
+          titulo="Receitas"
+          subtitulo="Entradas do período"
+          valor="R$ 0,00"
+          cor="green"
+          icone={<ArrowUpRight size={30} />}
+        />
 
-      <br />
-      <br />
+        <CardResumo
+          titulo="Despesas"
+          subtitulo="Saídas do período"
+          valor="R$ 0,00"
+          cor="red"
+          icone={<ArrowDownRight size={30} />}
+        />
 
-      <input
-        placeholder="Descrição"
-        value={descricao}
-        onChange={(e) => setDescricao(e.target.value)}
-      />
+        <CardResumo
+          titulo="Saldo"
+          subtitulo="Resultado"
+          valor="R$ 0,00"
+          cor="blue"
+          icone={<Wallet size={30} />}
+        />
 
-      <br />
-      <br />
+        <CardResumo
+          titulo="Movimentações"
+          subtitulo="Lançamentos"
+          valor="0"
+          cor="purple"
+          icone={<List size={30} />}
+        />
 
-      <input
-        type="number"
-        placeholder="Valor"
-        value={valor}
-        onChange={(e) => setValor(e.target.value)}
-      />
+      </div>
 
-      <br />
-      <br />
+      <div className="movimentacoes-filtros">
 
-      <input
-        type="date"
-        value={dataMovimentacao}
-        onChange={(e) => setDataMovimentacao(e.target.value)}
-      />
+        <input
+          type="text"
+          placeholder="🔍 Pesquisar descrição..."
+          className="filtro-pesquisa"
+        />
 
-      <br />
-      <br />
+        <select className="filtro-select">
 
-      <button onClick={salvarMovimentacao}>
-        Salvar Movimentação
-      </button>
+          <option>Todos os meses</option>
 
-      </MainLayout>
-  )
+        </select>
+
+        <select className="filtro-select">
+
+          <option>Todas as contas</option>
+
+        </select>
+
+        <select className="filtro-select">
+
+          <option>Todas categorias</option>
+
+        </select>
+
+        <select className="filtro-select">
+
+          <option>Receitas e Despesas</option>
+          <option>Receitas</option>
+          <option>Despesas</option>
+
+        </select>
+
+        <button className="btn-limpar">
+
+          Limpar
+
+        </button>
+
+      </div>
+
+      {
+        movimentacoes.map((mov) => (
+
+          <ItemMovimentacao
+
+            key={mov.id}
+
+            movimentacao={{
+
+              tipo: mov.tipo,
+
+              descricao: mov.descricao,
+
+              categoria: mov.categorias?.nome || "-",
+
+              conta: mov.contas?.nome || "-",
+
+              data: new Date(
+
+                mov.data_movimentacao
+
+              ).toLocaleDateString("pt-BR"),
+
+              valor: mov.valor
+
+            }}
+
+          />
+
+        ))
+      }
+
+
+      {
+        modalAberto && (
+          <ModalNovaMovimentacao
+            onFechar={() => setModalAberto(false)}
+          />
+        )
+      }
+
+    </MainLayout>
+
+  );
+
 }
 
-export default Movimentacoes
+export default Movimentacoes;

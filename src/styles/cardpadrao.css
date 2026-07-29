@@ -1,0 +1,23 @@
+.card-padrao{
+
+    background: var(--card);
+
+    border-radius: var(--radius-md);
+
+    box-shadow: var(--shadow-sm);
+
+    border: 1px solid var(--border);
+
+    padding:24px;
+
+    transition: var(--transition);
+
+}
+
+.card-padrao:hover{
+
+    transform: translateY(-4px);
+
+    box-shadow: var(--shadow-md);
+
+}
