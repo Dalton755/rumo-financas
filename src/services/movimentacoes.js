@@ -7,9 +7,17 @@ export async function listarMovimentacoes(usuarioId) {
         .from("movimentacoes")
 
         .select(`
-            *,
-            contas(nome),
-            categorias(nome)
+            id,
+            descricao,
+            valor,
+            tipo,
+            data_movimentacao,
+            categoria:categorias!movimentacoes_categoria_id_fkey(
+                nome
+            ),
+            conta:contas!movimentacoes_conta_id_fkey(
+                nome
+            )
         `)
 
         .eq("usuario_id", usuarioId)
@@ -20,6 +28,7 @@ export async function listarMovimentacoes(usuarioId) {
 
     if (error) throw error;
 
+    console.log(JSON.stringify(data, null, 2));
     return data;
 
 }

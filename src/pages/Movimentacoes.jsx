@@ -20,6 +20,42 @@ function Movimentacoes() {
 
   const [modalAberto, setModalAberto] = useState(false);
   const [movimentacoes, setMovimentacoes] = useState([]);
+  const [movimentacoesFiltradas, setMovimentacoesFiltradas] = useState([]);
+  const [pesquisa, setPesquisa] = useState("");
+  const [contaSelecionada, setContaSelecionada] = useState("");
+  const [tipoFiltro, setTipoFiltro] = useState("");
+  const contas = [
+    ...new Map(
+      movimentacoes.map((m) => [
+        m.conta?.nome,
+        {
+          id: m.conta_id,
+          nome: m.conta?.nome
+        }
+      ])
+    ).values()
+  ].filter(c => c.nome);
+
+  const totalReceitas = movimentacoes
+    .filter(m => m.tipo === "receita")
+    .reduce((total, m) => total + Number(m.valor), 0);
+
+  const totalDespesas = movimentacoes
+    .filter(m => m.tipo === "despesa")
+    .reduce((total, m) => total + Number(m.valor), 0);
+
+  const saldo = totalReceitas - totalDespesas;
+
+  const quantidade = movimentacoes.length;
+
+  function formatarMoeda(valor) {
+
+    return Number(valor || 0).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+
+  }
 
   useEffect(() => {
 
@@ -30,26 +66,64 @@ function Movimentacoes() {
   async function carregarMovimentacoes() {
 
     const {
-
       data: { user }
-
     } = await supabase.auth.getUser();
+
+
+
 
     if (!user) return;
 
-    const dados = await listarMovimentacoes(
+    try {
 
-      user.id
+      const dados = await listarMovimentacoes(user.id);
 
-    );
+      setMovimentacoes(dados);
+      setMovimentacoesFiltradas(dados);
 
-    setMovimentacoes(
+    } catch (error) {
 
-      dados
+      console.error("ERRO:", error);
 
-    );
+    }
 
   }
+
+  useEffect(() => {
+
+    const texto = pesquisa.toLowerCase();
+
+    const resultado = movimentacoes.filter((mov) => {
+
+      const descricaoOk =
+        mov.descricao
+          .toLowerCase()
+          .includes(texto);
+
+      const tipoOk =
+        !tipoFiltro ||
+        mov.tipo === tipoFiltro;
+
+      const contaOk =
+        !contaSelecionada ||
+        mov.conta?.nome === contaSelecionada;
+
+      return (
+        descricaoOk &&
+        tipoOk &&
+        contaOk
+      );
+
+    });
+
+    setMovimentacoesFiltradas(resultado);
+
+  }, [
+    pesquisa,
+    tipoFiltro,
+    contaSelecionada,
+    movimentacoes
+  ]);
 
   return (
 
@@ -74,10 +148,11 @@ function Movimentacoes() {
 
       <div className="dashboard-cards">
 
+
         <CardResumo
           titulo="Receitas"
           subtitulo="Entradas do período"
-          valor="R$ 0,00"
+          valor={formatarMoeda(totalReceitas)}
           cor="green"
           icone={<ArrowUpRight size={30} />}
         />
@@ -85,7 +160,7 @@ function Movimentacoes() {
         <CardResumo
           titulo="Despesas"
           subtitulo="Saídas do período"
-          valor="R$ 0,00"
+          valor={formatarMoeda(totalDespesas)}
           cor="red"
           icone={<ArrowDownRight size={30} />}
         />
@@ -93,7 +168,7 @@ function Movimentacoes() {
         <CardResumo
           titulo="Saldo"
           subtitulo="Resultado"
-          valor="R$ 0,00"
+          valor={formatarMoeda(saldo)}
           cor="blue"
           icone={<Wallet size={30} />}
         />
@@ -101,7 +176,7 @@ function Movimentacoes() {
         <CardResumo
           titulo="Movimentações"
           subtitulo="Lançamentos"
-          valor="0"
+          valor={quantidade}
           cor="purple"
           icone={<List size={30} />}
         />
@@ -114,6 +189,8 @@ function Movimentacoes() {
           type="text"
           placeholder="🔍 Pesquisar descrição..."
           className="filtro-pesquisa"
+          value={pesquisa}
+          onChange={(e) => setPesquisa(e.target.value)}
         />
 
         <select className="filtro-select">
@@ -122,9 +199,26 @@ function Movimentacoes() {
 
         </select>
 
-        <select className="filtro-select">
+        <select
+          className="filtro-select"
+          value={contaSelecionada}
+          onChange={(e) => setContaSelecionada(e.target.value)}
+        >
 
-          <option>Todas as contas</option>
+          <option value="">
+            Todas as contas
+          </option>
+
+          {contas.map((conta) => (
+
+            <option
+              key={conta.id}
+              value={conta.nome}
+            >
+              {conta.nome}
+            </option>
+
+          ))}
 
         </select>
 
@@ -134,11 +228,23 @@ function Movimentacoes() {
 
         </select>
 
-        <select className="filtro-select">
+        <select
+          className="filtro-select"
+          value={tipoFiltro}
+          onChange={(e) => setTipoFiltro(e.target.value)}
+        >
 
-          <option>Receitas e Despesas</option>
-          <option>Receitas</option>
-          <option>Despesas</option>
+          <option value="">
+            Receitas e Despesas
+          </option>
+
+          <option value="receita">
+            Receitas
+          </option>
+
+          <option value="despesa">
+            Despesas
+          </option>
 
         </select>
 
@@ -150,8 +256,10 @@ function Movimentacoes() {
 
       </div>
 
+
+
       {
-        movimentacoes.map((mov) => (
+        movimentacoesFiltradas.map((mov) => (
 
           <ItemMovimentacao
 
@@ -163,9 +271,8 @@ function Movimentacoes() {
 
               descricao: mov.descricao,
 
-              categoria: mov.categorias?.nome || "-",
-
-              conta: mov.contas?.nome || "-",
+              categoria: mov.categoria?.nome,
+              conta: mov.conta?.nome,
 
               data: new Date(
 
@@ -187,6 +294,7 @@ function Movimentacoes() {
         modalAberto && (
           <ModalNovaMovimentacao
             onFechar={() => setModalAberto(false)}
+            onSalvou={carregarMovimentacoes}
           />
         )
       }

@@ -1,12 +1,15 @@
 import "./ModalNovaMovimentacao.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase";
+import { useToast } from "../../context/ToastContext";
 
-export default function ModalNovaMovimentacao({ onFechar }) {
+export default function ModalNovaMovimentacao({ onFechar, onSalvou }) {
+
+    const { showToast } = useToast();
 
     const [contas, setContas] = useState([]);
     const [categorias, setCategorias] = useState([]);
-    const [tipo, setTipo] = useState("RECEITA");
+    const [tipo, setTipo] = useState("receita");
     const [descricao, setDescricao] = useState("");
     const [valor, setValor] = useState("");
     const [contaId, setContaId] = useState("");
@@ -29,42 +32,42 @@ export default function ModalNovaMovimentacao({ onFechar }) {
 
         if (!user) {
 
-            toast.error("Usuário não autenticado.");
+            showToast("Erro", "Usuário não autenticado.", "danger");
             return;
 
         }
 
         if (!descricao.trim()) {
 
-            toast.error("Informe a descrição.");
+            showToast("Erro", "Informe a descrição.", "danger");
             return;
 
         }
 
         if (!valor || Number(valor) <= 0) {
 
-            toast.error("Informe um valor válido.");
+            showToast("Erro", "Informe um valor válido.", "danger");
             return;
 
         }
 
         if (!contaId) {
 
-            toast.error("Selecione uma conta.");
+            showToast("Erro", "Selecione uma conta.", "danger");
             return;
 
         }
 
         if (!categoriaId) {
 
-            toast.error("Selecione uma categoria.");
+            showToast("Erro", "Selecione uma categoria.", "danger");
             return;
 
         }
 
         if (!dataMovimento) {
 
-            toast.error("Informe a data.");
+            showToast("Erro", "Informe a data.", "danger");
             return;
 
         }
@@ -85,22 +88,31 @@ export default function ModalNovaMovimentacao({ onFechar }) {
 
                 categoria_id: categoriaId,
 
-                data_movimento: dataMovimento,
+                data_movimentacao: dataMovimento,
 
-                observacao,
+                observacao
 
-                status: "CONFIRMADO"
 
             });
 
         if (error) {
 
-            toast.error(error.message);
+            showToast("Erro", error.message, "danger");
             return;
 
         }
 
-        toast.success("Movimentação cadastrada com sucesso.");
+        showToast(
+            "Sucesso",
+            "Movimentação cadastrada com sucesso!",
+            "success"
+        );
+
+        if (onSalvou) {
+
+            await onSalvou();
+
+        }
 
         onFechar();
 
@@ -162,11 +174,11 @@ export default function ModalNovaMovimentacao({ onFechar }) {
                         onChange={(e) => setTipo(e.target.value)}
                     >
 
-                        <option value="RECEITA">
+                        <option value="receita">
                             Receita
                         </option>
 
-                        <option value="DESPESA">
+                        <option value="despesa">
                             Despesa
                         </option>
 
@@ -253,7 +265,10 @@ export default function ModalNovaMovimentacao({ onFechar }) {
                         Cancelar
                     </button>
 
-                    <button className="btn-salvar">
+                    <button
+                        className="btn-salvar"
+                        onClick={salvarMovimentacao}
+                    >
                         Salvar
                     </button>
 

@@ -291,35 +291,17 @@ function Dashboard() {
                     movimentacoes.map((mov, index) => (
 
                         <ItemMovimentacao
-
                             key={index}
-
-                            titulo={mov.descricao}
-
-                            descricao={
-                                mov.tipo === "receita"
-                                    ? "Receita • Conta Principal"
-                                    : "Despesa • Conta Principal"
-                            }
-
-                            data={
-                                new Date(
+                            movimentacao={{
+                                tipo: mov.tipo,
+                                descricao: mov.descricao,
+                                categoria: mov.categoria,
+                                conta: mov.conta,
+                                data: new Date(
                                     mov.data_movimentacao
-                                ).toLocaleDateString("pt-BR")
-                            }
-
-                            valor={formatarMoeda(mov.valor)}
-
-                            tipo={mov.tipo}
-
-                            icone={
-                                mov.tipo === "receita"
-
-                                    ? <ArrowUpRight size={20} />
-
-                                    : <ArrowDownRight size={20} />
-                            }
-
+                                ).toLocaleDateString("pt-BR"),
+                                valor: mov.valor
+                            }}
                         />
 
                     ))
@@ -335,7 +317,7 @@ function Dashboard() {
 
             />
 
-            
+
 
 
 
