@@ -276,3 +276,127 @@
     }
 
 }
+
+/* =====================================================
+   MOVIMENTAÇÕES - RESPONSIVO MOBILE
+===================================================== */
+
+@media (max-width: 768px) {
+
+    .item-mov {
+
+        grid-template-columns:
+            52px
+            minmax(0, 1fr)
+            auto;
+
+        grid-template-areas:
+            "icone info menu"
+            "icone conta valor"
+            "icone data valor";
+
+        gap: 6px 12px;
+
+        padding: 18px;
+
+        border-radius: 20px;
+
+        align-items: center;
+
+    }
+
+    .item-icon {
+
+        grid-area: icone;
+
+        width: 46px;
+
+        height: 46px;
+
+        border-radius: 14px;
+
+        align-self: start;
+
+    }
+
+    .item-info {
+
+        grid-area: info;
+
+        min-width: 0;
+
+    }
+
+    .item-info h4 {
+
+        font-size: 16px;
+
+        line-height: 1.2;
+
+        margin: 0;
+
+        overflow-wrap: anywhere;
+
+    }
+
+    .item-info span {
+
+        display: block;
+
+        margin-top: 3px;
+
+        font-size: 13px;
+
+    }
+
+    .item-conta {
+
+        grid-area: conta;
+
+        font-size: 13px;
+
+        color: #475569;
+
+    }
+
+    .item-data {
+
+        grid-area: data;
+
+        font-size: 12px;
+
+        color: #64748b;
+
+    }
+
+    .item-valor {
+
+        grid-area: valor;
+
+        font-size: 16px;
+
+        white-space: nowrap;
+
+        align-self: center;
+
+        text-align: right;
+
+    }
+
+    .item-menu-container {
+
+        grid-area: menu;
+
+        align-self: start;
+
+    }
+
+    .item-menu {
+
+        width: 32px;
+
+        height: 32px;
+
+    }
+
+}
