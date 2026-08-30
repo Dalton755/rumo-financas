@@ -1,8 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import "./MainLayout.css";
-import IndiceRumo from "../components/ui/IndiceRumo";
-import { useDashboard } from "../context/DashboardContext";
 import { supabase } from "../services/supabase";
 
 import {
@@ -17,7 +15,6 @@ import {
 
 function MainLayout({ children }) {
   const [menuAberto, setMenuAberto] = useState(false)
-  const { dashboard } = useDashboard();
 
   async function sair() {
 
@@ -114,21 +111,7 @@ function MainLayout({ children }) {
               <span>Relatórios</span>
             </NavLink>
 
-            <div className="indice-card">
-
-              <small>
-
-                ÍNDICE DE RUMO
-
-              </small>
-
-              <IndiceRumo
-
-                valor={dashboard?.indice_rumo ?? 0}
-
-              />
-
-            </div>
+           
 
             <button
               className="rumo-sidebar-logout"

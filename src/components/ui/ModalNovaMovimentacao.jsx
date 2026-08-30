@@ -1,21 +1,49 @@
 import "./ModalNovaMovimentacao.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase";
+import { editarMovimentacao } from "../../services/movimentacoes";
 import { useToast } from "../../context/ToastContext";
 
-export default function ModalNovaMovimentacao({ onFechar, onSalvou }) {
+export default function ModalNovaMovimentacao({
+    onFechar,
+    onSalvou,
+    movimentacao = null
+}) {
 
     const { showToast } = useToast();
 
+    const editando = Boolean(movimentacao?.id);
+
     const [contas, setContas] = useState([]);
     const [categorias, setCategorias] = useState([]);
-    const [tipo, setTipo] = useState("receita");
-    const [descricao, setDescricao] = useState("");
-    const [valor, setValor] = useState("");
-    const [contaId, setContaId] = useState("");
-    const [categoriaId, setCategoriaId] = useState("");
-    const [dataMovimento, setDataMovimento] = useState("");
-    const [observacao, setObservacao] = useState("");
+
+    const [tipo, setTipo] = useState(
+        movimentacao?.tipo || "receita"
+    );
+
+    const [descricao, setDescricao] = useState(
+        movimentacao?.descricao || ""
+    );
+
+    const [valor, setValor] = useState(
+        movimentacao?.valor ?? ""
+    );
+
+    const [contaId, setContaId] = useState(
+        movimentacao?.conta_id || ""
+    );
+
+    const [categoriaId, setCategoriaId] = useState(
+        movimentacao?.categoria_id || ""
+    );
+
+    const [dataMovimento, setDataMovimento] = useState(
+        movimentacao?.data_movimentacao || ""
+    );
+
+    const [observacao, setObservacao] = useState(
+        movimentacao?.observacao || ""
+    );
 
     useEffect(() => {
 
@@ -32,90 +60,146 @@ export default function ModalNovaMovimentacao({ onFechar, onSalvou }) {
 
         if (!user) {
 
-            showToast("Erro", "Usuário não autenticado.", "danger");
-            return;
+            showToast(
+                "Erro",
+                "Usuário não autenticado.",
+                "danger"
+            );
 
+            return;
         }
 
         if (!descricao.trim()) {
 
-            showToast("Erro", "Informe a descrição.", "danger");
-            return;
+            showToast(
+                "Erro",
+                "Informe a descrição.",
+                "danger"
+            );
 
+            return;
         }
 
         if (!valor || Number(valor) <= 0) {
 
-            showToast("Erro", "Informe um valor válido.", "danger");
-            return;
+            showToast(
+                "Erro",
+                "Informe um valor válido.",
+                "danger"
+            );
 
+            return;
         }
 
         if (!contaId) {
 
-            showToast("Erro", "Selecione uma conta.", "danger");
-            return;
+            showToast(
+                "Erro",
+                "Selecione uma conta.",
+                "danger"
+            );
 
+            return;
         }
 
         if (!categoriaId) {
 
-            showToast("Erro", "Selecione uma categoria.", "danger");
-            return;
+            showToast(
+                "Erro",
+                "Selecione uma categoria.",
+                "danger"
+            );
 
+            return;
         }
 
         if (!dataMovimento) {
 
-            showToast("Erro", "Informe a data.", "danger");
+            showToast(
+                "Erro",
+                "Informe a data.",
+                "danger"
+            );
+
             return;
-
         }
 
-        const { error } = await supabase
-            .schema("rumo")
-            .from("movimentacoes")
-            .insert({
+        const dados = {
 
-                usuario_id: user.id,
+            tipo,
 
-                tipo,
+            descricao: descricao.trim(),
 
-                descricao,
+            valor: Number(valor),
 
-                valor: Number(valor),
+            conta_id: contaId,
 
-                conta_id: contaId,
+            categoria_id: categoriaId,
 
-                categoria_id: categoriaId,
+            data_movimentacao: dataMovimento,
 
-                data_movimentacao: dataMovimento,
+            observacao: observacao.trim() || null
 
-                observacao
+        };
 
+        try {
 
-            });
+            if (editando) {
 
-        if (error) {
+                await editarMovimentacao(
+                    movimentacao.id,
+                    dados
+                );
 
-            showToast("Erro", error.message, "danger");
-            return;
+            } else {
+
+                const { error } = await supabase
+                    .schema("rumo")
+                    .from("movimentacoes")
+                    .insert({
+
+                        usuario_id: user.id,
+
+                        ...dados
+
+                    });
+
+                if (error) {
+                    throw error;
+                }
+
+            }
+
+            showToast(
+                "Sucesso",
+                editando
+                    ? "Movimentação atualizada com sucesso!"
+                    : "Movimentação cadastrada com sucesso!",
+                "success"
+            );
+
+            if (onSalvou) {
+
+                await onSalvou();
+
+            }
+
+            onFechar();
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao salvar movimentação:",
+                error
+            );
+
+            showToast(
+                "Erro",
+                error.message || "Não foi possível salvar a movimentação.",
+                "danger"
+            );
 
         }
-
-        showToast(
-            "Sucesso",
-            "Movimentação cadastrada com sucesso!",
-            "success"
-        );
-
-        if (onSalvou) {
-
-            await onSalvou();
-
-        }
-
-        onFechar();
 
     }
 
@@ -129,7 +213,7 @@ export default function ModalNovaMovimentacao({ onFechar, onSalvou }) {
 
         if (!error) {
 
-            setContas(data);
+            setContas(data || []);
 
         }
 
@@ -145,7 +229,7 @@ export default function ModalNovaMovimentacao({ onFechar, onSalvou }) {
 
         if (!error) {
 
-            setCategorias(data);
+            setCategorias(data || []);
 
         }
 
@@ -159,7 +243,13 @@ export default function ModalNovaMovimentacao({ onFechar, onSalvou }) {
 
                 <div className="modal-header">
 
-                    <h2>Nova Movimentação</h2>
+                    <h2>
+                        {
+                            editando
+                                ? "Editar Movimentação"
+                                : "Nova Movimentação"
+                        }
+                    </h2>
 
                     <button
                         className="btn-fechar"
@@ -174,7 +264,9 @@ export default function ModalNovaMovimentacao({ onFechar, onSalvou }) {
 
                     <select
                         value={tipo}
-                        onChange={(e) => setTipo(e.target.value)}
+                        onChange={(e) =>
+                            setTipo(e.target.value)
+                        }
                     >
 
                         <option value="receita">
@@ -191,19 +283,27 @@ export default function ModalNovaMovimentacao({ onFechar, onSalvou }) {
                         type="text"
                         placeholder="Descrição"
                         value={descricao}
-                        onChange={(e) => setDescricao(e.target.value)}
+                        onChange={(e) =>
+                            setDescricao(e.target.value)
+                        }
                     />
 
                     <input
                         type="number"
+                        step="0.01"
+                        min="0"
                         placeholder="Valor"
                         value={valor}
-                        onChange={(e) => setValor(e.target.value)}
+                        onChange={(e) =>
+                            setValor(e.target.value)
+                        }
                     />
 
                     <select
                         value={contaId}
-                        onChange={(e) => setContaId(e.target.value)}
+                        onChange={(e) =>
+                            setContaId(e.target.value)
+                        }
                     >
 
                         <option value="">
@@ -225,7 +325,9 @@ export default function ModalNovaMovimentacao({ onFechar, onSalvou }) {
 
                     <select
                         value={categoriaId}
-                        onChange={(e) => setCategoriaId(e.target.value)}
+                        onChange={(e) =>
+                            setCategoriaId(e.target.value)
+                        }
                     >
 
                         <option value="">
@@ -248,13 +350,17 @@ export default function ModalNovaMovimentacao({ onFechar, onSalvou }) {
                     <input
                         type="date"
                         value={dataMovimento}
-                        onChange={(e) => setDataMovimento(e.target.value)}
+                        onChange={(e) =>
+                            setDataMovimento(e.target.value)
+                        }
                     />
 
                     <textarea
                         placeholder="Observações (opcional)"
                         value={observacao}
-                        onChange={(e) => setObservacao(e.target.value)}
+                        onChange={(e) =>
+                            setObservacao(e.target.value)
+                        }
                     />
 
                 </div>
@@ -272,7 +378,11 @@ export default function ModalNovaMovimentacao({ onFechar, onSalvou }) {
                         className="btn-salvar"
                         onClick={salvarMovimentacao}
                     >
-                        Salvar
+                        {
+                            editando
+                                ? "Salvar alterações"
+                                : "Salvar"
+                        }
                     </button>
 
                 </div>

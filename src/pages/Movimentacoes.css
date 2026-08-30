@@ -116,3 +116,80 @@
     background:#dbe8f5;
 
 }
+
+/* =====================================================
+   BOTÃO NOVA MOVIMENTAÇÃO
+===================================================== */
+
+.btn-nova-movimentacao {
+
+    height: 52px;
+
+    padding: 0 24px;
+
+    border: none;
+
+    border-radius: 16px;
+
+    background: linear-gradient(
+        135deg,
+        #22c7e8,
+        #22b8cf
+    );
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 25px
+        rgba(34, 199, 232, 0.25);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+
+}
+
+.btn-nova-movimentacao:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 30px
+        rgba(34, 199, 232, 0.35);
+
+    filter: brightness(1.03);
+
+}
+
+.btn-nova-movimentacao:active {
+
+    transform: translateY(0);
+
+}
+
+@media (max-width: 768px) {
+
+    .btn-nova-movimentacao {
+
+        width: 100%;
+
+        margin-top: 12px;
+
+    }
+
+}

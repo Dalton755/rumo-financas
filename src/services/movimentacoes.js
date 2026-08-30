@@ -12,6 +12,9 @@ export async function listarMovimentacoes(usuarioId) {
             valor,
             tipo,
             data_movimentacao,
+            observacao,
+            conta_id,
+            categoria_id,
             categoria:categorias!movimentacoes_categoria_id_fkey(
                 nome
             ),
@@ -28,7 +31,6 @@ export async function listarMovimentacoes(usuarioId) {
 
     if (error) throw error;
 
-    console.log(JSON.stringify(data, null, 2));
     return data;
 
 }

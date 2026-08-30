@@ -1,61 +1,249 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MainLayout from "../layouts/MainLayout";
 import PageHeader from "../components/ui/PageHeader";
+
 import {
   Wallet,
   ArrowUpRight,
   ArrowDownRight,
   List
 } from "lucide-react";
+
 import CardResumo from "../components/ui/CardResumo";
 import ItemMovimentacao from "../components/ui/ItemMovimentacao";
 import ModalNovaMovimentacao from "../components/ui/ModalNovaMovimentacao";
-import { useEffect } from "react";
+import ModalConfirmacao from "../components/ui/ModalConfirmacao";
+
 import { supabase } from "../services/supabase";
-import { listarMovimentacoes } from "../services/movimentacoes";
+
+import {
+  listarMovimentacoes,
+  excluirMovimentacao
+} from "../services/movimentacoes";
+
+import { useToast } from "../context/ToastContext";
 
 import "./Movimentacoes.css";
 
+
 function Movimentacoes() {
 
+  const { showToast } = useToast();
+
   const [modalAberto, setModalAberto] = useState(false);
+
+  const [
+    movimentacaoEditando,
+    setMovimentacaoEditando
+  ] = useState(null);
+
+  const [
+    movimentacaoExcluindo,
+    setMovimentacaoExcluindo
+  ] = useState(null);
+
   const [movimentacoes, setMovimentacoes] = useState([]);
-  const [movimentacoesFiltradas, setMovimentacoesFiltradas] = useState([]);
+
+  const [
+    movimentacoesFiltradas,
+    setMovimentacoesFiltradas
+  ] = useState([]);
+
   const [pesquisa, setPesquisa] = useState("");
-  const [contaSelecionada, setContaSelecionada] = useState("");
-  const [tipoFiltro, setTipoFiltro] = useState("");
+
+  const [
+    mesSelecionado,
+    setMesSelecionado
+  ] = useState("");
+
+  const [
+    contaSelecionada,
+    setContaSelecionada
+  ] = useState("");
+
+  const [
+    categoriaSelecionada,
+    setCategoriaSelecionada
+  ] = useState("");
+
+  const [
+    tipoFiltro,
+    setTipoFiltro
+  ] = useState("");
+
+
+  // =====================================================
+  // CONTAS DISPONÍVEIS
+  // =====================================================
+
   const contas = [
+
     ...new Map(
-      movimentacoes.map((m) => [
-        m.conta?.nome,
-        {
-          id: m.conta_id,
-          nome: m.conta?.nome
-        }
-      ])
+
+      movimentacoes
+        .filter((mov) => mov.conta?.nome)
+        .map((mov) => [
+
+          mov.conta.nome,
+
+          {
+            id:
+              mov.conta_id ||
+              mov.conta.nome,
+
+            nome:
+              mov.conta.nome
+          }
+
+        ])
+
     ).values()
-  ].filter(c => c.nome);
 
-  const totalReceitas = movimentacoes
-    .filter(m => m.tipo === "receita")
-    .reduce((total, m) => total + Number(m.valor), 0);
+  ];
 
-  const totalDespesas = movimentacoes
-    .filter(m => m.tipo === "despesa")
-    .reduce((total, m) => total + Number(m.valor), 0);
 
-  const saldo = totalReceitas - totalDespesas;
+  // =====================================================
+  // CATEGORIAS DISPONÍVEIS
+  // =====================================================
 
-  const quantidade = movimentacoes.length;
+  const categorias = [
+
+    ...new Map(
+
+      movimentacoes
+        .filter((mov) => mov.categoria?.nome)
+        .map((mov) => [
+
+          mov.categoria.nome,
+
+          {
+            id:
+              mov.categoria_id ||
+              mov.categoria.nome,
+
+            nome:
+              mov.categoria.nome
+          }
+
+        ])
+
+    ).values()
+
+  ];
+
+
+  // =====================================================
+  // MESES DISPONÍVEIS
+  // =====================================================
+
+  const meses = [
+
+    ...new Set(
+
+      movimentacoes
+        .map(
+          (mov) =>
+            mov.data_movimentacao?.slice(0, 7)
+        )
+        .filter(Boolean)
+
+    )
+
+  ]
+    .sort()
+    .reverse();
+
+
+  function formatarMes(valor) {
+
+    const [ano, mes] =
+      valor.split("-");
+
+    const data =
+      new Date(
+        Number(ano),
+        Number(mes) - 1,
+        1
+      );
+
+    const texto =
+      data.toLocaleDateString(
+        "pt-BR",
+        {
+          month: "long",
+          year: "numeric"
+        }
+      );
+
+    return (
+      texto.charAt(0).toUpperCase() +
+      texto.slice(1)
+    );
+
+  }
+
+
+  // =====================================================
+  // TOTAIS FILTRADOS
+  // =====================================================
+
+  const totalReceitas =
+    movimentacoesFiltradas
+
+      .filter(
+        (mov) =>
+          mov.tipo === "receita"
+      )
+
+      .reduce(
+        (total, mov) =>
+          total + Number(mov.valor),
+        0
+      );
+
+
+  const totalDespesas =
+    movimentacoesFiltradas
+
+      .filter(
+        (mov) =>
+          mov.tipo === "despesa"
+      )
+
+      .reduce(
+        (total, mov) =>
+          total + Number(mov.valor),
+        0
+      );
+
+
+  const saldo =
+    totalReceitas -
+    totalDespesas;
+
+
+  const quantidade =
+    movimentacoesFiltradas.length;
+
 
   function formatarMoeda(valor) {
 
-    return Number(valor || 0).toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL"
-    });
+    return Number(
+      valor || 0
+    ).toLocaleString(
+      "pt-BR",
+      {
+        style: "currency",
+        currency: "BRL"
+      }
+    );
 
   }
+
+
+  // =====================================================
+  // CARREGAR MOVIMENTAÇÕES
+  // =====================================================
 
   useEffect(() => {
 
@@ -63,71 +251,271 @@ function Movimentacoes() {
 
   }, []);
 
+
   async function carregarMovimentacoes() {
 
     const {
       data: { user }
-    } = await supabase.auth.getUser();
-
-
+    } =
+      await supabase.auth.getUser();
 
 
     if (!user) return;
 
+
     try {
 
-      const dados = await listarMovimentacoes(user.id);
+      const dados =
+        await listarMovimentacoes(
+          user.id
+        );
 
-      setMovimentacoes(dados);
-      setMovimentacoesFiltradas(dados);
+      setMovimentacoes(
+        dados || []
+      );
+
+      setMovimentacoesFiltradas(
+        dados || []
+      );
 
     } catch (error) {
 
-      console.error("ERRO:", error);
+      console.error(
+        "Erro ao carregar movimentações:",
+        error
+      );
 
     }
 
   }
 
+
+  // =====================================================
+  // FILTROS
+  // =====================================================
+
   useEffect(() => {
 
-    const texto = pesquisa.toLowerCase();
+    const texto =
+      pesquisa
+        .trim()
+        .toLowerCase();
 
-    const resultado = movimentacoes.filter((mov) => {
 
-      const descricaoOk =
-        mov.descricao
-          .toLowerCase()
-          .includes(texto);
+    const resultado =
+      movimentacoes.filter(
+        (mov) => {
 
-      const tipoOk =
-        !tipoFiltro ||
-        mov.tipo === tipoFiltro;
+          const descricaoOk =
 
-      const contaOk =
-        !contaSelecionada ||
-        mov.conta?.nome === contaSelecionada;
+            !texto ||
 
-      return (
-        descricaoOk &&
-        tipoOk &&
-        contaOk
+            (mov.descricao || "")
+              .toLowerCase()
+              .includes(texto);
+
+
+          const tipoOk =
+
+            !tipoFiltro ||
+
+            mov.tipo ===
+              tipoFiltro;
+
+
+          const contaOk =
+
+            !contaSelecionada ||
+
+            mov.conta?.nome ===
+              contaSelecionada;
+
+
+          const categoriaOk =
+
+            !categoriaSelecionada ||
+
+            mov.categoria?.nome ===
+              categoriaSelecionada;
+
+
+          const mesMovimentacao =
+
+            mov.data_movimentacao
+              ?.slice(0, 7);
+
+
+          const mesOk =
+
+            !mesSelecionado ||
+
+            mesMovimentacao ===
+              mesSelecionado;
+
+
+          return (
+
+            descricaoOk &&
+
+            tipoOk &&
+
+            contaOk &&
+
+            categoriaOk &&
+
+            mesOk
+
+          );
+
+        }
+
       );
 
-    });
 
-    setMovimentacoesFiltradas(resultado);
+    setMovimentacoesFiltradas(
+      resultado
+    );
+
 
   }, [
+
     pesquisa,
-    tipoFiltro,
+
+    mesSelecionado,
+
     contaSelecionada,
+
+    categoriaSelecionada,
+
+    tipoFiltro,
+
     movimentacoes
+
   ]);
+
+
+  // =====================================================
+  // LIMPAR FILTROS
+  // =====================================================
+
+  function limparFiltros() {
+
+    setPesquisa("");
+
+    setMesSelecionado("");
+
+    setContaSelecionada("");
+
+    setCategoriaSelecionada("");
+
+    setTipoFiltro("");
+
+  }
+
+
+  // =====================================================
+  // EDITAR
+  // =====================================================
+
+  function abrirEdicao(mov) {
+
+    setMovimentacaoEditando(
+      mov
+    );
+
+  }
+
+
+  function fecharEdicao() {
+
+    setMovimentacaoEditando(
+      null
+    );
+
+  }
+
+
+  // =====================================================
+  // EXCLUIR
+  // =====================================================
+
+  function solicitarExclusao(mov) {
+
+    setMovimentacaoExcluindo(
+      mov
+    );
+
+  }
+
+
+  function cancelarExclusao() {
+
+    setMovimentacaoExcluindo(
+      null
+    );
+
+  }
+
+
+  async function confirmarExclusao() {
+
+    if (
+      !movimentacaoExcluindo?.id
+    ) {
+      return;
+    }
+
+
+    try {
+
+      await excluirMovimentacao(
+        movimentacaoExcluindo.id
+      );
+
+
+      showToast(
+        "Sucesso",
+        "Movimentação excluída com sucesso!",
+        "success"
+      );
+
+
+      setMovimentacaoExcluindo(
+        null
+      );
+
+
+      await carregarMovimentacoes();
+
+
+    } catch (error) {
+
+      console.error(
+        "Erro ao excluir movimentação:",
+        error
+      );
+
+
+      showToast(
+        "Erro",
+        error.message ||
+          "Não foi possível excluir a movimentação.",
+        "danger"
+      );
+
+    }
+
+  }
+
+
+  // =====================================================
+  // TELA
+  // =====================================================
 
   return (
 
     <MainLayout>
+
 
       <PageHeader
 
@@ -138,171 +526,487 @@ function Movimentacoes() {
       >
 
         <button
+
           className="btn-nova-movimentacao"
-          onClick={() => setModalAberto(true)}
+
+          onClick={() =>
+            setModalAberto(true)
+          }
+
         >
+
           + Nova Movimentação
+
         </button>
 
       </PageHeader>
+
 
       <div className="dashboard-cards">
 
 
         <CardResumo
+
           titulo="Receitas"
+
           subtitulo="Entradas do período"
-          valor={formatarMoeda(totalReceitas)}
+
+          valor={
+            formatarMoeda(
+              totalReceitas
+            )
+          }
+
           cor="green"
-          icone={<ArrowUpRight size={30} />}
+
+          icone={
+            <ArrowUpRight
+              size={30}
+            />
+          }
+
         />
 
+
         <CardResumo
+
           titulo="Despesas"
+
           subtitulo="Saídas do período"
-          valor={formatarMoeda(totalDespesas)}
+
+          valor={
+            formatarMoeda(
+              totalDespesas
+            )
+          }
+
           cor="red"
-          icone={<ArrowDownRight size={30} />}
+
+          icone={
+            <ArrowDownRight
+              size={30}
+            />
+          }
+
         />
 
+
         <CardResumo
+
           titulo="Saldo"
+
           subtitulo="Resultado"
-          valor={formatarMoeda(saldo)}
+
+          valor={
+            formatarMoeda(
+              saldo
+            )
+          }
+
           cor="blue"
-          icone={<Wallet size={30} />}
+
+          icone={
+            <Wallet
+              size={30}
+            />
+          }
+
         />
 
+
         <CardResumo
+
           titulo="Movimentações"
+
           subtitulo="Lançamentos"
-          valor={quantidade}
+
+          valor={
+            quantidade
+          }
+
           cor="purple"
-          icone={<List size={30} />}
+
+          icone={
+            <List
+              size={30}
+            />
+          }
+
         />
+
 
       </div>
 
+
       <div className="movimentacoes-filtros">
 
+
         <input
+
           type="text"
+
           placeholder="🔍 Pesquisar descrição..."
+
           className="filtro-pesquisa"
-          value={pesquisa}
-          onChange={(e) => setPesquisa(e.target.value)}
+
+          value={
+            pesquisa
+          }
+
+          onChange={
+            (e) =>
+              setPesquisa(
+                e.target.value
+              )
+          }
+
         />
 
-        <select className="filtro-select">
-
-          <option>Todos os meses</option>
-
-        </select>
 
         <select
+
           className="filtro-select"
-          value={contaSelecionada}
-          onChange={(e) => setContaSelecionada(e.target.value)}
+
+          value={
+            mesSelecionado
+          }
+
+          onChange={
+            (e) =>
+              setMesSelecionado(
+                e.target.value
+              )
+          }
+
         >
 
           <option value="">
-            Todas as contas
+
+            Todos os meses
+
           </option>
 
-          {contas.map((conta) => (
 
-            <option
-              key={conta.id}
-              value={conta.nome}
-            >
-              {conta.nome}
-            </option>
+          {
+            meses.map(
+              (mes) => (
 
-          ))}
+                <option
+
+                  key={mes}
+
+                  value={mes}
+
+                >
+
+                  {
+                    formatarMes(
+                      mes
+                    )
+                  }
+
+                </option>
+
+              )
+            )
+          }
 
         </select>
 
-        <select className="filtro-select">
-
-          <option>Todas categorias</option>
-
-        </select>
 
         <select
+
           className="filtro-select"
-          value={tipoFiltro}
-          onChange={(e) => setTipoFiltro(e.target.value)}
+
+          value={
+            contaSelecionada
+          }
+
+          onChange={
+            (e) =>
+              setContaSelecionada(
+                e.target.value
+              )
+          }
+
         >
 
           <option value="">
+
+            Todas as contas
+
+          </option>
+
+
+          {
+            contas.map(
+              (conta) => (
+
+                <option
+
+                  key={
+                    conta.id
+                  }
+
+                  value={
+                    conta.nome
+                  }
+
+                >
+
+                  {
+                    conta.nome
+                  }
+
+                </option>
+
+              )
+            )
+          }
+
+        </select>
+
+
+        <select
+
+          className="filtro-select"
+
+          value={
+            categoriaSelecionada
+          }
+
+          onChange={
+            (e) =>
+              setCategoriaSelecionada(
+                e.target.value
+              )
+          }
+
+        >
+
+          <option value="">
+
+            Todas categorias
+
+          </option>
+
+
+          {
+            categorias.map(
+              (categoria) => (
+
+                <option
+
+                  key={
+                    categoria.id
+                  }
+
+                  value={
+                    categoria.nome
+                  }
+
+                >
+
+                  {
+                    categoria.nome
+                  }
+
+                </option>
+
+              )
+            )
+          }
+
+        </select>
+
+
+        <select
+
+          className="filtro-select"
+
+          value={
+            tipoFiltro
+          }
+
+          onChange={
+            (e) =>
+              setTipoFiltro(
+                e.target.value
+              )
+          }
+
+        >
+
+          <option value="">
+
             Receitas e Despesas
+
           </option>
 
           <option value="receita">
+
             Receitas
+
           </option>
 
           <option value="despesa">
+
             Despesas
+
           </option>
 
         </select>
 
-        <button className="btn-limpar">
+
+        <button
+
+          className="btn-limpar"
+
+          onClick={
+            limparFiltros
+          }
+
+        >
 
           Limpar
 
         </button>
 
+
       </div>
 
 
-
       {
-        movimentacoesFiltradas.map((mov) => (
+        movimentacoesFiltradas.map(
+          (mov) => (
 
-          <ItemMovimentacao
+            <ItemMovimentacao
 
-            key={mov.id}
+              key={
+                mov.id
+              }
 
-            movimentacao={{
+              movimentacao={{
 
-              tipo: mov.tipo,
+                tipo:
+                  mov.tipo,
 
-              descricao: mov.descricao,
+                descricao:
+                  mov.descricao,
 
-              categoria: mov.categoria?.nome,
-              conta: mov.conta?.nome,
+                categoria:
+                  mov.categoria?.nome,
 
-              data: new Date(
+                conta:
+                  mov.conta?.nome,
 
-                mov.data_movimentacao
+                data:
+                  new Date(
+                    `${mov.data_movimentacao}T12:00:00`
+                  ).toLocaleDateString(
+                    "pt-BR"
+                  ),
 
-              ).toLocaleDateString("pt-BR"),
+                valor:
+                  mov.valor
 
-              valor: mov.valor
+              }}
 
-            }}
+              onEditar={() =>
+                abrirEdicao(
+                  mov
+                )
+              }
 
-          />
+              onExcluir={() =>
+                solicitarExclusao(
+                  mov
+                )
+              }
 
-        ))
+            />
+
+          )
+        )
       }
 
 
       {
         modalAberto && (
+
           <ModalNovaMovimentacao
-            onFechar={() => setModalAberto(false)}
-            onSalvou={carregarMovimentacoes}
+
+            onFechar={() =>
+              setModalAberto(
+                false
+              )
+            }
+
+            onSalvou={
+              carregarMovimentacoes
+            }
+
           />
+
         )
       }
+
+
+      {
+        movimentacaoEditando && (
+
+          <ModalNovaMovimentacao
+
+            movimentacao={
+              movimentacaoEditando
+            }
+
+            onFechar={
+              fecharEdicao
+            }
+
+            onSalvou={
+              carregarMovimentacoes
+            }
+
+          />
+
+        )
+      }
+
+
+      <ModalConfirmacao
+
+        aberto={
+          Boolean(
+            movimentacaoExcluindo
+          )
+        }
+
+        titulo="Excluir movimentação"
+
+        mensagem={
+          movimentacaoExcluindo
+            ? `Deseja realmente excluir "${movimentacaoExcluindo.descricao}"? Esta ação não poderá ser desfeita.`
+            : ""
+        }
+
+        onCancelar={
+          cancelarExclusao
+        }
+
+        onConfirmar={
+          confirmarExclusao
+        }
+
+      />
+
 
     </MainLayout>
 
   );
 
 }
+
 
 export default Movimentacoes;
