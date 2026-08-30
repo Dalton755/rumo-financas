@@ -84,7 +84,10 @@ function Dashboard() {
 
     ) {
 
-        const { data, error } = await supabase.rpc(
+        const { data, error } = await supabase
+        
+        .schema("rumo")
+        .rpc(
             "obter_dashboard",
             {
                 p_usuario_id: userId,
@@ -111,7 +114,10 @@ function Dashboard() {
         periodo
 
     ) {
-        const { data, error } = await supabase.rpc(
+        const { data, error } = await supabase
+        
+        .schema("rumo")
+        .rpc(
             "obter_movimentacoes_dashboard",
             {
                 p_usuario_id: userId,
@@ -133,7 +139,10 @@ function Dashboard() {
 
     async function carregarPeriodos(userId) {
 
-        const { data, error } = await supabase.rpc(
+        const { data, error } = await supabase
+        
+        .schema("rumo")
+        .rpc(
             "listar_periodos_dashboard",
             {
                 p_usuario_id: userId
@@ -168,6 +177,7 @@ function Dashboard() {
             } = await supabase.auth.getUser()
 
             setUsuario(user)
+
 
             if (user) {
 

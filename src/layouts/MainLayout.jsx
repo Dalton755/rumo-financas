@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import "./MainLayout.css";
 import IndiceRumo from "../components/ui/IndiceRumo";
 import { useDashboard } from "../context/DashboardContext";
+import { supabase } from "../services/supabase";
 
 import {
   Menu,
@@ -18,7 +19,13 @@ function MainLayout({ children }) {
   const [menuAberto, setMenuAberto] = useState(false)
   const { dashboard } = useDashboard();
 
+  async function sair() {
 
+    await supabase.auth.signOut();
+
+    window.location.href = "/";
+
+  }
 
 
 
@@ -123,7 +130,10 @@ function MainLayout({ children }) {
 
             </div>
 
-            <button className="rumo-sidebar-logout">
+            <button
+              className="rumo-sidebar-logout"
+              onClick={sair}
+            >
 
               <LogOut size={20} />
 

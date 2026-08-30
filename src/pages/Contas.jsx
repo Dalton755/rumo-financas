@@ -33,6 +33,7 @@ function Contas() {
         } = await supabase.auth.getUser()
 
         const { data, error } = await supabase
+            .schema("rumo")
             .from('contas')
             .select('*')
             .eq('usuario_id', user.id)
@@ -82,6 +83,7 @@ function Contas() {
 
         const { error } = await supabase
 
+            .schema("rumo")
             .from("contas")
 
             .delete()
@@ -132,6 +134,7 @@ function Contas() {
 
             ({ error } = await supabase
 
+                .schema("rumo")
                 .from("contas")
 
                 .update({
@@ -152,6 +155,7 @@ function Contas() {
 
             ({ error } = await supabase
 
+                .schema("rumo")
                 .from("contas")
 
                 .insert([

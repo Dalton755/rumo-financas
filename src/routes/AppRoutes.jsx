@@ -5,6 +5,7 @@ import Dashboard from '../pages/Dashboard'
 import Contas from '../pages/Contas'
 import Movimentacoes from '../pages/Movimentacoes'
 import Relatorios from '../pages/Relatorios'
+import ProtectedRoute from '../components/ProtectedRoute'
 
 function AppRoutes() {
     return (
@@ -19,22 +20,38 @@ function AppRoutes() {
 
                 <Route
                     path="/dashboard"
-                    element={<Dashboard />}
+                    element={
+                        <ProtectedRoute>
+                            <Dashboard />
+                        </ProtectedRoute>
+                    }
                 />
 
                 <Route
                     path="/contas"
-                    element={<Contas />}
+                    element={
+                        <ProtectedRoute>
+                            <Contas />
+                        </ProtectedRoute>
+                    }
                 />
 
                 <Route
                     path="/movimentacoes"
-                    element={<Movimentacoes />}
+                    element={
+                        <ProtectedRoute>
+                            <Movimentacoes />
+                        </ProtectedRoute>
+                    }
                 />
 
                 <Route
                     path="/relatorios"
-                    element={<Relatorios />}
+                    element={
+                        <ProtectedRoute>
+                            <Relatorios />
+                        </ProtectedRoute>
+                    }
                 />
 
             </Routes>

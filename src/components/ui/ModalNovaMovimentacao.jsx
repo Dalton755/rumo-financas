@@ -73,6 +73,7 @@ export default function ModalNovaMovimentacao({ onFechar, onSalvou }) {
         }
 
         const { error } = await supabase
+            .schema("rumo")
             .from("movimentacoes")
             .insert({
 
@@ -121,6 +122,7 @@ export default function ModalNovaMovimentacao({ onFechar, onSalvou }) {
     async function carregarContas() {
 
         const { data, error } = await supabase
+            .schema("rumo")
             .from("contas")
             .select("id,nome")
             .order("nome");
@@ -136,6 +138,7 @@ export default function ModalNovaMovimentacao({ onFechar, onSalvou }) {
     async function carregarCategorias() {
 
         const { data, error } = await supabase
+            .schema("rumo")
             .from("categorias")
             .select("id,nome")
             .order("nome");

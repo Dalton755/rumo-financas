@@ -3,7 +3,7 @@ import { supabase } from "./supabase";
 export async function listarMovimentacoes(usuarioId) {
 
     const { data, error } = await supabase
-
+        .schema("rumo")
         .from("movimentacoes")
 
         .select(`
@@ -36,7 +36,7 @@ export async function listarMovimentacoes(usuarioId) {
 export async function salvarMovimentacao(dados) {
 
     const { error } = await supabase
-
+        .schema("rumo")
         .from("movimentacoes")
 
         .insert(dados);
@@ -48,7 +48,7 @@ export async function salvarMovimentacao(dados) {
 export async function editarMovimentacao(id, dados) {
 
     const { error } = await supabase
-
+        .schema("rumo")
         .from("movimentacoes")
 
         .update(dados)
@@ -62,7 +62,7 @@ export async function editarMovimentacao(id, dados) {
 export async function excluirMovimentacao(id) {
 
     const { error } = await supabase
-
+        .schema("rumo")
         .from("movimentacoes")
 
         .delete()
