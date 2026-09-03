@@ -23,7 +23,8 @@ const cores = {
     caixa: "#0066B3",
     itau: "#FF6200",
     banco_do_brasil: "#F7D117",
-    shopee: "#EE4D2D"
+    shopee: "#EE4D2D",
+    open_finance: "#3BC9DB"
 
 };
 
@@ -145,7 +146,10 @@ export default function CardConta({ conta, onEditar, onExcluir }) {
 
             <div className="card-conta-saldo">
 
-                {formatarMoeda(conta.saldo_inicial)}
+                {formatarMoeda(
+                    conta.saldo_atual ??
+                    conta.saldo_inicial
+                )}
 
             </div>
 

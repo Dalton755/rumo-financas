@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase";
 import { editarMovimentacao } from "../../services/movimentacoes";
 import { useToast } from "../../context/ToastContext";
+import ModalConta from "./ModalConta";
 
 export default function ModalNovaMovimentacao({
     onFechar,
@@ -44,6 +45,18 @@ export default function ModalNovaMovimentacao({
     const [observacao, setObservacao] = useState(
         movimentacao?.observacao || ""
     );
+
+    const [modalContaAberto, setModalContaAberto] = useState(false);
+
+    const [novaContaNome, setNovaContaNome] = useState("");
+    const [novaContaBanco, setNovaContaBanco] = useState("nubank");
+    const [novaContaTipo, setNovaContaTipo] = useState("corrente");
+    const [novaContaSaldoInicial, setNovaContaSaldoInicial] = useState("0");
+
+    const [modalCategoriaAberto, setModalCategoriaAberto] = useState(false);
+    const [novaCategoriaNome, setNovaCategoriaNome] = useState("");
+
+    const [salvandoAuxiliar, setSalvandoAuxiliar] = useState(false);
 
     useEffect(() => {
 
@@ -235,162 +248,535 @@ export default function ModalNovaMovimentacao({
 
     }
 
+    function abrirNovaConta() {
+
+        setNovaContaNome("");
+        setNovaContaBanco("nubank");
+        setNovaContaTipo("corrente");
+        setNovaContaSaldoInicial("0");
+
+        setModalContaAberto(true);
+
+    }
+
+
+    async function salvarNovaConta() {
+
+        if (!novaContaNome.trim()) {
+
+            showToast(
+                "Erro",
+                "Informe o nome da conta.",
+                "danger"
+            );
+
+            return;
+
+        }
+
+        try {
+
+            setSalvandoAuxiliar(true);
+
+            const {
+                data: { user }
+            } = await supabase.auth.getUser();
+
+            if (!user) {
+
+                throw new Error(
+                    "Usuário não autenticado."
+                );
+
+            }
+
+            const {
+                data: novaConta,
+                error
+            } = await supabase
+                .schema("rumo")
+                .from("contas")
+                .insert({
+                    usuario_id: user.id,
+
+                    nome: novaContaNome.trim(),
+
+                    banco: novaContaBanco,
+
+                    tipo: novaContaTipo,
+
+                    saldo_inicial:
+                        Number(
+                            novaContaSaldoInicial || 0
+                        )
+                })
+                .select("id,nome")
+                .single();
+
+            if (error) {
+
+                throw error;
+
+            }
+
+            await carregarContas();
+
+            /*
+             * Já seleciona automaticamente
+             * a conta recém-criada.
+             */
+            setContaId(novaConta.id);
+
+            setModalContaAberto(false);
+
+            showToast(
+                "Conta criada",
+                `${novaConta.nome} foi adicionada e selecionada.`,
+                "success"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao criar conta pela movimentação:",
+                error
+            );
+
+            showToast(
+                "Erro",
+                error.message ||
+                "Não foi possível criar a conta.",
+                "danger"
+            );
+
+        } finally {
+
+            setSalvandoAuxiliar(false);
+
+        }
+
+    }
+
+
+    function abrirNovaCategoria() {
+
+        setNovaCategoriaNome("");
+
+        setModalCategoriaAberto(true);
+
+    }
+
+
+    async function salvarNovaCategoria() {
+
+        if (!novaCategoriaNome.trim()) {
+
+            showToast(
+                "Erro",
+                "Informe o nome da categoria.",
+                "danger"
+            );
+
+            return;
+
+        }
+
+        try {
+
+            setSalvandoAuxiliar(true);
+
+            const {
+                data: { user }
+            } = await supabase.auth.getUser();
+
+            if (!user) {
+
+                throw new Error(
+                    "Usuário não autenticado."
+                );
+
+            }
+
+            const {
+                data: novaCategoria,
+                error
+            } = await supabase
+                .schema("rumo")
+                .from("categorias")
+                .insert({
+                    usuario_id: user.id,
+
+                    nome:
+                        novaCategoriaNome.trim(),
+
+                    /*
+                     * A categoria acompanha
+                     * automaticamente o tipo
+                     * da movimentação atual.
+                     */
+                    tipo,
+
+                    ativo: true
+                })
+                .select("id,nome")
+                .single();
+
+            if (error) {
+
+                throw error;
+
+            }
+
+            await carregarCategorias();
+
+            /*
+             * Já seleciona automaticamente
+             * a categoria recém-criada.
+             */
+            setCategoriaId(
+                novaCategoria.id
+            );
+
+            setModalCategoriaAberto(false);
+
+            showToast(
+                "Categoria criada",
+                `${novaCategoria.nome} foi adicionada e selecionada.`,
+                "success"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao criar categoria pela movimentação:",
+                error
+            );
+
+            showToast(
+                "Erro",
+                error.message ||
+                "Não foi possível criar a categoria.",
+                "danger"
+            );
+
+        } finally {
+
+            setSalvandoAuxiliar(false);
+
+        }
+
+    }
+
     return (
 
-        <div className="modal-overlay">
+        <>
 
-            <div className="modal-conta">
+            <div className="modal-overlay">
 
-                <div className="modal-header">
+                <div className="modal-conta">
 
-                    <h2>
-                        {
-                            editando
-                                ? "Editar Movimentação"
-                                : "Nova Movimentação"
-                        }
-                    </h2>
+                    <div className="modal-header">
 
-                    <button
-                        className="btn-fechar"
-                        onClick={onFechar}
-                    >
-                        ✕
-                    </button>
+                        <h2>
+                            {
+                                editando
+                                    ? "Editar Movimentação"
+                                    : "Nova Movimentação"
+                            }
+                        </h2>
 
-                </div>
+                        <button
+                            className="btn-fechar"
+                            onClick={onFechar}
+                        >
+                            ✕
+                        </button>
 
-                <div className="modal-body">
+                    </div>
 
-                    <select
-                        value={tipo}
-                        onChange={(e) =>
-                            setTipo(e.target.value)
-                        }
-                    >
+                    <div className="modal-body">
 
-                        <option value="receita">
-                            Receita
-                        </option>
+                        <select
+                            value={tipo}
+                            onChange={(e) =>
+                                setTipo(e.target.value)
+                            }
+                        >
 
-                        <option value="despesa">
-                            Despesa
-                        </option>
-
-                    </select>
-
-                    <input
-                        type="text"
-                        placeholder="Descrição"
-                        value={descricao}
-                        onChange={(e) =>
-                            setDescricao(e.target.value)
-                        }
-                    />
-
-                    <input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        placeholder="Valor"
-                        value={valor}
-                        onChange={(e) =>
-                            setValor(e.target.value)
-                        }
-                    />
-
-                    <select
-                        value={contaId}
-                        onChange={(e) =>
-                            setContaId(e.target.value)
-                        }
-                    >
-
-                        <option value="">
-                            Selecione uma conta
-                        </option>
-
-                        {contas.map((conta) => (
-
-                            <option
-                                key={conta.id}
-                                value={conta.id}
-                            >
-                                {conta.nome}
+                            <option value="receita">
+                                Receita
                             </option>
 
-                        ))}
-
-                    </select>
-
-                    <select
-                        value={categoriaId}
-                        onChange={(e) =>
-                            setCategoriaId(e.target.value)
-                        }
-                    >
-
-                        <option value="">
-                            Selecione uma categoria
-                        </option>
-
-                        {categorias.map((categoria) => (
-
-                            <option
-                                key={categoria.id}
-                                value={categoria.id}
-                            >
-                                {categoria.nome}
+                            <option value="despesa">
+                                Despesa
                             </option>
 
-                        ))}
+                        </select>
 
-                    </select>
+                        <input
+                            type="text"
+                            placeholder="Descrição"
+                            value={descricao}
+                            onChange={(e) =>
+                                setDescricao(e.target.value)
+                            }
+                        />
 
-                    <input
-                        type="date"
-                        value={dataMovimento}
-                        onChange={(e) =>
-                            setDataMovimento(e.target.value)
-                        }
-                    />
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="Valor"
+                            value={valor}
+                            onChange={(e) =>
+                                setValor(e.target.value)
+                            }
+                        />
 
-                    <textarea
-                        placeholder="Observações (opcional)"
-                        value={observacao}
-                        onChange={(e) =>
-                            setObservacao(e.target.value)
-                        }
-                    />
+                        <div className="movimentacao-campo-com-acao">
 
-                </div>
+                            <select
+                                value={contaId}
+                                onChange={(e) =>
+                                    setContaId(
+                                        e.target.value
+                                    )
+                                }
+                            >
 
-                <div className="modal-footer">
+                                <option value="">
+                                    Selecione uma conta
+                                </option>
 
-                    <button
-                        className="btn-cancelar"
-                        onClick={onFechar}
-                    >
-                        Cancelar
-                    </button>
+                                {contas.map((conta) => (
 
-                    <button
-                        className="btn-salvar"
-                        onClick={salvarMovimentacao}
-                    >
-                        {
-                            editando
-                                ? "Salvar alterações"
-                                : "Salvar"
-                        }
-                    </button>
+                                    <option
+                                        key={conta.id}
+                                        value={conta.id}
+                                    >
+                                        {conta.nome}
+                                    </option>
+
+                                ))}
+
+                            </select>
+
+                            <button
+                                type="button"
+                                className="movimentacao-btn-adicionar"
+                                onClick={abrirNovaConta}
+                            >
+                                + Nova
+                            </button>
+
+                        </div>
+
+                        <div className="movimentacao-campo-com-acao">
+
+                            <select
+                                value={categoriaId}
+                                onChange={(e) =>
+                                    setCategoriaId(
+                                        e.target.value
+                                    )
+                                }
+                            >
+
+                                <option value="">
+                                    Selecione uma categoria
+                                </option>
+
+                                {categorias.map((categoria) => (
+
+                                    <option
+                                        key={categoria.id}
+                                        value={categoria.id}
+                                    >
+                                        {categoria.nome}
+                                    </option>
+
+                                ))}
+
+                            </select>
+
+                            <button
+                                type="button"
+                                className="movimentacao-btn-adicionar"
+                                onClick={abrirNovaCategoria}
+                            >
+                                + Nova
+                            </button>
+
+                        </div>
+
+                        <input
+                            type="date"
+                            value={dataMovimento}
+                            onChange={(e) =>
+                                setDataMovimento(e.target.value)
+                            }
+                        />
+
+                        <textarea
+                            placeholder="Observações (opcional)"
+                            value={observacao}
+                            onChange={(e) =>
+                                setObservacao(e.target.value)
+                            }
+                        />
+
+                    </div>
+
+                    <div className="modal-footer">
+
+                        <button
+                            className="btn-cancelar"
+                            onClick={onFechar}
+                        >
+                            Cancelar
+                        </button>
+
+                        <button
+                            className="btn-salvar"
+                            onClick={salvarMovimentacao}
+                        >
+                            {
+                                editando
+                                    ? "Salvar alterações"
+                                    : "Salvar"
+                            }
+                        </button>
+
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
+            <div className="movimentacao-modal-secundario-wrap">
 
+                <ModalConta
+                    aberto={modalContaAberto}
+
+                    titulo="Nova Conta"
+
+                    nome={novaContaNome}
+                    setNome={setNovaContaNome}
+
+                    banco={novaContaBanco}
+                    setBanco={setNovaContaBanco}
+
+                    tipo={novaContaTipo}
+                    setTipo={setNovaContaTipo}
+
+                    saldoInicial={novaContaSaldoInicial}
+                    setSaldoInicial={setNovaContaSaldoInicial}
+
+                    onSalvar={salvarNovaConta}
+
+                    onFechar={() =>
+                        setModalContaAberto(false)
+                    }
+                />
+
+            </div>
+
+
+            {
+                modalCategoriaAberto && (
+
+                    <div className="modal-overlay movimentacao-modal-secundario">
+
+                        <div className="modal-conta movimentacao-modal-categoria">
+
+                            <div className="modal-header">
+
+                                <h2>
+                                    Nova Categoria
+                                </h2>
+
+                                <button
+                                    type="button"
+                                    className="btn-fechar"
+                                    onClick={() =>
+                                        setModalCategoriaAberto(false)
+                                    }
+                                >
+                                    ✕
+                                </button>
+
+                            </div>
+
+
+                            <div className="modal-body">
+
+                                <input
+                                    type="text"
+                                    autoFocus
+                                    placeholder="Nome da categoria"
+                                    value={novaCategoriaNome}
+                                    onChange={(e) =>
+                                        setNovaCategoriaNome(
+                                            e.target.value
+                                        )
+                                    }
+                                />
+
+                                <div className="movimentacao-categoria-tipo">
+
+                                    Essa categoria será criada como:
+
+                                    <strong>
+                                        {
+                                            tipo === "receita"
+                                                ? " Receita"
+                                                : " Despesa"
+                                        }
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <div className="modal-footer">
+
+                                <button
+                                    type="button"
+                                    className="btn-cancelar"
+                                    onClick={() =>
+                                        setModalCategoriaAberto(false)
+                                    }
+                                    disabled={salvandoAuxiliar}
+                                >
+                                    Cancelar
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="btn-salvar"
+                                    onClick={salvarNovaCategoria}
+                                    disabled={salvandoAuxiliar}
+                                >
+                                    {
+                                        salvandoAuxiliar
+                                            ? "Salvando..."
+                                            : "Salvar"
+                                    }
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                )
+            }
+
+        </>
     );
+
+
 
 }

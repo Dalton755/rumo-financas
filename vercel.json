@@ -1,7 +1,55 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/dashboard",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/contas",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/movimentacoes",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/relatorios",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/premium",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/inteligencia",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/metas",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/objetivos",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/dividas",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/projecoes",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/orcamento",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/alertas",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/open-finance",
       "destination": "/index.html"
     }
   ]

@@ -1,0 +1,1896 @@
+.dividas-loading,
+.dividas-erro {
+  min-height: 420px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px 20px;
+
+  text-align: center;
+
+  color: #64748b;
+}
+
+.dividas-loading svg,
+.dividas-erro svg {
+  margin-bottom: 16px;
+
+  color: #22b8cf;
+}
+
+.dividas-loading h2,
+.dividas-erro h2 {
+  margin: 0 0 8px;
+
+  color: #0f172a;
+
+  font-size: 24px;
+  font-weight: 850;
+}
+
+.dividas-loading p,
+.dividas-erro p {
+  max-width: 480px;
+
+  margin: 0;
+
+  line-height: 1.6;
+}
+
+.dividas-erro button {
+  margin-top: 20px;
+
+  padding: 12px 18px;
+
+  border: 0;
+  border-radius: 12px;
+
+  background: #0f172a;
+  color: #ffffff;
+
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.dividas-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  flex-wrap: wrap;
+}
+
+.dividas-premium-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 12px;
+
+  border:
+    1px solid
+    rgba(34, 184, 207, 0.18);
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(34, 199, 232, 0.14),
+      rgba(139, 92, 246, 0.1)
+    );
+
+  color: #0891b2;
+
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.dividas-btn-nova {
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 11px 18px;
+
+  border: 0;
+  border-radius: 13px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #22c7e8,
+      #22b8cf
+    );
+
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 850;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 10px 24px
+    rgba(34, 184, 207, 0.2);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dividas-btn-nova:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 15px 32px
+    rgba(34, 184, 207, 0.28);
+}
+
+
+/* =========================================================
+   RESUMO
+========================================================= */
+
+.dividas-resumo-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 16px;
+
+  margin-top: 28px;
+}
+
+.dividas-resumo-card {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  padding: 20px;
+
+  border:
+    1px solid
+    #e8edf3;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      #fbfdff
+    );
+
+  box-shadow:
+    0 8px 26px
+    rgba(15, 23, 42, 0.045);
+}
+
+.dividas-resumo-card > svg {
+  width: 46px;
+  height: 46px;
+
+  flex: 0 0 46px;
+
+  padding: 11px;
+
+  box-sizing: border-box;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(34, 199, 232, 0.16),
+      rgba(34, 184, 207, 0.07)
+    );
+
+  color: #0891b2;
+}
+
+.dividas-resumo-card > div {
+  min-width: 0;
+}
+
+.dividas-resumo-card span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.dividas-resumo-card strong {
+  display: block;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  color: #0f172a;
+
+  font-size: 20px;
+  font-weight: 850;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   SEÇÃO
+========================================================= */
+
+.dividas-section {
+  margin-top: 28px;
+
+  padding: 26px;
+
+  border:
+    1px solid
+    #e8edf3;
+
+  border-radius: 22px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 10px 32px
+    rgba(15, 23, 42, 0.04);
+}
+
+.dividas-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+
+  margin-bottom: 22px;
+}
+
+.dividas-section-heading > div:first-child > span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #0891b2;
+
+  font-size: 11px;
+  font-weight: 900;
+
+  letter-spacing: 0.1em;
+}
+
+.dividas-section-heading h2 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 25px;
+  font-weight: 850;
+}
+
+.dividas-contagem {
+  padding: 8px 12px;
+
+  border-radius: 999px;
+
+  background: #f1f5f9;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.dividas-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 18px;
+}
+
+.divida-card {
+  position: relative;
+
+  min-width: 0;
+
+  padding: 22px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    #e5eaf0;
+
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      150deg,
+      #ffffff,
+      #fbfdff
+    );
+
+  box-shadow:
+    0 8px 24px
+    rgba(15, 23, 42, 0.045);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.divida-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  bottom: 0;
+  left: 0;
+
+  width: 4px;
+
+  background: #22b8cf;
+}
+
+.divida-card:hover {
+  transform: translateY(-3px);
+
+  border-color:
+    rgba(34, 184, 207, 0.25);
+
+  box-shadow:
+    0 16px 35px
+    rgba(15, 23, 42, 0.075);
+}
+
+.divida-card.status-negociada::before {
+  background: #f59e0b;
+}
+
+.divida-card.status-quitada::before {
+  background: #22c55e;
+}
+
+.divida-card.status-quitada {
+  background:
+    linear-gradient(
+      150deg,
+      #ffffff,
+      #f7fff9
+    );
+}
+
+
+/* =========================================================
+   TOPO CARD
+========================================================= */
+
+.divida-card-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 14px;
+}
+
+.divida-identidade {
+  min-width: 0;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 12px;
+}
+
+.divida-icone {
+  width: 42px;
+  height: 42px;
+
+  flex: 0 0 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+
+  background:
+    rgba(34, 184, 207, 0.1);
+
+  color: #0891b2;
+}
+
+.status-negociada .divida-icone {
+  background:
+    rgba(245, 158, 11, 0.11);
+
+  color: #d97706;
+}
+
+.status-quitada .divida-icone {
+  background:
+    rgba(34, 197, 94, 0.1);
+
+  color: #16a34a;
+}
+
+.divida-identidade h3 {
+  margin: 6px 0 0;
+
+  color: #0f172a;
+
+  font-size: 18px;
+  font-weight: 850;
+
+  line-height: 1.3;
+}
+
+.divida-identidade p {
+  margin: 4px 0 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   BADGES
+========================================================= */
+
+.divida-badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 6px;
+}
+
+.divida-status,
+.divida-prioridade {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 4px 8px;
+
+  border-radius: 999px;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  letter-spacing: 0.04em;
+
+  text-transform: uppercase;
+}
+
+.divida-status {
+  background:
+    rgba(34, 184, 207, 0.1);
+
+  color: #0891b2;
+}
+
+.divida-status.status-negociada {
+  background:
+    rgba(245, 158, 11, 0.12);
+
+  color: #b45309;
+}
+
+.divida-status.status-quitada {
+  background:
+    rgba(34, 197, 94, 0.11);
+
+  color: #15803d;
+}
+
+.divida-prioridade {
+  background: #f8fafc;
+
+  color: #64748b;
+}
+
+.divida-prioridade.prioridade-1 {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.divida-prioridade.prioridade-2 {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.divida-prioridade.prioridade-3 {
+  background: #fefce8;
+  color: #a16207;
+}
+
+.divida-prioridade.prioridade-4,
+.divida-prioridade.prioridade-5 {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+
+/* =========================================================
+   AÇÕES MINI
+========================================================= */
+
+.divida-acoes-mini {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.divida-acoes-mini button {
+  width: 34px;
+  height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: #f8fafc;
+
+  color: #64748b;
+
+  cursor: pointer;
+}
+
+.divida-acoes-mini button:hover {
+  background: #eef6f8;
+
+  color: #0891b2;
+}
+
+.divida-acoes-mini button.perigo:hover {
+  background: #fff1f2;
+
+  color: #e11d48;
+}
+
+
+/* =========================================================
+   VALORES
+========================================================= */
+
+.divida-valores {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+
+  margin-top: 22px;
+}
+
+.divida-valores > div {
+  padding: 14px;
+
+  border-radius: 14px;
+
+  background: #f8fafc;
+}
+
+.divida-valores span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.divida-valores strong {
+  color: #0f172a;
+
+  font-size: 17px;
+  font-weight: 850;
+}
+
+
+/* =========================================================
+   PROGRESSO
+========================================================= */
+
+.divida-progresso {
+  margin-top: 20px;
+}
+
+.divida-progresso > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 8px;
+}
+
+.divida-progresso span {
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.divida-progresso strong {
+  color: #0f172a;
+
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.divida-progresso-barra {
+  width: 100%;
+  height: 9px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #e9eef3;
+}
+
+.divida-progresso-barra > div {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #22c7e8,
+      #22b8cf
+    );
+
+  transition: width 0.5s ease;
+}
+
+.status-negociada
+.divida-progresso-barra > div {
+  background:
+    linear-gradient(
+      90deg,
+      #fbbf24,
+      #f59e0b
+    );
+}
+
+.status-quitada
+.divida-progresso-barra > div {
+  background:
+    linear-gradient(
+      90deg,
+      #4ade80,
+      #22c55e
+    );
+}
+
+
+/* =========================================================
+   INFORMAÇÕES
+========================================================= */
+
+.divida-info {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+
+  margin-top: 18px;
+}
+
+.divida-info > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.divida-info svg {
+  flex: 0 0 auto;
+
+  color: #94a3b8;
+}
+
+.divida-info strong {
+  color: #334155;
+}
+
+
+/* =========================================================
+   AÇÕES CARD
+========================================================= */
+
+.divida-card-acoes {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 20px;
+}
+
+.divida-card-acoes button {
+  min-height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 9px 13px;
+
+  border-radius: 11px;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.divida-btn-detalhes {
+  flex: 1;
+
+  border: 0;
+
+  background:
+    linear-gradient(
+      135deg,
+      #22c7e8,
+      #22b8cf
+    );
+
+  color: #ffffff;
+}
+
+.divida-btn-secundario {
+  border:
+    1px solid
+    #e2e8f0;
+
+  background: #ffffff;
+
+  color: #64748b;
+}
+
+
+/* =========================================================
+   VAZIO
+========================================================= */
+
+.dividas-vazio {
+  min-height: 320px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 35px 20px;
+
+  text-align: center;
+
+  border:
+    1px dashed
+    #d7e0e8;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      #fbfdff
+    );
+}
+
+.dividas-vazio > svg {
+  margin-bottom: 16px;
+
+  color: #22c55e;
+}
+
+.dividas-vazio h3 {
+  margin: 0 0 8px;
+
+  color: #0f172a;
+
+  font-size: 20px;
+}
+
+.dividas-vazio p {
+  max-width: 440px;
+
+  margin: 0;
+
+  color: #64748b;
+
+  line-height: 1.6;
+}
+
+.dividas-vazio button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-top: 20px;
+
+  padding: 11px 17px;
+
+  border: 0;
+  border-radius: 12px;
+
+  background: #0f172a;
+  color: #ffffff;
+
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.dividas-modal-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 1200;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background:
+    rgba(15, 23, 42, 0.48);
+
+  backdrop-filter: blur(4px);
+}
+
+.dividas-modal {
+  width:
+    min(
+      100%,
+      640px
+    );
+
+  max-height:
+    calc(100vh - 48px);
+
+  overflow-y: auto;
+
+  border:
+    1px solid
+    rgba(226, 232, 240, 0.9);
+
+  border-radius: 22px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 30px 80px
+    rgba(15, 23, 42, 0.22);
+}
+
+.dividas-modal-detalhes {
+  width:
+    min(
+      100%,
+      920px
+    );
+}
+
+.dividas-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding:
+    23px
+    24px
+    18px;
+
+  border-bottom:
+    1px solid
+    #edf1f5;
+}
+
+.dividas-modal-header > div > span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #0891b2;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  letter-spacing: 0.1em;
+}
+
+.dividas-modal-header h2 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 22px;
+  font-weight: 850;
+}
+
+.dividas-modal-fechar {
+  width: 36px;
+  height: 36px;
+
+  flex: 0 0 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: 11px;
+
+  background: #f8fafc;
+
+  color: #64748b;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.dividas-form {
+  display: flex;
+  flex-direction: column;
+
+  gap: 17px;
+
+  padding: 22px 24px;
+}
+
+.dividas-form-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 14px;
+}
+
+.dividas-form label,
+.divida-plano-form-grid label,
+.divida-simulador-campo {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.dividas-form label > span,
+.divida-plano-form-grid label > span,
+.divida-simulador-campo > span {
+  color: #475569;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.dividas-form input,
+.dividas-form select,
+.divida-pagamento input,
+.divida-simulador-campo input,
+.divida-plano-form-grid input {
+  width: 100%;
+
+  min-height: 46px;
+
+  padding: 11px 13px;
+
+  box-sizing: border-box;
+
+  outline: none;
+
+  border:
+    1px solid
+    #dce4eb;
+
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  color: #0f172a;
+
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.dividas-form input:focus,
+.dividas-form select:focus,
+.divida-pagamento input:focus,
+.divida-simulador-campo input:focus,
+.divida-plano-form-grid input:focus {
+  border-color: #22b8cf;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(34, 184, 207, 0.12);
+}
+
+
+/* =========================================================
+   FOOTER MODAL
+========================================================= */
+
+.dividas-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  padding:
+    17px
+    24px
+    22px;
+
+  border-top:
+    1px solid
+    #edf1f5;
+
+  background: #fbfdff;
+}
+
+.dividas-modal-footer button {
+  min-height: 42px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 10px 16px;
+
+  border-radius: 12px;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.dividas-btn-fechar {
+  border:
+    1px solid
+    #e2e8f0;
+
+  background: #ffffff;
+
+  color: #64748b;
+}
+
+.dividas-btn-salvar {
+  border: 0;
+
+  background:
+    linear-gradient(
+      135deg,
+      #22c7e8,
+      #22b8cf
+    );
+
+  color: #ffffff;
+}
+
+.dividas-modal-footer button:disabled {
+  opacity: 0.6;
+
+  cursor: wait;
+}
+
+
+/* =========================================================
+   RESUMO DETALHE
+========================================================= */
+
+.divida-detalhe-resumo {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 12px;
+
+  padding:
+    22px
+    24px
+    0;
+}
+
+.divida-detalhe-resumo > div {
+  padding: 15px;
+
+  border-radius: 14px;
+
+  background: #f8fafc;
+}
+
+.divida-detalhe-resumo span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.divida-detalhe-resumo strong {
+  color: #0f172a;
+
+  font-size: 17px;
+  font-weight: 850;
+}
+
+
+/* =========================================================
+   SUBTÍTULOS
+========================================================= */
+
+.divida-subtitulo {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 10px;
+}
+
+.divida-subtitulo > svg {
+  margin-top: 2px;
+
+  color: #0891b2;
+}
+
+.divida-subtitulo strong {
+  display: block;
+
+  color: #0f172a;
+
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.divida-subtitulo span {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   PAGAMENTO
+========================================================= */
+
+.divida-pagamento {
+  margin:
+    20px
+    24px
+    0;
+
+  padding: 18px;
+
+  border:
+    1px solid
+    rgba(34, 184, 207, 0.15);
+
+  border-radius: 17px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(34, 199, 232, 0.055),
+      rgba(34, 184, 207, 0.02)
+    );
+}
+
+.divida-pagamento-linha {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  gap: 10px;
+
+  margin-top: 15px;
+}
+
+.divida-pagamento-linha button {
+  min-width: 125px;
+
+  border: 0;
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #22c7e8,
+      #22b8cf
+    );
+
+  color: #ffffff;
+
+  font-weight: 850;
+
+  cursor: pointer;
+}
+
+.divida-pagamento-linha button:disabled {
+  opacity: 0.6;
+
+  cursor: wait;
+}
+
+
+/* =========================================================
+   SIMULADOR
+========================================================= */
+
+.divida-simulador {
+  margin:
+    18px
+    24px
+    0;
+
+  padding: 18px;
+
+  border:
+    1px solid
+    #e5eaf0;
+
+  border-radius: 17px;
+
+  background: #ffffff;
+}
+
+.divida-simulador-campo {
+  margin-top: 16px;
+}
+
+.divida-simulacoes-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+
+  margin-top: 16px;
+}
+
+.divida-simulacoes-grid article {
+  padding: 16px;
+
+  border:
+    1px solid
+    #e8edf3;
+
+  border-radius: 15px;
+
+  background: #f8fafc;
+}
+
+.divida-simulacoes-grid article.destaque {
+  border-color:
+    rgba(34, 184, 207, 0.2);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(34, 199, 232, 0.08),
+      rgba(34, 184, 207, 0.03)
+    );
+}
+
+.divida-simulacoes-grid article > span {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.divida-simulacoes-grid article > strong {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #0f172a;
+
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.divida-simulacoes-grid p {
+  margin:
+    5px
+    0
+    0;
+
+  color: #64748b;
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+.divida-simulacoes-grid p b {
+  color: #334155;
+}
+
+.divida-simulacao-alerta {
+  color: #b45309 !important;
+
+  font-weight: 700;
+}
+
+.divida-aviso-calculo {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 8px;
+
+  margin-top: 15px;
+
+  padding: 11px 12px;
+
+  border-radius: 11px;
+
+  background: #fff7ed;
+
+  color: #9a5b13;
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+.divida-aviso-calculo svg {
+  flex: 0 0 auto;
+
+  margin-top: 1px;
+}
+
+
+/* =========================================================
+   PLANO SEMANAL
+========================================================= */
+
+.divida-plano {
+  margin:
+    18px
+    24px
+    0;
+
+  padding: 18px;
+
+  border:
+    1px solid
+    #e5eaf0;
+
+  border-radius: 17px;
+
+  background: #ffffff;
+}
+
+.divida-plano-form-grid {
+  display: grid;
+
+  grid-template-columns:
+    1.2fr
+    1fr
+    1fr
+    auto;
+
+  align-items: end;
+
+  gap: 10px;
+
+  margin-top: 16px;
+}
+
+.divida-plano-form-grid > button {
+  min-height: 46px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding:
+    0
+    15px;
+
+  border: 0;
+  border-radius: 12px;
+
+  background: #0f172a;
+
+  color: #ffffff;
+
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.divida-plano-form-grid > button:disabled {
+  opacity: 0.6;
+
+  cursor: wait;
+}
+
+
+/* =========================================================
+   HISTÓRICO DO PLANO
+========================================================= */
+
+.divida-plano-historico {
+  padding: 22px 24px 26px;
+}
+
+.divida-plano-resumo {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 10px;
+
+  margin-bottom: 20px;
+}
+
+.divida-plano-resumo > div {
+  padding: 13px;
+
+  border-radius: 13px;
+
+  background: #f8fafc;
+}
+
+.divida-plano-resumo span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #64748b;
+
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.divida-plano-resumo strong {
+  color: #0f172a;
+
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.divida-plano-lista {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+
+  margin-top: 15px;
+}
+
+.divida-parcela {
+  display: grid;
+
+  grid-template-columns:
+    1.3fr
+    1fr
+    1fr
+    auto
+    auto;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 13px 14px;
+
+  border:
+    1px solid
+    #edf1f5;
+
+  border-radius: 14px;
+
+  background: #ffffff;
+}
+
+.divida-parcela.status-pago {
+  background: #f8fff9;
+}
+
+.divida-parcela.status-parcial {
+  background: #fffbeb;
+}
+
+.divida-parcela-data {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #475569;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.divida-parcela-data svg {
+  color: #94a3b8;
+}
+
+.divida-parcela > div > span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+  font-weight: 750;
+
+  text-transform: uppercase;
+}
+
+.divida-parcela > div > strong {
+  color: #0f172a;
+
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.divida-parcela-status {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 5px;
+
+  padding: 5px 8px;
+
+  border-radius: 999px;
+
+  background: #f1f5f9;
+
+  color: #64748b;
+
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.divida-parcela-status.status-pago {
+  background:
+    rgba(34, 197, 94, 0.1);
+
+  color: #15803d;
+}
+
+.divida-parcela-status.status-parcial {
+  background:
+    rgba(245, 158, 11, 0.12);
+
+  color: #b45309;
+}
+
+.divida-parcela-acoes {
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+}
+
+.divida-parcela-acoes button {
+  width: 32px;
+  height: 32px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: 9px;
+
+  background: #f8fafc;
+
+  color: #64748b;
+
+  cursor: pointer;
+}
+
+.divida-parcela-acoes button:hover {
+  color: #0891b2;
+}
+
+.divida-parcela-acoes button.perigo:hover {
+  background: #fff1f2;
+
+  color: #e11d48;
+}
+
+.divida-parcela-acoes button:disabled {
+  opacity: 0.5;
+}
+
+.divida-plano-vazio {
+  min-height: 120px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  margin-top: 14px;
+
+  padding: 20px;
+
+  border:
+    1px dashed
+    #dce4eb;
+
+  border-radius: 14px;
+
+  color: #94a3b8;
+
+  text-align: center;
+}
+
+.divida-plano-vazio p {
+  margin: 0;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
+@media (
+  max-width: 1100px
+) {
+  .dividas-resumo-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .divida-plano-form-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .divida-plano-form-grid > button {
+    min-height: 46px;
+  }
+}
+
+
+@media (
+  max-width: 860px
+) {
+  .dividas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .divida-parcela {
+    grid-template-columns:
+      1fr
+      1fr;
+
+    align-items: start;
+  }
+
+  .divida-parcela-acoes {
+    justify-content: flex-end;
+  }
+}
+
+
+@media (
+  max-width: 640px
+) {
+  .dividas-header-actions {
+    width: 100%;
+  }
+
+  .dividas-btn-nova {
+    flex: 1;
+  }
+
+  .dividas-resumo-grid {
+    grid-template-columns: 1fr;
+
+    gap: 11px;
+  }
+
+  .dividas-section {
+    padding: 18px;
+
+    border-radius: 18px;
+  }
+
+  .dividas-section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 10px;
+  }
+
+  .divida-card {
+    padding: 18px;
+  }
+
+  .divida-valores,
+  .dividas-form-grid,
+  .divida-detalhe-resumo,
+  .divida-simulacoes-grid,
+  .divida-plano-form-grid,
+  .divida-plano-resumo {
+    grid-template-columns: 1fr;
+  }
+
+  .divida-card-acoes {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .divida-card-acoes button {
+    width: 100%;
+  }
+
+  .dividas-modal-overlay {
+    align-items: flex-end;
+
+    padding: 10px;
+  }
+
+  .dividas-modal {
+    width: 100%;
+
+    max-height:
+      calc(100vh - 20px);
+
+    border-radius: 20px;
+  }
+
+  .dividas-modal-header {
+    padding:
+      20px
+      18px
+      16px;
+  }
+
+  .dividas-form {
+    padding:
+      20px
+      18px;
+  }
+
+  .dividas-modal-footer {
+    padding:
+      15px
+      18px
+      18px;
+
+    flex-direction: column-reverse;
+
+    align-items: stretch;
+  }
+
+  .dividas-modal-footer button {
+    width: 100%;
+  }
+
+  .divida-detalhe-resumo {
+    padding:
+      20px
+      18px
+      0;
+  }
+
+  .divida-pagamento,
+  .divida-simulador,
+  .divida-plano {
+    margin:
+      18px
+      18px
+      0;
+  }
+
+  .divida-pagamento-linha {
+    grid-template-columns: 1fr;
+  }
+
+  .divida-pagamento-linha button {
+    min-height: 44px;
+  }
+
+  .divida-plano-historico {
+    padding:
+      20px
+      18px;
+  }
+
+  .divida-parcela {
+    grid-template-columns: 1fr;
+
+    gap: 9px;
+  }
+
+  .divida-parcela-acoes {
+    justify-content: flex-start;
+  }
+}

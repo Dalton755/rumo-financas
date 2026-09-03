@@ -1,7 +1,10 @@
-import { NavLink } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+﻿import { NavLink } from "react-router-dom";
+import { useState } from "react";
+
 import "./MainLayout.css";
+
 import { supabase } from "../services/supabase";
+import { usePlano } from "../context/PlanoContext";
 
 import {
   Menu,
@@ -10,73 +13,132 @@ import {
   WalletCards,
   ArrowLeftRight,
   BarChart3,
-  LogOut
+  BrainCircuit,
+  Target,
+  Trophy,
+  CreditCard,
+  TrendingUp,
+  PieChart,
+  BellRing,
+  Landmark,
+  LockKeyhole,
+  LogOut,
 } from "lucide-react";
 
+const recursosPremium = [
+  {
+    codigo: "INTELIGENCIA_FINANCEIRA",
+    nome: "Inteligência",
+    rota: "/inteligencia",
+    Icone: BrainCircuit,
+  },
+  {
+    codigo: "METAS",
+    nome: "Metas",
+    rota: "/metas",
+    Icone: Target,
+  },
+  {
+    codigo: "OBJETIVOS",
+    nome: "Objetivos",
+    rota: "/objetivos",
+    Icone: Trophy,
+  },
+  {
+    codigo: "DIVIDAS",
+    nome: "Dívidas",
+    rota: "/dividas",
+    Icone: CreditCard,
+  },
+  {
+    codigo: "PROJECOES",
+    nome: "Projeções",
+    rota: "/projecoes",
+    Icone: TrendingUp,
+  },
+  {
+    codigo: "ORCAMENTO",
+    nome: "Orçamento",
+    rota: "/orcamento",
+    Icone: PieChart,
+  },
+  {
+    codigo: "ALERTAS_INTELIGENTES",
+    nome: "Alertas",
+    rota: "/alertas",
+    Icone: BellRing,
+  },
+  {
+    codigo: "OPEN_FINANCE",
+    nome: "Open Finance",
+    rota: "/open-finance",
+    Icone: Landmark,
+  },
+];
+
 function MainLayout({ children }) {
-  const [menuAberto, setMenuAberto] = useState(false)
+  const [menuAberto, setMenuAberto] = useState(false);
+
+  const {
+    premium,
+    temRecurso,
+  } = usePlano();
 
   async function sair() {
-
     await supabase.auth.signOut();
-
     window.location.href = "/";
-
   }
 
-
+  function fecharMenuMobile() {
+    setMenuAberto(false);
+  }
 
   return (
     <div className="container-fluid">
-
       <div className="d-md-none p-2">
-
         <button
           className="btn btn-dark"
           onClick={() => setMenuAberto(!menuAberto)}
         >
-
-          {
-            menuAberto
-              ? <X size={20} />
-              : <Menu size={20} />
-          }
-
+          {menuAberto ? (
+            <X size={20} />
+          ) : (
+            <Menu size={20} />
+          )}
         </button>
-
       </div>
 
       <div className="row">
-
         <div
           className={`
-          col-md-2
-          rumo-sidebar
-          ${menuAberto ? "d-block" : "d-none"}
-          d-md-block
+            col-md-2
+            rumo-sidebar
+            ${menuAberto ? "d-block" : "d-none"}
+            d-md-block
           `}
         >
-
           <div className="rumo-logo">
-
             <h2>
-
               ↗ Rumo
-
             </h2>
+
+            {premium && (
+              <span className="rumo-plan-badge">
+                Premium
+              </span>
+            )}
 
             <p className="sidebar-subtitle">
               Veja para onde seu dinheiro está levando você.
             </p>
-
           </div>
 
           <hr />
 
           <div className="rumo-sidebar-menu">
-
             <NavLink
               to="/dashboard"
+              onClick={fecharMenuMobile}
               className={({ isActive }) =>
                 isActive
                   ? "rumo-sidebar-item active"
@@ -89,7 +151,12 @@ function MainLayout({ children }) {
 
             <NavLink
               to="/contas"
-              className="rumo-sidebar-item"
+              onClick={fecharMenuMobile}
+              className={({ isActive }) =>
+                isActive
+                  ? "rumo-sidebar-item active"
+                  : "rumo-sidebar-item"
+              }
             >
               <WalletCards size={20} />
               <span>Contas</span>
@@ -97,7 +164,12 @@ function MainLayout({ children }) {
 
             <NavLink
               to="/movimentacoes"
-              className="rumo-sidebar-item"
+              onClick={fecharMenuMobile}
+              className={({ isActive }) =>
+                isActive
+                  ? "rumo-sidebar-item active"
+                  : "rumo-sidebar-item"
+              }
             >
               <ArrowLeftRight size={20} />
               <span>Movimentações</span>
@@ -105,46 +177,90 @@ function MainLayout({ children }) {
 
             <NavLink
               to="/relatorios"
-              className="rumo-sidebar-item"
+              onClick={fecharMenuMobile}
+              className={({ isActive }) =>
+                isActive
+                  ? "rumo-sidebar-item active"
+                  : "rumo-sidebar-item"
+              }
             >
               <BarChart3 size={20} />
               <span>Relatórios</span>
             </NavLink>
 
-           
+            <div className="rumo-sidebar-premium-label">
+              Premium
+            </div>
+
+            <div className="rumo-sidebar-premium-list">
+              {recursosPremium.map(
+                ({
+                  codigo,
+                  nome,
+                  rota,
+                  Icone,
+                }) => {
+                  const liberado =
+                    temRecurso(codigo);
+
+                  return (
+                    <NavLink
+                      key={codigo}
+                      to={rota}
+                      onClick={fecharMenuMobile}
+                      className={({ isActive }) =>
+                        [
+                          "rumo-sidebar-item",
+                          "rumo-sidebar-item-premium",
+                          isActive ? "active" : "",
+                          !liberado
+                            ? "rumo-sidebar-premium-locked"
+                            : "",
+                        ]
+                          .filter(Boolean)
+                          .join(" ")
+                      }
+                    >
+                      <Icone size={19} />
+
+                      <span>
+                        {nome}
+                      </span>
+
+                      {liberado ? (
+                        <span className="rumo-sidebar-premium-pill">
+                          PRO
+                        </span>
+                      ) : (
+                        <span
+                          className="rumo-sidebar-lock"
+                          title="Recurso exclusivo Premium"
+                        >
+                          <LockKeyhole size={14} />
+                        </span>
+                      )}
+                    </NavLink>
+                  );
+                }
+              )}
+            </div>
 
             <button
               className="rumo-sidebar-logout"
               onClick={sair}
             >
-
               <LogOut size={20} />
-
               <span>Sair</span>
-
             </button>
-
           </div>
-
-
-
         </div>
-
-
 
         <div className="col-md-10 p-4">
-
           {children}
-
-
-
         </div>
-
       </div>
-
     </div>
-  )
-
+  );
 }
 
-export default MainLayout
+export default MainLayout;

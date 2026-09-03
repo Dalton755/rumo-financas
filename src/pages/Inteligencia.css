@@ -1,0 +1,337 @@
+﻿.inteligencia-premium-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: linear-gradient(
+    135deg,
+    rgba(34, 199, 232, .14),
+    rgba(99, 102, 241, .12)
+  );
+  border: 1px solid rgba(34, 199, 232, .25);
+  color: #0891b2;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.inteligencia-resumo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.inteligencia-metrica {
+  padding: 22px;
+  border-radius: 22px;
+  background: #ffffff;
+  border: 1px solid #edf2f7;
+  box-shadow: 0 12px 34px rgba(15, 23, 42, .06);
+}
+
+.inteligencia-metrica-topo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.inteligencia-metrica-icone {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+}
+
+.inteligencia-metrica-icone.receita {
+  background: #ecfdf5;
+  color: #16a34a;
+}
+
+.inteligencia-metrica-icone.despesa {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.inteligencia-metrica-icone.economia {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.inteligencia-metrica-icone.saldo {
+  background: #ecfeff;
+  color: #0891b2;
+}
+
+.inteligencia-metrica strong {
+  display: block;
+  color: #1e293b;
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.inteligencia-variacao {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.inteligencia-variacao.positiva {
+  color: #16a34a;
+}
+
+.inteligencia-variacao.negativa {
+  color: #ef4444;
+}
+
+.inteligencia-metrica-legenda {
+  margin-top: 12px;
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.inteligencia-painel {
+  margin-bottom: 24px;
+  padding: 28px;
+  border-radius: 26px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(34, 199, 232, .09),
+      rgba(99, 102, 241, .06)
+    );
+  border: 1px solid rgba(34, 199, 232, .16);
+}
+
+.inteligencia-painel-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.inteligencia-painel-icone {
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 17px;
+  background: linear-gradient(
+    135deg,
+    #22c7e8,
+    #6366f1
+  );
+  color: #ffffff;
+  box-shadow: 0 12px 28px rgba(34, 199, 232, .20);
+}
+
+.inteligencia-painel-cabecalho span {
+  display: block;
+  margin-bottom: 3px;
+  color: #0891b2;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.inteligencia-painel-cabecalho h2 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.inteligencia-insights {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.inteligencia-insight {
+  display: flex;
+  gap: 13px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .88);
+  border: 1px solid rgba(226, 232, 240, .85);
+}
+
+.inteligencia-insight-icon {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.inteligencia-insight.positivo
+.inteligencia-insight-icon {
+  background: #ecfdf5;
+  color: #16a34a;
+}
+
+.inteligencia-insight.atencao
+.inteligencia-insight-icon {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.inteligencia-insight.informacao
+.inteligencia-insight-icon {
+  background: #ecfeff;
+  color: #0891b2;
+}
+
+.inteligencia-insight h3 {
+  margin: 0 0 5px;
+  color: #1e293b;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.inteligencia-insight p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.inteligencia-destaques {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.inteligencia-destaques article {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 24px;
+  border-radius: 22px;
+  background: #ffffff;
+  border: 1px solid #edf2f7;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, .05);
+}
+
+.inteligencia-destaques span {
+  display: block;
+  margin-bottom: 4px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.inteligencia-destaques strong {
+  display: block;
+  color: #334155;
+  font-size: 16px;
+}
+
+.inteligencia-destaques svg {
+  color: #22b8cf;
+}
+
+.inteligencia-destaques b {
+  grid-column: 1 / -1;
+  color: #1e293b;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.inteligencia-loading,
+.inteligencia-erro {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px;
+  color: #64748b;
+}
+
+.inteligencia-loading svg {
+  margin-bottom: 16px;
+  color: #22b8cf;
+}
+
+.inteligencia-loading h2,
+.inteligencia-erro h2 {
+  margin-bottom: 8px;
+  color: #1e293b;
+  font-weight: 800;
+}
+
+.inteligencia-loading p,
+.inteligencia-erro p {
+  max-width: 520px;
+}
+
+.inteligencia-erro button {
+  margin-top: 14px;
+  padding: 11px 18px;
+  border: none;
+  border-radius: 13px;
+  background: #22b8cf;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.inteligencia-sem-insights {
+  grid-column: 1 / -1;
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .8);
+  color: #64748b;
+  text-align: center;
+}
+
+@media (max-width: 1200px) {
+  .inteligencia-resumo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .inteligencia-resumo-grid,
+  .inteligencia-insights,
+  .inteligencia-destaques {
+    grid-template-columns: 1fr;
+  }
+
+  .inteligencia-painel {
+    padding: 20px;
+  }
+
+  .inteligencia-painel-cabecalho {
+    align-items: flex-start;
+  }
+
+  .inteligencia-painel-cabecalho h2 {
+    font-size: 19px;
+  }
+
+  .inteligencia-metrica strong {
+    font-size: 22px;
+  }
+}

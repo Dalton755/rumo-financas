@@ -1,1 +1,102 @@
 @import "./ModalConta.css";
+
+.movimentacao-campo-com-acao {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    gap: 8px;
+
+    align-items: stretch;
+}
+
+
+.movimentacao-campo-com-acao select {
+    width: 100%;
+    min-width: 0;
+}
+
+
+.movimentacao-btn-adicionar {
+    min-width: 84px;
+
+    padding: 0 12px;
+
+    border: 1px solid #dbe4ea;
+    border-radius: 10px;
+
+    background: #f8fafc;
+
+    color: #0891b2;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.movimentacao-btn-adicionar:hover {
+    background: #ecfeff;
+
+    border-color:
+        rgba(34, 184, 207, 0.4);
+
+    transform:
+        translateY(-1px);
+}
+
+
+/*
+ * Garante que o cadastro rápido fique
+ * acima do formulário da movimentação.
+ */
+.movimentacao-modal-secundario-wrap
+.modal-overlay,
+.movimentacao-modal-secundario {
+    z-index: 20000;
+}
+
+
+.movimentacao-modal-categoria {
+    width: min(92vw,
+            430px);
+}
+
+
+.movimentacao-categoria-tipo {
+    padding: 10px 12px;
+
+    border-radius: 10px;
+
+    background: #f8fafc;
+
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+
+.movimentacao-categoria-tipo strong {
+    color: #0891b2;
+}
+
+
+@media (max-width: 520px) {
+
+    .movimentacao-campo-com-acao {
+        grid-template-columns: 1fr;
+    }
+
+
+    .movimentacao-btn-adicionar {
+        min-height: 40px;
+    }
+
+}

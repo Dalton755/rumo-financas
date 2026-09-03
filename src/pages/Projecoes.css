@@ -1,0 +1,501 @@
+.projecoes-premium-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    min-height: 34px;
+    padding: 0 12px;
+
+    border-radius: 999px;
+
+    background: #eef2ff;
+    color: #4f46e5;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+
+.projecoes-cards {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        );
+
+    gap: 18px;
+
+    margin-top: 30px;
+}
+
+
+.projecoes-card {
+    min-height: 190px;
+
+    padding: 22px;
+
+    background: #ffffff;
+
+    border:
+        1px solid
+        #e8edf5;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 10px 28px
+        rgba(
+            15,
+            23,
+            42,
+            0.05
+        );
+}
+
+
+.projecoes-card.atual {
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f8fafc
+        );
+}
+
+
+.projecoes-card-topo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: #64748b;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+.projecoes-card-icone {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: #ecfeff;
+    color: #0891b2;
+}
+
+
+.projecoes-card-icone.futuro {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+
+.projecoes-card > strong {
+    display: block;
+
+    margin-top: 20px;
+
+    color: #0f172a;
+
+    font-size: 27px;
+    font-weight: 850;
+    line-height: 1.15;
+}
+
+
+.projecoes-card > strong.negativo {
+    color: #dc2626;
+}
+
+
+.projecoes-card small {
+    display: block;
+
+    margin-top: 12px;
+
+    color: #94a3b8;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+.projecoes-card-detalhes {
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+
+    margin-top: 14px;
+
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+
+.projecoes-card-detalhes b {
+    color: #334155;
+}
+
+
+.projecoes-estado {
+    margin-top: 30px;
+    padding: 30px;
+
+    border:
+        1px solid
+        #e2e8f0;
+
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    color: #64748b;
+
+    text-align: center;
+}
+
+
+.projecoes-estado.erro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 8px;
+
+    color: #64748b;
+}
+
+
+.projecoes-estado.erro strong {
+    color: #b91c1c;
+}
+
+
+.projecoes-estado.erro button {
+    margin-top: 8px;
+
+    border: none;
+    border-radius: 10px;
+
+    padding: 10px 15px;
+
+    background: #4f46e5;
+    color: #ffffff;
+
+    cursor: pointer;
+
+    font-weight: 700;
+}
+
+
+@media (
+    max-width: 1180px
+) {
+
+    .projecoes-cards {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+}
+
+.projecoes-painel {
+    margin-top: 24px;
+    padding: 26px;
+
+    background: #ffffff;
+
+    border:
+        1px solid
+        #e8edf5;
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 10px 30px
+        rgba(
+            15,
+            23,
+            42,
+            0.05
+        );
+}
+
+
+.projecoes-painel-cabecalho h2 {
+    margin: 6px 0 4px;
+
+    color: #0f172a;
+
+    font-size: 21px;
+    font-weight: 800;
+}
+
+
+.projecoes-painel-cabecalho p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+
+.projecoes-painel-etiqueta {
+    color: #4f46e5;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+
+.projecoes-grafico {
+    width: 100%;
+    height: 320px;
+
+    margin-top: 25px;
+}
+
+
+.projecoes-grafico-vazio {
+    margin-top: 22px;
+    padding: 30px;
+
+    border-radius: 15px;
+
+    background: #f8fafc;
+
+    color: #64748b;
+
+    text-align: center;
+    font-size: 13px;
+}
+
+.projecoes-agenda {
+    margin-bottom: 30px;
+}
+
+
+.projecoes-agenda .projecoes-painel-cabecalho {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+
+.projecoes-agenda-contador {
+    padding: 7px 11px;
+
+    border-radius: 999px;
+
+    background: #f1f5f9;
+    color: #64748b;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+
+.projecoes-agenda-lista {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin-top: 22px;
+}
+
+
+.projecoes-agenda-item {
+    display: grid;
+
+    grid-template-columns:
+        48px
+        minmax(180px, 1fr)
+        minmax(100px, 150px)
+        minmax(100px, 140px)
+        minmax(130px, auto);
+
+    align-items: center;
+
+    gap: 16px;
+
+    padding: 16px 18px;
+
+    border: 1px solid #e8edf5;
+    border-radius: 16px;
+
+    background: #ffffff;
+}
+
+
+.projecoes-agenda-icone {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+}
+
+
+.projecoes-agenda-icone.receita {
+    background: #ecfdf5;
+    color: #16a34a;
+}
+
+
+.projecoes-agenda-icone.despesa {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+
+.projecoes-agenda-info {
+    min-width: 0;
+}
+
+
+.projecoes-agenda-info > strong {
+    display: block;
+
+    color: #0f172a;
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+
+.projecoes-agenda-info > div {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    margin-top: 4px;
+
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+
+.projecoes-agenda-prevista {
+    padding: 3px 7px;
+
+    border-radius: 999px;
+
+    background: #eef2ff;
+    color: #4f46e5;
+
+    font-size: 9px;
+    font-weight: 850;
+
+    letter-spacing: 0.05em;
+}
+
+
+.projecoes-agenda-conta,
+.projecoes-agenda-data {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.projecoes-agenda-conta span,
+.projecoes-agenda-data span {
+    color: #94a3b8;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+
+.projecoes-agenda-conta strong,
+.projecoes-agenda-data strong {
+    color: #475569;
+
+    font-size: 12px;
+    font-weight: 750;
+}
+
+
+.projecoes-agenda-valor {
+    text-align: right;
+
+    font-size: 15px;
+    font-weight: 850;
+
+    white-space: nowrap;
+}
+
+
+.projecoes-agenda-valor.receita {
+    color: #16a34a;
+}
+
+
+.projecoes-agenda-valor.despesa {
+    color: #dc2626;
+}
+
+
+
+
+@media (
+    max-width: 700px
+) {
+
+    .projecoes-cards {
+        grid-template-columns: 1fr;
+    }
+
+
+    .projecoes-agenda .projecoes-painel-cabecalho {
+        flex-direction: column;
+    }
+
+
+    .projecoes-agenda-item {
+        grid-template-columns:
+            44px
+            1fr;
+    }
+
+
+    .projecoes-agenda-conta,
+    .projecoes-agenda-data,
+    .projecoes-agenda-valor {
+        grid-column: 2;
+    }
+
+
+    .projecoes-agenda-valor {
+        text-align: left;
+    }
+
+}

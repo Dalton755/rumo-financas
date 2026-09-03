@@ -34,10 +34,21 @@ function Contas() {
 
         const { data, error } = await supabase
             .schema("rumo")
-            .from('contas')
-            .select('*')
-            .eq('usuario_id', user.id)
-            .order('nome')
+            .from("vw_saldo_contas")
+            .select(`
+                id,
+                usuario_id,
+                nome,
+                banco,
+                tipo,
+                saldo_inicial,
+                saldo_atual
+            `)
+            .eq(
+                "usuario_id",
+                user.id
+            )
+            .order("nome")
 
         if (!error) {
             setContas(data)

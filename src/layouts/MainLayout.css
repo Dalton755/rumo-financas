@@ -386,3 +386,115 @@ SIDEBAR
     color: #FFF;
 
 }
+/* ==================================
+   IDENTIFICAÇÃO DO PLANO PREMIUM
+================================== */
+
+.rumo-plan-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 10px;
+
+    padding: 6px 13px;
+
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, .20);
+
+    border: 1px solid rgba(255, 255, 255, .40);
+
+    backdrop-filter: blur(12px);
+
+    color: #ffffff;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: .12em;
+
+    text-transform: uppercase;
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, .10);
+}
+
+
+/* ==================================
+   MENU PREMIUM
+================================== */
+
+.rumo-sidebar-premium-label {
+    margin-top: 12px;
+    padding: 4px 18px 0;
+
+    color: rgba(255, 255, 255, .72);
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+.rumo-sidebar-item-premium {
+    position: relative;
+}
+
+.rumo-sidebar-premium-pill {
+    margin-left: auto;
+
+    padding: 3px 7px;
+
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, .22);
+
+    border: 1px solid rgba(255, 255, 255, .32);
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: .08em;
+}
+
+.rumo-sidebar-item-premium.active
+.rumo-sidebar-premium-pill {
+    background: rgba(255, 255, 255, .30);
+}
+
+
+/* ==================================
+   RECURSO PREMIUM BLOQUEADO
+================================== */
+
+.rumo-sidebar-premium-locked {
+    opacity: .90;
+}
+
+.rumo-sidebar-lock {
+    margin-left: auto;
+
+    width: 28px;
+    height: 28px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: rgba(255, 255, 255, .16);
+
+    border: 1px solid rgba(255, 255, 255, .28);
+
+    color: #ffffff;
+}
+
+.rumo-sidebar-premium-locked:hover
+.rumo-sidebar-lock {
+    background: rgba(255, 255, 255, .26);
+}

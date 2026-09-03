@@ -5,7 +5,9 @@ function ModalConfirmacao({
     titulo,
     mensagem,
     onCancelar,
-    onConfirmar
+    onConfirmar,
+    textoConfirmar = "Excluir",
+    confirmando = false
 }) {
     if (!aberto) return null;
 
@@ -20,6 +22,7 @@ function ModalConfirmacao({
                     <button
                         className="btn-confirmacao-cancelar"
                         onClick={onCancelar}
+                        disabled={confirmando}
                     >
                         Cancelar
                     </button>
@@ -27,8 +30,11 @@ function ModalConfirmacao({
                     <button
                         className="btn-confirmacao-excluir"
                         onClick={onConfirmar}
+                        disabled={confirmando}
                     >
-                        Excluir
+                        {confirmando
+                            ? "Aguarde..."
+                            : textoConfirmar}
                     </button>
                 </div>
             </div>

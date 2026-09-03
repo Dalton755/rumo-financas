@@ -184,11 +184,34 @@ function Movimentacoes() {
 
 
   // =====================================================
-  // TOTAIS FILTRADOS
+  // TOTAIS REALIZADOS
+  // Movimentações futuras permanecem na lista,
+  // mas não entram nos indicadores atuais.
   // =====================================================
 
+  const agora = new Date();
+
+  const hojeTexto =
+    `${agora.getFullYear()}-` +
+    `${String(
+      agora.getMonth() + 1
+    ).padStart(2, "0")}-` +
+    `${String(
+      agora.getDate()
+    ).padStart(2, "0")}`;
+
+
+  const movimentacoesRealizadas =
+    movimentacoesFiltradas.filter(
+      (mov) =>
+        mov.data_movimentacao &&
+        mov.data_movimentacao <=
+        hojeTexto
+    );
+
+
   const totalReceitas =
-    movimentacoesFiltradas
+    movimentacoesRealizadas
 
       .filter(
         (mov) =>
@@ -203,7 +226,7 @@ function Movimentacoes() {
 
 
   const totalDespesas =
-    movimentacoesFiltradas
+    movimentacoesRealizadas
 
       .filter(
         (mov) =>
@@ -223,7 +246,7 @@ function Movimentacoes() {
 
 
   const quantidade =
-    movimentacoesFiltradas.length;
+    movimentacoesRealizadas.length;
 
 
   function formatarMoeda(valor) {
@@ -320,7 +343,7 @@ function Movimentacoes() {
             !tipoFiltro ||
 
             mov.tipo ===
-              tipoFiltro;
+            tipoFiltro;
 
 
           const contaOk =
@@ -328,7 +351,7 @@ function Movimentacoes() {
             !contaSelecionada ||
 
             mov.conta?.nome ===
-              contaSelecionada;
+            contaSelecionada;
 
 
           const categoriaOk =
@@ -336,7 +359,7 @@ function Movimentacoes() {
             !categoriaSelecionada ||
 
             mov.categoria?.nome ===
-              categoriaSelecionada;
+            categoriaSelecionada;
 
 
           const mesMovimentacao =
@@ -350,7 +373,7 @@ function Movimentacoes() {
             !mesSelecionado ||
 
             mesMovimentacao ===
-              mesSelecionado;
+            mesSelecionado;
 
 
           return (
@@ -499,7 +522,7 @@ function Movimentacoes() {
       showToast(
         "Erro",
         error.message ||
-          "Não foi possível excluir a movimentação.",
+        "Não foi possível excluir a movimentação.",
         "danger"
       );
 
@@ -906,6 +929,10 @@ function Movimentacoes() {
                   ).toLocaleDateString(
                     "pt-BR"
                   ),
+
+                prevista:
+                  mov.data_movimentacao >
+                  hojeTexto,
 
                 valor:
                   mov.valor

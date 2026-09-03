@@ -32,6 +32,11 @@ export default function ItemMovimentacao({
     const receita =
         movimentacao?.tipo === "receita";
 
+    const prevista =
+        Boolean(
+            movimentacao?.prevista
+        );
+
     function editar() {
 
         setMenuAberto(false);
@@ -57,11 +62,10 @@ export default function ItemMovimentacao({
         <div className="item-mov">
 
             <div
-                className={`item-icon ${
-                    receita
+                className={`item-icon ${receita
                         ? "receita"
                         : "despesa"
-                }`}
+                    }`}
             >
 
                 {
@@ -80,9 +84,23 @@ export default function ItemMovimentacao({
                     {movimentacao?.descricao}
                 </h4>
 
-                <span>
-                    {movimentacao?.categoria}
-                </span>
+                <div className="item-info-meta">
+
+    <span>
+        {movimentacao?.categoria}
+    </span>
+
+    {
+        prevista && (
+
+            <span className="item-prevista">
+                PREVISTA
+            </span>
+
+        )
+    }
+
+</div>
 
             </div>
 
@@ -99,11 +117,10 @@ export default function ItemMovimentacao({
             </div>
 
             <div
-                className={`item-valor ${
-                    receita
+                className={`item-valor ${receita
                         ? "receita"
                         : "despesa"
-                }`}
+                    }`}
             >
 
                 {formatarMoeda(

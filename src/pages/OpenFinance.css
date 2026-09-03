@@ -1,0 +1,425 @@
+.open-finance-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 40px;
+}
+
+.open-finance-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.open-finance-header h1 {
+    margin: 8px 0 6px;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.open-finance-header p {
+    margin: 0;
+    max-width: 720px;
+    color: var(--bs-secondary-color);
+}
+
+.open-finance-premium,
+.open-finance-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.open-finance-hero {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 30px;
+    border: 1px solid rgba(127, 127, 127, 0.18);
+    border-radius: 22px;
+    background: var(--bs-body-bg);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.06);
+}
+
+.open-finance-hero-icon {
+    width: 64px;
+    height: 64px;
+    flex: 0 0 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.open-finance-hero-content {
+    max-width: 760px;
+}
+
+.open-finance-hero-content h2 {
+    margin: 8px 0 10px;
+    font-size: 1.55rem;
+    font-weight: 750;
+}
+
+.open-finance-hero-content p {
+    margin: 0 0 22px;
+    line-height: 1.65;
+    color: var(--bs-secondary-color);
+}
+
+.open-finance-connect-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 46px;
+    padding: 11px 19px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--bs-primary);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.open-finance-connect-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.open-finance-connect-button:disabled {
+    cursor: wait;
+    opacity: 0.72;
+}
+
+.open-finance-spinner {
+    animation: open-finance-girar 0.8s linear infinite;
+}
+
+@keyframes open-finance-girar {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.open-finance-beneficios {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.open-finance-beneficios article {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 20px;
+    border: 1px solid rgba(127, 127, 127, 0.16);
+    border-radius: 16px;
+    background: var(--bs-body-bg);
+}
+
+.open-finance-beneficio-icon {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(99, 102, 241, 0.09);
+}
+
+.open-finance-beneficios strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.open-finance-beneficios p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--bs-secondary-color);
+}
+
+.open-finance-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 15px 17px;
+    border-radius: 13px;
+}
+
+.open-finance-alert strong,
+.open-finance-alert span {
+    display: block;
+}
+
+.open-finance-alert-success {
+    background: rgba(25, 135, 84, 0.1);
+    border: 1px solid rgba(25, 135, 84, 0.2);
+}
+
+.open-finance-alert-error {
+    flex-direction: column;
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+.open-finance-conectado {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 18px;
+    border: 1px dashed rgba(127, 127, 127, 0.3);
+    border-radius: 15px;
+}
+
+.open-finance-conectado strong,
+.open-finance-conectado span {
+    display: block;
+}
+
+.open-finance-conectado span {
+    margin-top: 4px;
+    color: var(--bs-secondary-color);
+}
+
+#PluggyConnect {
+    position: relative;
+    z-index: 20000;
+}
+
+.open-finance-conexoes {
+    padding: 24px;
+    border: 1px solid rgba(127, 127, 127, 0.16);
+    border-radius: 20px;
+    background: var(--bs-body-bg);
+}
+
+.open-finance-conexoes-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+}
+
+.open-finance-conexoes-header h2 {
+    margin: 6px 0 4px;
+    font-size: 1.35rem;
+    font-weight: 750;
+}
+
+.open-finance-conexoes-header p {
+    margin: 0;
+    color: var(--bs-secondary-color);
+}
+
+.open-finance-conexoes-total {
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.09);
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.open-finance-conexoes-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.open-finance-conexao-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 17px;
+    border: 1px solid rgba(127, 127, 127, 0.16);
+    border-radius: 15px;
+}
+
+.open-finance-conexao-icone {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 13px;
+    background: rgba(99, 102, 241, 0.09);
+}
+
+.open-finance-conexao-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.open-finance-conexao-info strong,
+.open-finance-conexao-info span {
+    display: block;
+}
+
+.open-finance-conexao-info span {
+    margin-top: 3px;
+    font-size: 0.86rem;
+    color: var(--bs-secondary-color);
+}
+
+.open-finance-conexao-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.open-finance-conexao-ultima {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.78rem;
+    color: var(--bs-secondary-color);
+}
+
+.open-finance-conexao-acoes {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.open-finance-sync-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    min-height: 38px;
+    padding: 8px 13px;
+
+    border: 1px solid rgba(99, 102, 241, 0.22);
+    border-radius: 10px;
+
+    background: rgba(99, 102, 241, 0.08);
+    color: inherit;
+
+    font-size: 0.84rem;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease,
+        background 0.15s ease;
+}
+
+.open-finance-sync-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background: rgba(99, 102, 241, 0.14);
+}
+
+.open-finance-sync-button:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+.open-finance-disconnect-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 38px;
+    padding: 8px 13px;
+
+    border: 1px solid rgba(220, 53, 69, 0.25);
+    border-radius: 10px;
+
+    background: rgba(220, 53, 69, 0.06);
+    color: #dc3545;
+
+    font-size: 0.84rem;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease,
+        background 0.15s ease;
+}
+
+.open-finance-disconnect-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background: rgba(220, 53, 69, 0.12);
+}
+
+.open-finance-disconnect-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.open-finance-conexoes-loading,
+.open-finance-conexoes-vazio {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 70px;
+    color: var(--bs-secondary-color);
+}
+
+.open-finance-conexoes-vazio strong,
+.open-finance-conexoes-vazio span {
+    display: block;
+}
+
+.open-finance-conexoes-vazio span {
+    margin-top: 3px;
+    font-size: 0.9rem;
+}
+
+
+
+
+@media (max-width: 800px) {
+
+    .open-finance-beneficios {
+        grid-template-columns: 1fr;
+    }
+
+    .open-finance-hero {
+        flex-direction: column;
+        padding: 22px;
+    }
+
+    .open-finance-connect-button {
+        width: 100%;
+    }
+
+    .open-finance-conexoes-header {
+        flex-direction: column;
+    }
+
+    .open-finance-conexao-card {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .open-finance-conexao-acoes {
+    width: 100%;
+    padding-left: 60px;
+    justify-content: flex-start;
+}
+
+
+
+}
