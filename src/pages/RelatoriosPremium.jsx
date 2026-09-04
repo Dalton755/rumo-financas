@@ -11,7 +11,10 @@ import {
     PiggyBank,
     TrendingDown,
     TrendingUp,
-    Wallet
+    Wallet,
+    Download,
+    FileText,
+    FileSpreadsheet
 } from "lucide-react";
 
 import {
@@ -27,6 +30,11 @@ import {
     XAxis,
     YAxis
 } from "recharts";
+
+import {
+    exportarRelatorioPdf,
+    exportarRelatorioExcel
+} from "../services/exportarRelatorioPremium";
 
 import MainLayout from "../layouts/MainLayout";
 import LogoBanco from "../components/ui/LogoBanco";
@@ -529,6 +537,12 @@ function RelatoriosPremium() {
         useState(true);
 
     const [erro, setErro] =
+        useState("");
+
+    const [menuExportacaoAberto, setMenuExportacaoAberto] =
+        useState(false);
+
+    const [exportando, setExportando] =
         useState("");
 
 
@@ -1292,6 +1306,116 @@ function RelatoriosPremium() {
         analise
             .gastosContas[0];
 
+    const contaSelecionada =
+        contasDisponiveis.find(
+            (item) =>
+                item.id === contaFiltro
+        );
+
+
+    const categoriaSelecionada =
+        categoriasDisponiveis.find(
+            (item) =>
+                item.id === categoriaFiltro
+        );
+
+    async function gerarPdf() {
+
+        try {
+
+            setMenuExportacaoAberto(
+                false
+            );
+
+            setExportando(
+                "pdf"
+            );
+
+
+            await exportarRelatorioPdf({
+                analise,
+
+                periodo,
+
+                dataInicio,
+
+                dataFim,
+
+                contaNome:
+                    contaSelecionada?.nome,
+
+                categoriaNome:
+                    categoriaSelecionada?.nome
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao exportar PDF:",
+                error
+            );
+
+            window.alert(
+                "Não foi possível gerar o PDF."
+            );
+
+        } finally {
+
+            setExportando("");
+
+        }
+
+    }
+
+
+    async function gerarExcel() {
+
+        try {
+
+            setMenuExportacaoAberto(
+                false
+            );
+
+            setExportando(
+                "excel"
+            );
+
+
+            await exportarRelatorioExcel({
+                analise,
+
+                periodo,
+
+                dataInicio,
+
+                dataFim,
+
+                contaNome:
+                    contaSelecionada?.nome,
+
+                categoriaNome:
+                    categoriaSelecionada?.nome
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao exportar Excel:",
+                error
+            );
+
+            window.alert(
+                "Não foi possível gerar o Excel."
+            );
+
+        } finally {
+
+            setExportando("");
+
+        }
+
+    }
+
     function limparFiltros() {
 
         setPeriodo("mes");
@@ -1485,6 +1609,87 @@ function RelatoriosPremium() {
                         >
                             Limpar
                         </button>
+
+                        <div className="rel-premium-exportar">
+
+                            <button
+                                type="button"
+                                className="rel-premium-exportar-botao"
+                                onClick={() =>
+                                    setMenuExportacaoAberto(
+                                        (valor) => !valor
+                                    )
+                                }
+                                disabled={
+                                    Boolean(exportando)
+                                }
+                            >
+
+                                <Download size={17} />
+
+                                {
+                                    exportando
+                                        ? "Gerando..."
+                                        : "Exportar"
+                                }
+
+                            </button>
+
+
+                            {
+                                menuExportacaoAberto && (
+
+                                    <div className="rel-premium-exportar-menu">
+
+                                        <button
+                                            type="button"
+                                            onClick={gerarPdf}
+                                        >
+
+                                            <FileText size={18} />
+
+                                            <div>
+
+                                                <strong>
+                                                    PDF
+                                                </strong>
+
+                                                <span>
+                                                    Relatório pronto para imprimir
+                                                </span>
+
+                                            </div>
+
+                                        </button>
+
+
+                                        <button
+                                            type="button"
+                                            onClick={gerarExcel}
+                                        >
+
+                                            <FileSpreadsheet size={18} />
+
+                                            <div>
+
+                                                <strong>
+                                                    Excel
+                                                </strong>
+
+                                                <span>
+                                                    Planilha completa com os dados
+                                                </span>
+
+                                            </div>
+
+                                        </button>
+
+                                    </div>
+
+                                )
+                            }
+
+                        </div>
 
                     </div>
 

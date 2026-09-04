@@ -115,6 +115,133 @@
     color: #0891b2;
 }
 
+.rel-premium-exportar {
+    position: relative;
+}
+
+
+.rel-premium-exportar-botao {
+    min-height: 46px;
+
+    padding: 0 17px;
+
+    border: none;
+    border-radius: 13px;
+
+    background: #22b8cf;
+
+    color: #fff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition: .18s ease;
+
+    box-shadow:
+        0 8px 20px rgba(34, 184, 207, .18);
+}
+
+
+.rel-premium-exportar-botao:hover {
+    background: #0891b2;
+
+    transform:
+        translateY(-1px);
+}
+
+
+.rel-premium-exportar-botao:disabled {
+    opacity: .65;
+
+    cursor: wait;
+
+    transform: none;
+}
+
+
+.rel-premium-exportar-menu {
+    position: absolute;
+
+    top: calc(100% + 8px);
+    right: 0;
+
+    width: 285px;
+
+    padding: 7px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 15px;
+
+    background: #fff;
+
+    box-shadow:
+        0 18px 45px rgba(15, 23, 42, .15);
+
+    z-index: 1000;
+}
+
+
+.rel-premium-exportar-menu>button {
+    width: 100%;
+
+    padding: 12px;
+
+    border: none;
+    border-radius: 11px;
+
+    background: transparent;
+
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    color: #334155;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+
+.rel-premium-exportar-menu>button:hover {
+    background: #f8fafc;
+}
+
+
+.rel-premium-exportar-menu svg {
+    color: #0891b2;
+
+    flex-shrink: 0;
+}
+
+
+.rel-premium-exportar-menu strong {
+    display: block;
+
+    font-size: 13px;
+}
+
+
+.rel-premium-exportar-menu span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+}
+
 .rel-premium-indicadores {
     display: grid;
     grid-template-columns:
@@ -455,6 +582,19 @@
 
     .rel-premium h1 {
         font-size: 30px;
+    }
+
+    .rel-premium-exportar,
+    .rel-premium-exportar-botao {
+        width: 100%;
+    }
+
+
+    .rel-premium-exportar-menu {
+        width: 100%;
+
+        left: 0;
+        right: auto;
     }
 
 }
