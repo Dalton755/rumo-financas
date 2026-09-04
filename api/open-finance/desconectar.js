@@ -242,29 +242,61 @@ export default async function handler(
 
         } catch (pluggyError) {
 
-            console.error(
-                "[RUMO OPEN FINANCE] Falha ao revogar Item na Pluggy:",
-                pluggyError
-            );
+            const statusPluggy =
+                Number(
+                    pluggyError?.response?.status ??
+                    pluggyError?.status ??
+                    0
+                );
 
 
             /*
-             * Não desativamos localmente se a Pluggy
-             * não confirmou a revogação.
+             * Se a Pluggy responder 404, o Item já não
+             * existe mais no provedor.
              *
-             * Isso evita mostrar "desconectado" no Rumo
-             * enquanto a autorização ainda possa existir.
+             * Isso significa que a autorização já foi
+             * revogada anteriormente.
+             *
+             * Nesse cenário devemos continuar e corrigir
+             * o estado local do Rumo para REVOGADO.
              */
+            if (
+                statusPluggy === 404
+            ) {
 
-            return responder(
-                res,
-                502,
-                {
-                    success: false,
-                    error:
-                        "Não foi possível revogar a autorização junto à instituição. Tente novamente.",
-                }
-            );
+                console.warn(
+                    "[RUMO OPEN FINANCE] Item já removido da Pluggy. Ajustando estado local.",
+                    {
+                        usuario_id:
+                            user.id,
+
+                        conexao_id:
+                            conexao.id,
+
+                        pluggy_item_id:
+                            conexao.pluggy_item_id,
+                    }
+                );
+
+            } else {
+
+                console.error(
+                    "[RUMO OPEN FINANCE] Falha ao revogar Item na Pluggy:",
+                    pluggyError
+                );
+
+
+                return responder(
+                    res,
+                    502,
+                    {
+                        success: false,
+                        error:
+                            "Não foi possível revogar a autorização junto à instituição. Tente novamente.",
+                    }
+                );
+
+            }
 
         }
 
@@ -411,9 +443,9 @@ export default async function handler(
 
         if (
             error?.message ===
-                "TOKEN_AUSENTE" ||
+            "TOKEN_AUSENTE" ||
             error?.message ===
-                "TOKEN_INVALIDO"
+            "TOKEN_INVALIDO"
         ) {
 
             return responder(
