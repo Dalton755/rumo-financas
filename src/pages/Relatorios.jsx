@@ -1,9 +1,16 @@
+import { usePlano } from "../context/PlanoContext";
+import RelatoriosPremium from "./RelatoriosPremium";
 import { useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
 import GraficoCategorias from "../components/GraficoCategorias";
 import MainLayout from "../layouts/MainLayout";
 
 function Relatorios() {
+
+  const {
+    premium,
+    carregandoPlano
+  } = usePlano();
 
   const [dados, setDados] = useState([]);
 
@@ -35,6 +42,36 @@ function Relatorios() {
     }
 
     setDados(data || []);
+  }
+
+  if (carregandoPlano) {
+
+    return (
+
+      <MainLayout>
+
+        <div
+          style={{
+            padding: "40px",
+            color: "#64748B"
+          }}
+        >
+          Carregando relatórios...
+        </div>
+
+      </MainLayout>
+
+    );
+
+  }
+
+
+  if (premium) {
+
+    return (
+      <RelatoriosPremium />
+    );
+
   }
 
   return (
