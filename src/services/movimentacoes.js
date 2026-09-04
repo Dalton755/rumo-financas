@@ -16,10 +16,13 @@ export async function listarMovimentacoes(usuarioId) {
             conta_id,
             categoria_id,
             categoria:categorias!movimentacoes_categoria_id_fkey(
-                nome
+                nome,
+                icone,
+                cor
             ),
             conta:contas!movimentacoes_conta_id_fkey(
-                nome
+                nome,
+                banco
             )
         `)
 

@@ -4,6 +4,10 @@ import { supabase } from "../../services/supabase";
 import { editarMovimentacao } from "../../services/movimentacoes";
 import { useToast } from "../../context/ToastContext";
 import ModalConta from "./ModalConta";
+import IconeCategoria, {
+    CORES_CATEGORIA,
+    OPCOES_ICONES_CATEGORIA,
+} from "./IconeCategoria";
 
 export default function ModalNovaMovimentacao({
     onFechar,
@@ -55,6 +59,11 @@ export default function ModalNovaMovimentacao({
 
     const [modalCategoriaAberto, setModalCategoriaAberto] = useState(false);
     const [novaCategoriaNome, setNovaCategoriaNome] = useState("");
+    const [novaCategoriaIcone, setNovaCategoriaIcone] =
+        useState("shopping-cart");
+
+    const [novaCategoriaCor, setNovaCategoriaCor] =
+        useState("#F97316");
 
     const [salvandoAuxiliar, setSalvandoAuxiliar] = useState(false);
 
@@ -222,13 +231,23 @@ export default function ModalNovaMovimentacao({
             .schema("rumo")
             .from("contas")
             .select("id,nome")
+            .eq("ativo", true)
             .order("nome");
 
-        if (!error) {
+        if (error) {
 
-            setContas(data || []);
+            console.error(
+                "Erro ao carregar contas:",
+                error
+            );
+
+            setContas([]);
+
+            return;
 
         }
+
+        setContas(data || []);
 
     }
 
@@ -237,14 +256,24 @@ export default function ModalNovaMovimentacao({
         const { data, error } = await supabase
             .schema("rumo")
             .from("categorias")
-            .select("id,nome")
+            .select("id,nome,tipo,icone,cor")
+            .eq("ativo", true)
             .order("nome");
 
-        if (!error) {
+        if (error) {
 
-            setCategorias(data || []);
+            console.error(
+                "Erro ao carregar categorias:",
+                error
+            );
+
+            setCategorias([]);
+
+            return;
 
         }
+
+        setCategorias(data || []);
 
     }
 
@@ -362,6 +391,18 @@ export default function ModalNovaMovimentacao({
 
         setNovaCategoriaNome("");
 
+        setNovaCategoriaIcone(
+            tipo === "receita"
+                ? "banknote"
+                : "shopping-cart"
+        );
+
+        setNovaCategoriaCor(
+            tipo === "receita"
+                ? "#22C55E"
+                : "#F97316"
+        );
+
         setModalCategoriaAberto(true);
 
     }
@@ -416,9 +457,13 @@ export default function ModalNovaMovimentacao({
                      */
                     tipo,
 
+                    icone: novaCategoriaIcone,
+
+                    cor: novaCategoriaCor,
+
                     ativo: true
                 })
-                .select("id,nome")
+                .select("id,nome,tipo,icone,cor")
                 .single();
 
             if (error) {
@@ -586,16 +631,21 @@ export default function ModalNovaMovimentacao({
                                     Selecione uma categoria
                                 </option>
 
-                                {categorias.map((categoria) => (
+                                {categorias
+                                    .filter(
+                                        (categoria) =>
+                                            categoria.tipo === tipo
+                                    )
+                                    .map((categoria) => (
 
-                                    <option
-                                        key={categoria.id}
-                                        value={categoria.id}
-                                    >
-                                        {categoria.nome}
-                                    </option>
+                                        <option
+                                            key={categoria.id}
+                                            value={categoria.id}
+                                        >
+                                            {categoria.nome}
+                                        </option>
 
-                                ))}
+                                    ))}
 
                             </select>
 
@@ -721,6 +771,87 @@ export default function ModalNovaMovimentacao({
                                         )
                                     }
                                 />
+
+                                <div className="movimentacao-categoria-opcoes">
+
+                                    <label>
+                                        Escolha um ícone
+                                    </label>
+
+                                    <div className="movimentacao-categoria-icones">
+
+                                        {
+                                            OPCOES_ICONES_CATEGORIA.map(
+                                                (opcao) => (
+
+                                                    <button
+                                                        type="button"
+                                                        key={opcao.valor}
+                                                        title={opcao.rotulo}
+                                                        className={
+                                                            novaCategoriaIcone ===
+                                                                opcao.valor
+                                                                ? "ativo"
+                                                                : ""
+                                                        }
+                                                        onClick={() =>
+                                                            setNovaCategoriaIcone(
+                                                                opcao.valor
+                                                            )
+                                                        }
+                                                    >
+
+                                                        <IconeCategoria
+                                                            icone={opcao.valor}
+                                                            cor={novaCategoriaCor}
+                                                            size={22}
+                                                        />
+
+                                                    </button>
+
+                                                )
+                                            )
+                                        }
+
+                                    </div>
+
+
+                                    <label>
+                                        Escolha uma cor
+                                    </label>
+
+                                    <div className="movimentacao-categoria-cores">
+
+                                        {
+                                            CORES_CATEGORIA.map(
+                                                (cor) => (
+
+                                                    <button
+                                                        type="button"
+                                                        key={cor}
+                                                        title={cor}
+                                                        className={
+                                                            novaCategoriaCor === cor
+                                                                ? "ativo"
+                                                                : ""
+                                                        }
+                                                        style={{
+                                                            backgroundColor: cor
+                                                        }}
+                                                        onClick={() =>
+                                                            setNovaCategoriaCor(
+                                                                cor
+                                                            )
+                                                        }
+                                                    />
+
+                                                )
+                                            )
+                                        }
+
+                                    </div>
+
+                                </div>
 
                                 <div className="movimentacao-categoria-tipo">
 

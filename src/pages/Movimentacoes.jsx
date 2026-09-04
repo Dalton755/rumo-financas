@@ -920,8 +920,17 @@ function Movimentacoes() {
                 categoria:
                   mov.categoria?.nome,
 
+                categoriaIcone:
+                  mov.categoria?.icone,
+
+                categoriaCor:
+                  mov.categoria?.cor,
+
                 conta:
                   mov.conta?.nome,
+
+                contaBanco:
+                  mov.conta?.banco,
 
                 data:
                   new Date(

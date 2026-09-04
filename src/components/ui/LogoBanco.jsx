@@ -1,5 +1,6 @@
 import { Landmark } from "lucide-react";
 import { banks } from "react-bancos";
+import shopeeLogo from "../../assets/bancos/shopee.svg";
 
 const aliases = {
     banco_do_brasil: "bancodobrasil",
@@ -73,6 +74,40 @@ export default function LogoBanco({
 }) {
 
     const encontrado = buscarBanco(banco);
+
+    const chave = normalizar(banco);
+
+    if (chave === "shopee") {
+
+        return (
+            <div
+                title="Shopee"
+                style={{
+                    width: size,
+                    height: size,
+                    minWidth: size,
+                    borderRadius: radius,
+                    background: "#EE4D2D",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    overflow: "hidden",
+                }}
+            >
+                <img
+                    src={shopeeLogo}
+                    alt="Shopee"
+                    style={{
+                        width: "68%",
+                        height: "68%",
+                        objectFit: "contain",
+                        filter: "brightness(0) invert(1)",
+                    }}
+                />
+            </div>
+        );
+
+    }
 
     if (encontrado?.Icon) {
 

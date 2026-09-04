@@ -1,124 +1,119 @@
-.item-mov{
+.item-mov {
 
-    display:grid;
+    display: grid;
 
     grid-template-columns:
-    60px
-    1.8fr
-    1fr
-    120px
-    150px
-    50px;
+        60px 1.8fr 1fr 120px 150px 50px;
 
-    align-items:center;
+    align-items: center;
 
-    gap:20px;
+    gap: 20px;
 
-    background:white;
+    background: white;
 
-    border-radius:22px;
+    border-radius: 22px;
 
-    padding:22px;
+    padding: 22px;
 
-    margin-bottom:16px;
+    margin-bottom: 16px;
 
-    box-shadow:0 15px 40px rgba(30,40,60,.08);
+    box-shadow: 0 15px 40px rgba(30, 40, 60, .08);
 
 }
 
-.item-icon{
+.item-icon {
 
-    width:52px;
+    width: 52px;
 
-    height:52px;
+    height: 52px;
 
-    border-radius:16px;
+    border-radius: 16px;
 
-    display:flex;
+    display: flex;
 
-    align-items:center;
+    align-items: center;
 
-    justify-content:center;
+    justify-content: center;
 
-    color:white;
+    background: #F8FAFC;
 
-}
-
-.item-icon.receita{
-
-    background:#22C55E;
+    border: 1px solid #EEF2F7;
 
 }
 
-.item-icon.despesa{
+.item-info h4 {
 
-    background:#EF4444;
+    margin: 0;
 
-}
+    font-size: 20px;
 
-.item-info h4{
+    font-weight: 700;
 
-    margin:0;
-
-    font-size:20px;
-
-    font-weight:700;
-
-    color:#1E293B;
+    color: #1E293B;
 
 }
 
-.item-info span{
+.item-info span {
 
-    color:#64748B;
+    color: #64748B;
 
-    font-size:15px;
-
-}
-
-.item-conta{
-
-    color:#475569;
-
-    font-weight:600;
+    font-size: 15px;
 
 }
 
-.item-data{
+.item-conta {
 
-    color:#64748B;
+    color: #475569;
 
-}
-
-.item-valor{
-
-    font-size:22px;
-
-    font-weight:800;
-
-    text-align:right;
+    font-weight: 600;
 
 }
 
-.item-valor.receita{
+.item-conta-logo {
 
-    color:#22C55E;
+    display: flex;
 
-}
+    align-items: center;
 
-.item-valor.despesa{
-
-    color:#EF4444;
+    justify-content: flex-start;
 
 }
 
-.item-menu{
+.item-data {
 
-    border:none;
+    color: #64748B;
 
-    background:transparent;
+}
 
-    cursor:pointer;
+.item-valor {
+
+    font-size: 22px;
+
+    font-weight: 800;
+
+    text-align: right;
+
+}
+
+.item-valor.receita {
+
+    color: #22C55E;
+
+}
+
+.item-valor.despesa {
+
+    color: #EF4444;
+
+}
+
+.item-menu {
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
 
 }
 
@@ -159,8 +154,7 @@
     padding: 30px;
 
     box-shadow:
-        0 25px 70px
-        rgba(15, 23, 42, 0.25);
+        0 25px 70px rgba(15, 23, 42, 0.25);
 
 }
 
@@ -286,9 +280,7 @@
     .item-mov {
 
         grid-template-columns:
-            52px
-            minmax(0, 1fr)
-            auto;
+            52px minmax(0, 1fr) auto;
 
         grid-template-areas:
             "icone info menu"

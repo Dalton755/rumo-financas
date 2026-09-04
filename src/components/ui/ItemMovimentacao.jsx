@@ -1,14 +1,16 @@
 import { useState } from "react";
 
 import {
-    ArrowUpRight,
-    ArrowDownRight,
+
     MoreVertical,
     Pencil,
     Trash2
 } from "lucide-react";
 
 import "./ItemMovimentacao.css";
+
+import IconeCategoria from "./IconeCategoria";
+import LogoBanco from "./LogoBanco";
 
 function formatarMoeda(valor) {
 
@@ -18,6 +20,36 @@ function formatarMoeda(valor) {
         currency: "BRL"
 
     });
+
+}
+
+function corComTransparencia(cor, alpha = 0.12) {
+
+    const valor = String(cor || "")
+        .replace("#", "");
+
+    if (!/^[0-9a-fA-F]{6}$/.test(valor)) {
+
+        return `rgba(100, 116, 139, ${alpha})`;
+
+    }
+
+    const r = parseInt(
+        valor.substring(0, 2),
+        16
+    );
+
+    const g = parseInt(
+        valor.substring(2, 4),
+        16
+    );
+
+    const b = parseInt(
+        valor.substring(4, 6),
+        16
+    );
+
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 
 }
 
@@ -63,18 +95,29 @@ export default function ItemMovimentacao({
 
             <div
                 className={`item-icon ${receita
-                        ? "receita"
-                        : "despesa"
+                    ? "receita"
+                    : "despesa"
                     }`}
+                style={{
+                    backgroundColor:
+                        corComTransparencia(
+                            movimentacao?.categoriaCor ||
+                            (
+                                receita
+                                    ? "#22C55E"
+                                    : "#EF4444"
+                            )
+                        )
+                }}
             >
 
-                {
-                    receita
-
-                        ? <ArrowUpRight size={22} />
-
-                        : <ArrowDownRight size={22} />
-                }
+                <IconeCategoria
+                    nome={movimentacao?.categoria}
+                    icone={movimentacao?.categoriaIcone}
+                    cor={movimentacao?.categoriaCor}
+                    tipo={movimentacao?.tipo}
+                    size={22}
+                />
 
             </div>
 
@@ -86,27 +129,34 @@ export default function ItemMovimentacao({
 
                 <div className="item-info-meta">
 
-    <span>
-        {movimentacao?.categoria}
-    </span>
+                    <span>
+                        {movimentacao?.categoria}
+                    </span>
 
-    {
-        prevista && (
+                    {
+                        prevista && (
 
-            <span className="item-prevista">
-                PREVISTA
-            </span>
+                            <span className="item-prevista">
+                                PREVISTA
+                            </span>
 
-        )
-    }
+                        )
+                    }
 
-</div>
+                </div>
 
             </div>
 
-            <div className="item-conta">
+            <div
+                className="item-conta item-conta-logo"
+                title={movimentacao?.conta}
+            >
 
-                {movimentacao?.conta}
+                <LogoBanco
+                    banco={movimentacao?.contaBanco}
+                    size={38}
+                    radius={10}
+                />
 
             </div>
 
@@ -118,8 +168,8 @@ export default function ItemMovimentacao({
 
             <div
                 className={`item-valor ${receita
-                        ? "receita"
-                        : "despesa"
+                    ? "receita"
+                    : "despesa"
                     }`}
             >
 
