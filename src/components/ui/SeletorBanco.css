@@ -1,0 +1,283 @@
+.seletor-banco {
+    width: 100%;
+}
+
+.seletor-banco-label {
+    display: block;
+    margin-bottom: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #475569;
+}
+
+.seletor-banco-selecionado {
+    width: 100%;
+
+    min-height: 66px;
+
+    padding: 10px 14px;
+
+    border: 1px solid #ddd;
+    border-radius: 14px;
+
+    background: #fff;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.seletor-banco-selecionado:hover {
+    border-color: #3BC9DB;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(59, 201, 219, .10);
+}
+
+.seletor-banco-identidade {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    min-width: 0;
+}
+
+.seletor-banco-textos {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    min-width: 0;
+}
+
+.seletor-banco-textos strong {
+    color: #1F2937;
+
+    font-size: 15px;
+}
+
+.seletor-banco-textos small {
+    margin-top: 3px;
+
+    color: #94A3B8;
+
+    font-size: 12px;
+}
+
+.seletor-banco-chevron {
+    color: #64748B;
+
+    transition: transform .2s;
+}
+
+.seletor-banco-chevron.aberto {
+    transform: rotate(180deg);
+}
+
+.seletor-banco-painel {
+    margin-top: 10px;
+
+    padding: 14px;
+
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+
+    background: #F8FAFC;
+}
+
+.seletor-banco-busca {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 0 12px;
+
+    background: #fff;
+
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+}
+
+.seletor-banco-busca svg {
+    color: #94A3B8;
+
+    flex-shrink: 0;
+}
+
+.modal-body .seletor-banco-busca input {
+    width: 100%;
+
+    padding: 12px 0;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    box-shadow: none;
+}
+
+.seletor-banco-titulo {
+    margin-top: 16px;
+    margin-bottom: 9px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    color: #64748B;
+
+    text-transform: uppercase;
+
+    letter-spacing: .04em;
+}
+
+.seletor-banco-populares {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 8px;
+}
+
+.seletor-banco-popular {
+    min-width: 0;
+
+    padding: 9px;
+
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+
+    background: #fff;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    cursor: pointer;
+
+    text-align: left;
+}
+
+.seletor-banco-popular:hover {
+    border-color: #3BC9DB;
+}
+
+.seletor-banco-popular.ativo {
+    border-color: #3BC9DB;
+
+    background:
+        rgba(59, 201, 219, .08);
+}
+
+.seletor-banco-popular span {
+    overflow: hidden;
+
+    color: #334155;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.seletor-banco-lista {
+    max-height: 260px;
+
+    overflow-y: auto;
+
+    background: #fff;
+
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+}
+
+.seletor-banco-item {
+    width: 100%;
+
+    padding: 10px 12px;
+
+    border: none;
+    border-bottom: 1px solid #F1F5F9;
+
+    background: #fff;
+
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    cursor: pointer;
+
+    text-align: left;
+}
+
+.seletor-banco-item:last-child {
+    border-bottom: none;
+}
+
+.seletor-banco-item:hover {
+    background: #F8FAFC;
+}
+
+.seletor-banco-item.ativo {
+    background:
+        rgba(59, 201, 219, .08);
+}
+
+.seletor-banco-item-texto {
+    display: flex;
+    flex-direction: column;
+
+    flex: 1;
+
+    min-width: 0;
+}
+
+.seletor-banco-item-texto strong {
+    color: #334155;
+
+    font-size: 14px;
+}
+
+.seletor-banco-item-texto small {
+    margin-top: 2px;
+
+    color: #94A3B8;
+
+    font-size: 11px;
+}
+
+.seletor-banco-item > svg:last-child {
+    color: #06B6D4;
+}
+
+.seletor-banco-vazio {
+    padding: 25px;
+
+    color: #94A3B8;
+
+    text-align: center;
+}
+
+
+@media (max-width: 600px) {
+
+    .seletor-banco-populares {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}

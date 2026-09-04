@@ -1,3 +1,4 @@
+import SeletorBanco from "./SeletorBanco";
 import "./ModalConta.css";
 
 export default function ModalConta({
@@ -49,29 +50,17 @@ export default function ModalConta({
                     <input
                         placeholder="Nome da conta"
                         value={nome}
-                        onChange={(e)=>setNome(e.target.value)}
+                        onChange={(e) => setNome(e.target.value)}
+                    />
+
+                    <SeletorBanco
+                        banco={banco}
+                        setBanco={setBanco}
                     />
 
                     <select
-                        value={banco}
-                        onChange={(e)=>setBanco(e.target.value)}
-                    >
-
-                        <option value="nubank">Nubank</option>
-                        <option value="inter">Inter</option>
-                        <option value="neon">Neon</option>
-                        <option value="itau">Itaú</option>
-                        <option value="bradesco">Bradesco</option>
-                        <option value="santander">Santander</option>
-                        <option value="caixa">Caixa</option>
-                        <option value="banco_do_brasil">Banco do Brasil</option>
-                        <option value="shopee">Shopee</option>
-
-                    </select>
-
-                    <select
                         value={tipo}
-                        onChange={(e)=>setTipo(e.target.value)}
+                        onChange={(e) => setTipo(e.target.value)}
                     >
 
                         <option value="corrente">Conta Corrente</option>
@@ -85,7 +74,7 @@ export default function ModalConta({
                         type="number"
                         placeholder="Saldo inicial"
                         value={saldoInicial}
-                        onChange={(e)=>setSaldoInicial(e.target.value)}
+                        onChange={(e) => setSaldoInicial(e.target.value)}
                     />
 
                 </div>

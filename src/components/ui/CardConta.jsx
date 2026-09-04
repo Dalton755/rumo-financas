@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { MoreVertical } from "lucide-react";
+import LogoBanco, { obterCorBanco } from "./LogoBanco";
 import "./CardConta.css";
 
 function formatarMoeda(valor) {
@@ -13,24 +14,10 @@ function formatarMoeda(valor) {
 
 }
 
-const cores = {
-
-    nubank: "#820AD1",
-    neon: "#00D8D6",
-    santander: "#EC0000",
-    bradesco: "#CC092F",
-    inter: "#FF7A00",
-    caixa: "#0066B3",
-    itau: "#FF6200",
-    banco_do_brasil: "#F7D117",
-    shopee: "#EE4D2D",
-    open_finance: "#3BC9DB"
-
-};
 
 export default function CardConta({ conta, onEditar, onExcluir }) {
 
-    const cor = cores[conta.banco] || "#3BC9DB";
+    const cor = obterCorBanco(conta.banco);
 
     const [menuAberto, setMenuAberto] = useState(false);
 
@@ -78,19 +65,25 @@ export default function CardConta({ conta, onEditar, onExcluir }) {
 
             <div className="card-conta-topo">
 
-                <div>
+                <div className="card-conta-identidade">
 
-                    <h3>
+                    <LogoBanco
+                        banco={conta.banco}
+                        size={52}
+                        radius={14}
+                    />
 
-                        {conta.nome}
+                    <div className="card-conta-dados">
 
-                    </h3>
+                        <h3>
+                            {conta.nome}
+                        </h3>
 
-                    <span>
+                        <span>
+                            {conta.tipo}
+                        </span>
 
-                        {conta.tipo}
-
-                    </span>
+                    </div>
 
                 </div>
 

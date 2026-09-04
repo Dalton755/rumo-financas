@@ -52,6 +52,38 @@
 
 }
 
+.card-conta-identidade {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    min-width: 0;
+
+}
+
+.card-conta-dados {
+
+    min-width: 0;
+
+}
+
+.card-conta-dados h3 {
+
+    margin: 0;
+
+}
+
+.card-conta-dados span {
+
+    display: block;
+
+    margin-top: 3px;
+
+}
+
 .card-conta-topo h3 {
 
     margin: 0;
