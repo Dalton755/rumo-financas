@@ -20,7 +20,6 @@ import {
   TrendingUp,
   PieChart,
   BellRing,
-  Landmark,
   LockKeyhole,
   LogOut,
 } from "lucide-react";
@@ -68,12 +67,7 @@ const recursosPremium = [
     rota: "/alertas",
     Icone: BellRing,
   },
-  {
-    codigo: "OPEN_FINANCE",
-    nome: "Open Finance",
-    rota: "/open-finance",
-    Icone: Landmark,
-  },
+  
 ];
 
 function MainLayout({ children }) {
