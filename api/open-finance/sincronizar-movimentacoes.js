@@ -125,15 +125,15 @@ function normalizarValorFingerprint(
 
 function criarFingerprintMovimentacao({
     usuarioId,
-    fingerprintConta,
+    openFinanceContaId,
     transacao,
     secret,
 }) {
 
-    if (!fingerprintConta) {
+    if (!openFinanceContaId) {
 
         throw new Error(
-            "A conta Open Finance não possui fingerprint."
+            "A movimentação não possui conta Open Finance interna."
         );
 
     }
@@ -151,11 +151,14 @@ function criarFingerprintMovimentacao({
     if (providerId) {
 
         /*
-         * Para Open Finance, providerId é o identificador
-         * da movimentação informado pelo provedor.
+         * OPEN FINANCE REGULADO
          *
-         * Não armazenamos o providerId puro.
-         * Ele participa somente do HMAC.
+         * providerId é fornecido pela instituição e permanece
+         * consistente para a mesma transação mesmo quando a
+         * conta reaparece em outro Item da Pluggy.
+         *
+         * Usamos o ID INTERNO da conta Open Finance porque ele
+         * é preservado pelo Rumo durante uma reconexão.
          */
         base =
             [
@@ -164,7 +167,7 @@ function criarFingerprintMovimentacao({
                     usuarioId
                 ),
                 String(
-                    fingerprintConta
+                    openFinanceContaId
                 ),
                 providerId,
             ]
@@ -173,11 +176,11 @@ function criarFingerprintMovimentacao({
     } else {
 
         /*
-         * Fallback para instituições que não forneçam
-         * providerId.
+         * Fallback para conectores que não fornecem providerId.
          *
-         * Não usamos status ou categoria porque esses
-         * campos podem mudar depois da transação.
+         * Também usamos a identidade INTERNA da conta, e não
+         * fingerprint_conta, pois o fingerprint externo pode
+         * mudar durante uma reconexão.
          */
         const descricao =
             normalizarTexto(
@@ -193,7 +196,7 @@ function criarFingerprintMovimentacao({
                     usuarioId
                 ),
                 String(
-                    fingerprintConta
+                    openFinanceContaId
                 ),
 
                 normalizarData(
@@ -561,6 +564,7 @@ export default async function handler(
                     id,
                     usuario_id,
                     pluggy_item_id,
+                    pluggy_connector_id,
                     ativo
                 `)
                 .eq(
@@ -594,6 +598,13 @@ export default async function handler(
             );
 
         }
+
+        const ehSandbox =
+            String(
+                conexao.pluggy_connector_id ??
+                ""
+            ) ===
+            "600";
 
 
         // =====================================================
@@ -770,8 +781,8 @@ export default async function handler(
                                     usuarioId:
                                         user.id,
 
-                                    fingerprintConta:
-                                        conta.fingerprint_conta,
+                                    openFinanceContaId:
+                                        conta.id,
 
                                     transacao,
 
@@ -867,7 +878,7 @@ export default async function handler(
                     );
 
 
-                      if (
+            if (
                 registros.length > 0
             ) {
 
@@ -928,6 +939,101 @@ export default async function handler(
                     movimentacoesExistentes ??
                     [];
 
+                /*
+* Uma movimentação local só pode representar
+* UMA movimentação recebida nesta sincronização.
+*
+* Isso é especialmente importante no Sandbox,
+* onde várias transações podem possuir a mesma
+* descrição e o mesmo tipo.
+*/
+                const idsMovimentacoesUsadas =
+                    new Set();
+
+
+                const criarChaveSandbox =
+                    (
+                        movimentacao
+                    ) => {
+
+                        const descricao =
+                            normalizarTexto(
+                                movimentacao
+                                    .descricao_original ??
+                                movimentacao
+                                    .descricao
+                            );
+
+
+                        const tipo =
+                            normalizarTexto(
+                                movimentacao
+                                    .tipo_pluggy
+                            );
+
+
+                        return [
+                            descricao,
+                            tipo,
+                        ].join("|");
+
+                    };
+
+
+                const contarPorChaveSandbox =
+                    (
+                        listaMovimentacoes
+                    ) => {
+
+                        const mapa =
+                            new Map();
+
+
+                        for (
+                            const movimentacao of
+                            listaMovimentacoes
+                        ) {
+
+                            const chave =
+                                criarChaveSandbox(
+                                    movimentacao
+                                );
+
+
+                            mapa.set(
+                                chave,
+                                (
+                                    mapa.get(
+                                        chave
+                                    ) ??
+                                    0
+                                ) +
+                                1
+                            );
+
+                        }
+
+
+                        return mapa;
+
+                    };
+
+
+                const contagemRecebidaSandbox =
+                    ehSandbox
+                        ? contarPorChaveSandbox(
+                            registros
+                        )
+                        : new Map();
+
+
+                const contagemExistenteSandbox =
+                    ehSandbox
+                        ? contarPorChaveSandbox(
+                            movimentacoesConhecidas
+                        )
+                        : new Map();
+
 
                 for (
                     const registro of
@@ -948,6 +1054,10 @@ export default async function handler(
                         movimentacoesConhecidas
                             .find(
                                 (movimentacaoLocal) =>
+                                    !idsMovimentacoesUsadas.has(
+                                        movimentacaoLocal.id
+                                    ) &&
+
                                     movimentacaoLocal
                                         .pluggy_transaction_id ===
                                     registro
@@ -971,6 +1081,9 @@ export default async function handler(
                             movimentacoesConhecidas
                                 .filter(
                                     (movimentacaoLocal) =>
+                                        !idsMovimentacoesUsadas.has(
+                                            movimentacaoLocal.id
+                                        ) &&
                                         movimentacaoLocal
                                             .fingerprint_movimentacao ===
                                         registro
@@ -1035,10 +1148,13 @@ export default async function handler(
 
 
                                         return (
+                                            !idsMovimentacoesUsadas.has(
+                                                movimentacaoLocal.id
+                                            ) &&
                                             movimentacaoLocal
                                                 .data_movimentacao ===
-                                                registro
-                                                    .data_movimentacao &&
+                                            registro
+                                                .data_movimentacao &&
 
                                             normalizarTexto(
                                                 movimentacaoLocal
@@ -1108,6 +1224,89 @@ export default async function handler(
 
                     }
 
+                    // =========================================
+                    // 4. FALLBACK EXCLUSIVO DO SANDBOX
+                    //
+                    // O connector 600 utiliza dados sintéticos.
+                    //
+                    // Em uma nova conexão ele pode manter
+                    // descrição/tipo mas regenerar ID, data,
+                    // valor e outros campos.
+                    //
+                    // Só fazemos pareamento quando o grupo
+                    // recebido possui EXATAMENTE a mesma
+                    // quantidade do grupo já armazenado.
+                    //
+                    // Cada registro existente só pode ser usado
+                    // uma vez nesta sincronização.
+                    // =========================================
+
+                    if (
+                        !movimentacaoExistente &&
+                        ehSandbox
+                    ) {
+
+                        const chaveSandbox =
+                            criarChaveSandbox(
+                                registro
+                            );
+
+
+                        const quantidadeRecebida =
+                            contagemRecebidaSandbox
+                                .get(
+                                    chaveSandbox
+                                ) ??
+                            0;
+
+
+                        const quantidadeExistente =
+                            contagemExistenteSandbox
+                                .get(
+                                    chaveSandbox
+                                ) ??
+                            0;
+
+
+                        if (
+                            quantidadeRecebida >
+                            0 &&
+                            quantidadeRecebida ===
+                            quantidadeExistente
+                        ) {
+
+                            const candidatoSandbox =
+                                movimentacoesConhecidas
+                                    .find(
+                                        (
+                                            movimentacaoLocal
+                                        ) =>
+                                            !idsMovimentacoesUsadas
+                                                .has(
+                                                    movimentacaoLocal.id
+                                                ) &&
+
+                                            criarChaveSandbox(
+                                                movimentacaoLocal
+                                            ) ===
+                                            chaveSandbox
+                                    ) ??
+                                null;
+
+
+                            if (
+                                candidatoSandbox
+                            ) {
+
+                                movimentacaoExistente =
+                                    candidatoSandbox;
+
+                            }
+
+                        }
+
+                    }
+
 
                     // =========================================
                     // MOVIMENTAÇÃO RECONHECIDA
@@ -1123,6 +1322,10 @@ export default async function handler(
                         movimentacaoExistente
                     ) {
 
+                        idsMovimentacoesUsadas.add(
+                            movimentacaoExistente.id
+                        );
+
                         const {
                             error: atualizarMovimentacaoError,
                         } =
@@ -1131,6 +1334,7 @@ export default async function handler(
                                 .from(
                                     "open_finance_movimentacoes"
                                 )
+
                                 .update(
                                     registro
                                 )
@@ -1165,7 +1369,7 @@ export default async function handler(
                                         movimentacaoLocal
                                     ) =>
                                         movimentacaoLocal.id ===
-                                        movimentacaoExistente.id
+                                            movimentacaoExistente.id
                                             ? {
                                                 ...movimentacaoLocal,
                                                 ...registro,
@@ -1234,9 +1438,9 @@ export default async function handler(
 
 
                         throw inserirMovimentacaoError ??
-                            new Error(
-                                "Não foi possível criar a movimentação Open Finance."
-                            );
+                        new Error(
+                            "Não foi possível criar a movimentação Open Finance."
+                        );
 
                     }
 
@@ -1245,6 +1449,10 @@ export default async function handler(
                         .push(
                             movimentacaoCriada
                         );
+
+                    idsMovimentacoesUsadas.add(
+                        movimentacaoCriada.id
+                    );
 
 
                     totalSalvo +=
