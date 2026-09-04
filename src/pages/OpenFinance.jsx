@@ -1,4 +1,8 @@
 import {
+    Link,
+} from "react-router-dom";
+
+import {
     useEffect,
     useRef,
     useState,
@@ -23,6 +27,11 @@ import {
 import MainLayout from "../layouts/MainLayout";
 import PageContainer from "../components/ui/PageContainer";
 import ModalConfirmacao from "../components/ui/ModalConfirmacao";
+import {
+    usePlano,
+} from "../context/PlanoContext";
+
+
 
 import {
     criarConnectToken,
@@ -80,6 +89,18 @@ function formatarUltimaSincronizacao(
 
 
 function OpenFinance() {
+
+    const {
+        temRecurso,
+        carregandoPlano,
+    } =
+        usePlano();
+
+
+    const possuiOpenFinance =
+        temRecurso(
+            "OPEN_FINANCE"
+        );
 
     const pluggyRef =
         useRef(null);
@@ -195,6 +216,7 @@ function OpenFinance() {
 
             setErro("");
             setSucesso("");
+            setSucessoDetalhe("");
 
 
             await sincronizarConexaoOpenFinance(
@@ -233,6 +255,7 @@ function OpenFinance() {
 
 
             setSucesso("");
+            setSucessoDetalhe("");
 
             setErro(
                 error?.message ??
@@ -299,6 +322,7 @@ function OpenFinance() {
             setDesconectando(true);
             setErro("");
             setSucesso("");
+            setSucessoDetalhe("");
 
 
             await desconectarConexaoOpenFinance(
@@ -357,6 +381,7 @@ function OpenFinance() {
             setCarregando(true);
             setErro("");
             setSucesso("");
+            setSucessoDetalhe("");
             setItemCriado(null);
 
             // Sempre pedimos um token novo.
@@ -405,7 +430,7 @@ function OpenFinance() {
     }
 
 
-    async function conexaoConcluida(
+        async function conexaoConcluida(
         dados
     ) {
 
@@ -422,6 +447,7 @@ function OpenFinance() {
 
             setItemCriado(null);
             setSucesso("");
+            setSucessoDetalhe("");
 
             setErro(
                 "A instituição foi autorizada, mas a Pluggy não retornou o identificador da conexão."
@@ -436,14 +462,11 @@ function OpenFinance() {
 
             setErro("");
             setSucesso("");
+            setSucessoDetalhe("");
 
 
             // =====================================================
-            // REGISTRAR NO BACKEND DO RUMO
-            //
-            // O navegador envia somente o itemId.
-            // O backend consulta novamente a Pluggy, valida
-            // clientUserId e só então salva no Supabase.
+            // 1. REGISTRAR CONEXÃO NO BACKEND DO RUMO
             // =====================================================
 
             const conexao =
@@ -452,13 +475,22 @@ function OpenFinance() {
                 );
 
 
+            if (!conexao?.id) {
+
+                throw new Error(
+                    "A conexão foi registrada, mas o Rumo não retornou seu identificador."
+                );
+
+            }
+
+
             setItemCriado({
                 ...item,
 
                 conexaoRumoId:
-                    conexao?.id ??
-                    null,
+                    conexao.id,
             });
+
 
             setConexoes(
                 (atuais) => {
@@ -479,21 +511,11 @@ function OpenFinance() {
             );
 
 
-            setSucesso(
-                "Instituição conectada e registrada com sucesso no Rumo."
-            );
-
-            setSucessoDetalhe(
-                "A autorização Open Finance foi concluída com sucesso."
-            );
-
-
             console.log(
                 "[RUMO OPEN FINANCE] Conexão registrada:",
                 {
                     conexaoId:
-                        conexao?.id ??
-                        null,
+                        conexao.id,
 
                     instituicao:
                         conexao?.instituicao_nome ??
@@ -505,6 +527,99 @@ function OpenFinance() {
                 }
             );
 
+
+            // =====================================================
+            // 2. SINCRONIZAÇÃO AUTOMÁTICA
+            //
+            // A conexão já está salva.
+            //
+            // Se esta etapa falhar, NÃO desfazemos a conexão.
+            // O usuário poderá usar "Sincronizar agora".
+            // =====================================================
+
+            try {
+
+                setSincronizandoId(
+                    conexao.id
+                );
+
+
+                await sincronizarConexaoOpenFinance(
+                    conexao.id
+                );
+
+
+                // =================================================
+                // 3. RECARREGAR A CONEXÃO APÓS SINCRONIZAÇÃO
+                //
+                // Atualiza status, última sincronização etc.
+                // =================================================
+
+                const listaAtualizada =
+                    await listarConexoesOpenFinance();
+
+
+                setConexoes(
+                    listaAtualizada
+                );
+
+
+                setSucesso(
+                    "Instituição conectada e sincronizada com sucesso."
+                );
+
+                setSucessoDetalhe(
+                    "Contas, saldos e movimentações já foram atualizados automaticamente no Rumo."
+                );
+
+
+                console.log(
+                    "[RUMO OPEN FINANCE] Primeira sincronização concluída:",
+                    {
+                        conexaoId:
+                            conexao.id,
+
+                        instituicao:
+                            conexao?.instituicao_nome ??
+                            null,
+                    }
+                );
+
+            } catch (sincronizacaoError) {
+
+                /*
+                 * IMPORTANTE:
+                 *
+                 * A autorização e a conexão já foram salvas.
+                 * Portanto uma falha de sincronização não deve
+                 * ser apresentada como falha de conexão.
+                 */
+
+                console.error(
+                    "[RUMO OPEN FINANCE] Conexão salva, mas a sincronização automática falhou:",
+                    sincronizacaoError
+                );
+
+
+                setSucesso(
+                    "Instituição conectada com sucesso."
+                );
+
+                setSucessoDetalhe(
+                    "Não foi possível concluir a primeira sincronização automaticamente. Use o botão “Sincronizar agora” para tentar novamente."
+                );
+
+
+                setErro("");
+
+            } finally {
+
+                setSincronizandoId(
+                    null
+                );
+
+            }
+
         } catch (error) {
 
             console.error(
@@ -515,6 +630,7 @@ function OpenFinance() {
 
             setItemCriado(null);
             setSucesso("");
+            setSucessoDetalhe("");
 
             setErro(
                 error?.message ??
@@ -541,6 +657,7 @@ function OpenFinance() {
         );
 
         setSucesso("");
+        setSucessoDetalhe("");
 
     }
 
@@ -610,6 +727,39 @@ function OpenFinance() {
                         </div>
 
                     </header>
+
+                    {!carregandoPlano &&
+                        !possuiOpenFinance && (
+
+                            <div className="open-finance-alert open-finance-alert-warning">
+
+                                <LockKeyhole size={22} />
+
+                                <div>
+                                    <strong>
+                                        Open Finance não está disponível no seu plano atual
+                                    </strong>
+
+                                    <span>
+                                        Você não pode conectar novas instituições nem sincronizar dados,
+                                        mas ainda pode visualizar suas conexões e desconectá-las quando quiser.
+                                    </span>
+
+                                    <Link
+                                        to="/premium"
+                                        className="open-finance-premium-button"
+                                    >
+                                        <Sparkles size={17} />
+                                        Conhecer o Rumo Premium
+                                    </Link>
+
+
+
+                                </div>
+
+                            </div>
+
+                        )}
 
 
                     {erro && (
@@ -682,7 +832,11 @@ function OpenFinance() {
                                 type="button"
                                 className="open-finance-connect-button"
                                 onClick={iniciarConexao}
-                                disabled={carregando}
+                                disabled={
+                                    carregando ||
+                                    carregandoPlano ||
+                                    !possuiOpenFinance
+                                }
                             >
 
                                 {carregando ? (
@@ -694,13 +848,17 @@ function OpenFinance() {
 
                                         Preparando conexão...
                                     </>
+                                ) : !possuiOpenFinance ? (
+                                    <>
+                                        <LockKeyhole size={19} />
+                                        Disponível no Rumo Premium
+                                    </>
                                 ) : (
                                     <>
                                         <Link2 size={19} />
                                         Conectar instituição financeira
                                     </>
                                 )}
-
                             </button>
 
                         </div>
@@ -839,7 +997,9 @@ function OpenFinance() {
                                                     disabled={
                                                         Boolean(
                                                             sincronizandoId
-                                                        )
+                                                        ) ||
+                                                        carregandoPlano ||
+                                                        !possuiOpenFinance
                                                     }
                                                 >
 
@@ -852,6 +1012,12 @@ function OpenFinance() {
                                                             />
 
                                                             Sincronizando...
+                                                        </>
+                                                    ) : !possuiOpenFinance ? (
+                                                        <>
+                                                            <LockKeyhole size={16} />
+
+                                                            Premium necessário
                                                         </>
                                                     ) : (
                                                         <>
