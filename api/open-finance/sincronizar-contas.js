@@ -122,13 +122,6 @@ function criarFingerprintConta({
                 .trim()
                 .toUpperCase(),
 
-            String(
-                conta?.subtype ??
-                ""
-            )
-                .trim()
-                .toUpperCase(),
-
             identificador,
         ]
             .join("|");
@@ -656,53 +649,469 @@ export default async function handler(
                     })
                 );
 
+        // =================================================
+        // RECONCILIAR CONTAS
+        //
+        // IMPORTANTE:
+        // pluggy_account_id pertence ao Item da Pluggy e
+        // pode mudar quando o usuário desconecta e conecta
+        // novamente a mesma instituição.
+        //
+        // Por isso tentamos reconhecer a conta existente
+        // antes de criar um novo registro.
+        // =================================================
 
-        // =================================================
-        // UPSERT DAS CONTAS
-        // =================================================
+        let contasReconhecidas =
+            0;
+
+        let contasNovas =
+            0;
+
+
+        // -------------------------------------------------
+        // BUSCAR TODAS AS CONEXÕES DO MESMO CONNECTOR
+        //
+        // Incluímos conexões antigas/inativas porque é
+        // justamente nelas que estará a conta anterior.
+        // -------------------------------------------------
+
+        const {
+            data: conexoesDaInstituicao,
+            error: conexoesDaInstituicaoError,
+        } =
+            await supabaseAdmin
+                .schema("rumo")
+                .from(
+                    "open_finance_conexoes"
+                )
+                .select(`
+                    id,
+                    pluggy_connector_id,
+                    ativo
+                `)
+                .eq(
+                    "usuario_id",
+                    user.id
+                )
+                .eq(
+                    "pluggy_connector_id",
+                    conexao.pluggy_connector_id
+                );
+
+
+        if (conexoesDaInstituicaoError) {
+
+            throw conexoesDaInstituicaoError;
+
+        }
+
+
+        const idsConexoesDaInstituicao =
+            (
+                conexoesDaInstituicao ??
+                []
+            )
+                .map(
+                    (registro) =>
+                        registro.id
+                );
+
+
+        let contasConhecidas =
+            [];
+
 
         if (
-            registros.length > 0
+            idsConexoesDaInstituicao.length >
+            0
         ) {
 
             const {
-                error: upsertError,
+                data: contasHistoricas,
+                error: contasHistoricasError,
             } =
                 await supabaseAdmin
                     .schema("rumo")
                     .from(
                         "open_finance_contas"
                     )
-                    .upsert(
-                        registros,
-                        {
-                            onConflict:
-                                "pluggy_account_id",
-                        }
+                    .select(`
+                        id,
+                        usuario_id,
+                        conexao_id,
+                        fingerprint_conta,
+                        pluggy_account_id,
+                        tipo_pluggy,
+                        subtipo_pluggy,
+                        nome,
+                        numero_mascarado,
+                        conta_rumo_id,
+                        ativo,
+                        sincronizado_em
+                    `)
+                    .eq(
+                        "usuario_id",
+                        user.id
+                    )
+                    .in(
+                        "conexao_id",
+                        idsConexoesDaInstituicao
                     );
 
 
-            if (upsertError) {
+            if (contasHistoricasError) {
+
+                throw contasHistoricasError;
+
+            }
+
+
+            contasConhecidas =
+                contasHistoricas ??
+                [];
+
+        }
+
+
+        // -------------------------------------------------
+        // PROCESSAR CADA CONTA RECEBIDA
+        // -------------------------------------------------
+
+        for (
+            const registro of
+            registros
+        ) {
+
+            let contaExistente =
+                null;
+
+
+            // =============================================
+            // 1. MESMO pluggy_account_id
+            //
+            // Fluxo normal de sincronizações seguintes.
+            // =============================================
+
+            contaExistente =
+                contasConhecidas
+                    .find(
+                        (contaLocal) =>
+                            contaLocal
+                                .pluggy_account_id ===
+                            registro
+                                .pluggy_account_id
+                    ) ??
+                null;
+
+
+            // =============================================
+            // 2. MESMO fingerprint
+            //
+            // Reconexões em que o ID da Pluggy mudou mas
+            // o identificador bancário permaneceu estável.
+            // =============================================
+
+            if (!contaExistente) {
+
+                const candidatosFingerprint =
+                    contasConhecidas
+                        .filter(
+                            (contaLocal) =>
+                                contaLocal
+                                    .fingerprint_conta ===
+                                registro
+                                    .fingerprint_conta
+                        );
+
+
+                if (
+                    candidatosFingerprint.length ===
+                    1
+                ) {
+
+                    contaExistente =
+                        candidatosFingerprint[0];
+
+                } else if (
+                    candidatosFingerprint.length >
+                    1
+                ) {
+
+                    const vinculados =
+                        candidatosFingerprint
+                            .filter(
+                                (contaLocal) =>
+                                    Boolean(
+                                        contaLocal
+                                            .conta_rumo_id
+                                    )
+                            );
+
+
+                    if (
+                        vinculados.length ===
+                        1
+                    ) {
+
+                        contaExistente =
+                            vinculados[0];
+
+                    }
+
+                }
+
+            }
+
+
+            // =============================================
+            // 3. RECONEXÃO COM IDENTIFICADOR ALTERADO
+            //
+            // Mesmo banco/connector
+            // + mesmo tipo geral BANK/CREDIT
+            // + mesmos últimos dígitos.
+            //
+            // Não exigimos subtipo porque a própria Pluggy
+            // pode mudar SAVINGS_ACCOUNT para
+            // CHECKING_ACCOUNT, como vimos no Sib 22-4.
+            // =============================================
+
+            if (
+                !contaExistente &&
+                registro.numero_mascarado
+            ) {
+
+                const candidatosConta =
+                    contasConhecidas
+                        .filter(
+                            (contaLocal) =>
+                                contaLocal
+                                    .tipo_pluggy ===
+                                registro
+                                    .tipo_pluggy &&
+
+                                contaLocal
+                                    .numero_mascarado ===
+                                registro
+                                    .numero_mascarado
+                        );
+
+
+                if (
+                    candidatosConta.length ===
+                    1
+                ) {
+
+                    contaExistente =
+                        candidatosConta[0];
+
+                } else if (
+                    candidatosConta.length >
+                    1
+                ) {
+
+                    /*
+                     * Se houver várias candidatas, somente
+                     * adotamos automaticamente quando apenas
+                     * uma delas já estiver vinculada a uma
+                     * conta real do Rumo.
+                     *
+                     * Caso contrário preferimos NÃO unir
+                     * contas potencialmente diferentes.
+                     */
+                    const vinculados =
+                        candidatosConta
+                            .filter(
+                                (contaLocal) =>
+                                    Boolean(
+                                        contaLocal
+                                            .conta_rumo_id
+                                    )
+                            );
+
+
+                    if (
+                        vinculados.length ===
+                        1
+                    ) {
+
+                        contaExistente =
+                            vinculados[0];
+
+                    } else {
+
+                        console.warn(
+                            "[RUMO OPEN FINANCE] Reconexão ambígua de conta.",
+                            {
+                                usuario_id:
+                                    user.id,
+
+                                conexao_id:
+                                    conexao.id,
+
+                                tipo:
+                                    registro.tipo_pluggy,
+
+                                numero:
+                                    registro.numero_mascarado,
+
+                                candidatos:
+                                    candidatosConta.length,
+                            }
+                        );
+
+                    }
+
+                }
+
+            }
+
+
+            // =============================================
+            // CONTA JÁ EXISTE
+            //
+            // Atualizamos o mesmo registro interno.
+            //
+            // conta_rumo_id NÃO está no objeto registro,
+            // então o vínculo anterior é preservado.
+            // =============================================
+
+            if (contaExistente) {
+
+                const {
+                    error: atualizarContaError,
+                } =
+                    await supabaseAdmin
+                        .schema("rumo")
+                        .from(
+                            "open_finance_contas"
+                        )
+                        .update(
+                            registro
+                        )
+                        .eq(
+                            "id",
+                            contaExistente.id
+                        )
+                        .eq(
+                            "usuario_id",
+                            user.id
+                        );
+
+
+                if (atualizarContaError) {
+
+                    console.error(
+                        "[RUMO OPEN FINANCE] Erro ao atualizar conta reconhecida:",
+                        atualizarContaError
+                    );
+
+                    throw atualizarContaError;
+
+                }
+
+
+                contasReconhecidas +=
+                    1;
+
+
+                // Atualizamos também a cópia em memória.
+                contasConhecidas =
+                    contasConhecidas
+                        .map(
+                            (contaLocal) =>
+                                contaLocal.id ===
+                                    contaExistente.id
+                                    ? {
+                                        ...contaLocal,
+                                        ...registro,
+                                    }
+                                    : contaLocal
+                        );
+
+
+                continue;
+
+            }
+
+
+            // =============================================
+            // CONTA REALMENTE NOVA
+            // =============================================
+
+            const {
+                data: contaCriada,
+                error: inserirContaError,
+            } =
+                await supabaseAdmin
+                    .schema("rumo")
+                    .from(
+                        "open_finance_contas"
+                    )
+                    .insert(
+                        registro
+                    )
+                    .select(`
+                        id,
+                        usuario_id,
+                        conexao_id,
+                        fingerprint_conta,
+                        pluggy_account_id,
+                        tipo_pluggy,
+                        subtipo_pluggy,
+                        nome,
+                        numero_mascarado,
+                        conta_rumo_id,
+                        ativo,
+                        sincronizado_em
+                    `)
+                    .single();
+
+
+            if (
+                inserirContaError ||
+                !contaCriada
+            ) {
 
                 console.error(
-                    "[RUMO OPEN FINANCE] Erro ao salvar contas:",
-                    upsertError
+                    "[RUMO OPEN FINANCE] Erro ao criar nova conta:",
+                    inserirContaError
                 );
 
-
-                return responder(
-                    res,
-                    500,
-                    {
-                        success: false,
-                        error:
-                            "Não foi possível salvar as contas sincronizadas.",
-                    }
+                throw inserirContaError ??
+                new Error(
+                    "Não foi possível criar a conta Open Finance."
                 );
 
             }
 
+
+            contasConhecidas.push(
+                contaCriada
+            );
+
+
+            contasNovas +=
+                1;
+
         }
+
+
+        console.log(
+            "[RUMO OPEN FINANCE] Reconciliação das contas:",
+            {
+                usuario_id:
+                    user.id,
+
+                conexao_id:
+                    conexao.id,
+
+                reconhecidas:
+                    contasReconhecidas,
+
+                novas:
+                    contasNovas,
+            }
+        );
 
 
         // =================================================

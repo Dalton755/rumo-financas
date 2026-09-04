@@ -867,48 +867,390 @@ export default async function handler(
                     );
 
 
-            if (
+                      if (
                 registros.length > 0
             ) {
 
+                // =============================================
+                // RECONCILIAR MOVIMENTAÇÕES
+                //
+                // pluggy_transaction_id pode mudar depois de
+                // uma reconexão da instituição.
+                //
+                // Como a conta Open Finance interna é
+                // preservada, podemos reconhecer o mesmo
+                // lançamento dentro dela.
+                // =============================================
+
                 const {
-                    error: upsertError,
+                    data: movimentacoesExistentes,
+                    error: movimentacoesExistentesError,
                 } =
                     await supabaseAdmin
                         .schema("rumo")
                         .from(
                             "open_finance_movimentacoes"
                         )
-                        .upsert(
-                            registros,
-                            {
-                                onConflict:
-                                    "pluggy_transaction_id",
-                            }
+                        .select(`
+                            id,
+                            open_finance_conta_id,
+                            pluggy_transaction_id,
+                            pluggy_account_id,
+                            fingerprint_movimentacao,
+                            data_movimentacao,
+                            descricao,
+                            descricao_original,
+                            tipo_pluggy,
+                            valor,
+                            moeda,
+                            movimentacao_rumo_id
+                        `)
+                        .eq(
+                            "usuario_id",
+                            user.id
+                        )
+                        .eq(
+                            "open_finance_conta_id",
+                            conta.id
                         );
 
 
-                if (upsertError) {
+                if (
+                    movimentacoesExistentesError
+                ) {
 
-                    console.error(
-                        "[RUMO OPEN FINANCE] Erro nas transações da conta:",
-                        {
-                            conta:
-                                conta.pluggy_account_id,
-
-                            erro:
-                                upsertError,
-                        }
-                    );
-
-
-                    throw upsertError;
+                    throw movimentacoesExistentesError;
 
                 }
 
 
-                totalSalvo +=
-                    registros.length;
+                let movimentacoesConhecidas =
+                    movimentacoesExistentes ??
+                    [];
+
+
+                for (
+                    const registro of
+                    registros
+                ) {
+
+                    let movimentacaoExistente =
+                        null;
+
+
+                    // =========================================
+                    // 1. MESMO ID DA PLUGGY
+                    //
+                    // Fluxo normal sem reconexão.
+                    // =========================================
+
+                    movimentacaoExistente =
+                        movimentacoesConhecidas
+                            .find(
+                                (movimentacaoLocal) =>
+                                    movimentacaoLocal
+                                        .pluggy_transaction_id ===
+                                    registro
+                                        .pluggy_transaction_id
+                            ) ??
+                        null;
+
+
+                    // =========================================
+                    // 2. MESMO FINGERPRINT
+                    //
+                    // Proteção adicional dentro da mesma
+                    // identidade atual da conta.
+                    // =========================================
+
+                    if (
+                        !movimentacaoExistente
+                    ) {
+
+                        const candidatosFingerprint =
+                            movimentacoesConhecidas
+                                .filter(
+                                    (movimentacaoLocal) =>
+                                        movimentacaoLocal
+                                            .fingerprint_movimentacao ===
+                                        registro
+                                            .fingerprint_movimentacao
+                                );
+
+
+                        if (
+                            candidatosFingerprint.length ===
+                            1
+                        ) {
+
+                            movimentacaoExistente =
+                                candidatosFingerprint[0];
+
+                        }
+
+                    }
+
+
+                    // =========================================
+                    // 3. RECONEXÃO
+                    //
+                    // O ID da Pluggy e o fingerprint podem
+                    // ter mudado.
+                    //
+                    // Então reconhecemos pela identidade
+                    // financeira do lançamento:
+                    //
+                    // - mesma conta interna
+                    // - mesma data
+                    // - mesmo tipo
+                    // - mesmo valor
+                    // - mesma descrição
+                    // =========================================
+
+                    if (
+                        !movimentacaoExistente
+                    ) {
+
+                        const descricaoRegistro =
+                            normalizarTexto(
+                                registro
+                                    .descricao_original ??
+                                registro
+                                    .descricao
+                            );
+
+
+                        const candidatosCompatibilidade =
+                            movimentacoesConhecidas
+                                .filter(
+                                    (movimentacaoLocal) => {
+
+                                        const descricaoLocal =
+                                            normalizarTexto(
+                                                movimentacaoLocal
+                                                    .descricao_original ??
+                                                movimentacaoLocal
+                                                    .descricao
+                                            );
+
+
+                                        return (
+                                            movimentacaoLocal
+                                                .data_movimentacao ===
+                                                registro
+                                                    .data_movimentacao &&
+
+                                            normalizarTexto(
+                                                movimentacaoLocal
+                                                    .tipo_pluggy
+                                            ) ===
+                                            normalizarTexto(
+                                                registro
+                                                    .tipo_pluggy
+                                            ) &&
+
+                                            normalizarValorFingerprint(
+                                                movimentacaoLocal
+                                                    .valor
+                                            ) ===
+                                            normalizarValorFingerprint(
+                                                registro
+                                                    .valor
+                                            ) &&
+
+                                            descricaoLocal ===
+                                            descricaoRegistro
+                                        );
+
+                                    }
+                                );
+
+
+                        if (
+                            candidatosCompatibilidade.length ===
+                            1
+                        ) {
+
+                            movimentacaoExistente =
+                                candidatosCompatibilidade[0];
+
+                        } else if (
+                            candidatosCompatibilidade.length >
+                            1
+                        ) {
+
+                            console.warn(
+                                "[RUMO OPEN FINANCE] Movimentação de reconexão ambígua.",
+                                {
+                                    usuario_id:
+                                        user.id,
+
+                                    conta_id:
+                                        conta.id,
+
+                                    data:
+                                        registro
+                                            .data_movimentacao,
+
+                                    valor:
+                                        registro.valor,
+
+                                    descricao:
+                                        registro.descricao,
+
+                                    candidatos:
+                                        candidatosCompatibilidade
+                                            .length,
+                                }
+                            );
+
+                        }
+
+                    }
+
+
+                    // =========================================
+                    // MOVIMENTAÇÃO RECONHECIDA
+                    //
+                    // Atualizamos o MESMO registro interno.
+                    //
+                    // movimentacao_rumo_id não está presente
+                    // em "registro", portanto o vínculo com
+                    // o Rumo é preservado.
+                    // =========================================
+
+                    if (
+                        movimentacaoExistente
+                    ) {
+
+                        const {
+                            error: atualizarMovimentacaoError,
+                        } =
+                            await supabaseAdmin
+                                .schema("rumo")
+                                .from(
+                                    "open_finance_movimentacoes"
+                                )
+                                .update(
+                                    registro
+                                )
+                                .eq(
+                                    "id",
+                                    movimentacaoExistente.id
+                                )
+                                .eq(
+                                    "usuario_id",
+                                    user.id
+                                );
+
+
+                        if (
+                            atualizarMovimentacaoError
+                        ) {
+
+                            console.error(
+                                "[RUMO OPEN FINANCE] Erro ao atualizar movimentação reconhecida:",
+                                atualizarMovimentacaoError
+                            );
+
+                            throw atualizarMovimentacaoError;
+
+                        }
+
+
+                        movimentacoesConhecidas =
+                            movimentacoesConhecidas
+                                .map(
+                                    (
+                                        movimentacaoLocal
+                                    ) =>
+                                        movimentacaoLocal.id ===
+                                        movimentacaoExistente.id
+                                            ? {
+                                                ...movimentacaoLocal,
+                                                ...registro,
+                                            }
+                                            : movimentacaoLocal
+                                );
+
+
+                        totalSalvo +=
+                            1;
+
+
+                        continue;
+
+                    }
+
+
+                    // =========================================
+                    // MOVIMENTAÇÃO REALMENTE NOVA
+                    // =========================================
+
+                    const {
+                        data: movimentacaoCriada,
+                        error: inserirMovimentacaoError,
+                    } =
+                        await supabaseAdmin
+                            .schema("rumo")
+                            .from(
+                                "open_finance_movimentacoes"
+                            )
+                            .insert(
+                                registro
+                            )
+                            .select(`
+                                id,
+                                open_finance_conta_id,
+                                pluggy_transaction_id,
+                                pluggy_account_id,
+                                fingerprint_movimentacao,
+                                data_movimentacao,
+                                descricao,
+                                descricao_original,
+                                tipo_pluggy,
+                                valor,
+                                moeda,
+                                movimentacao_rumo_id
+                            `)
+                            .single();
+
+
+                    if (
+                        inserirMovimentacaoError ||
+                        !movimentacaoCriada
+                    ) {
+
+                        console.error(
+                            "[RUMO OPEN FINANCE] Erro ao criar movimentação:",
+                            {
+                                conta:
+                                    conta.pluggy_account_id,
+
+                                erro:
+                                    inserirMovimentacaoError,
+                            }
+                        );
+
+
+                        throw inserirMovimentacaoError ??
+                            new Error(
+                                "Não foi possível criar a movimentação Open Finance."
+                            );
+
+                    }
+
+
+                    movimentacoesConhecidas
+                        .push(
+                            movimentacaoCriada
+                        );
+
+
+                    totalSalvo +=
+                        1;
+
+                }
 
             }
 
