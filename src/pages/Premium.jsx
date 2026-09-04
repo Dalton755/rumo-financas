@@ -8,7 +8,6 @@ import {
   ChevronRight,
   Crown,
   CreditCard,
-  Landmark,
   LockKeyhole,
   PieChart,
   Sparkles,
@@ -68,13 +67,7 @@ const recursos = [
     descricao:
       "Receba avisos quando algo importante nas suas finanças exigir atenção.",
   },
-  {
-    Icone: Landmark,
-    titulo: "Open Finance",
-    descricao:
-      "Consolide informações autorizadas de instituições financeiras.",
-    observacao: "Integração em implantação",
-  },
+  
 ];
 
 const comparacao = [
@@ -128,11 +121,7 @@ const comparacao = [
     gratuito: false,
     premium: true,
   },
-  {
-    recurso: "Open Finance",
-    gratuito: false,
-    premium: true,
-  },
+  
 ];
 
 function Premium() {

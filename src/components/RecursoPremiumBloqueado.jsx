@@ -397,59 +397,7 @@ const previews = {
   },
 
 
-  OPEN_FINANCE: {
-    subtitulo:
-      "Tenha uma visão mais completa da sua vida financeira sem precisar alimentar tudo manualmente.",
 
-    descricao:
-      "Com Open Finance, o Rumo poderá consolidar informações autorizadas de diferentes instituições financeiras para oferecer uma visão centralizada e atualizada das suas finanças.",
-
-    beneficios: [
-      "Conecte instituições financeiras autorizadas por você.",
-      "Visualize contas e saldos em um único lugar.",
-      "Reduza a necessidade de lançamentos manuais.",
-      "Tenha informações mais completas para análises do Rumo.",
-      "Gerencie e revogue seus consentimentos quando quiser.",
-    ],
-
-    previewTitulo:
-      "Minha vida financeira conectada",
-
-    previewDescricao:
-      "Contas de diferentes instituições reunidas em uma visão consolidada.",
-
-    previewCards: [
-      {
-        titulo: "Instituições conectadas",
-        valor: "3",
-        descricao: "Bancos autorizados pelo usuário.",
-        progresso: 75,
-      },
-      {
-        titulo: "Saldo consolidado",
-        valor: "R$ 12.480",
-        descricao: "Visão conjunta das contas conectadas.",
-        destaque: true,
-      },
-      {
-        titulo: "Cartões",
-        valor: "R$ 2.340",
-        descricao: "Valor consolidado apresentado na prévia.",
-      },
-      {
-        titulo: "Sincronização",
-        valor: "Automática",
-        descricao: "Dados atualizados após sincronizações autorizadas.",
-        destaque: true,
-      },
-    ],
-
-    insightTitulo:
-      "Uma visão financeira mais completa",
-
-    insightTexto:
-      "Com suas instituições conectadas e mediante sua autorização, o Rumo poderá analisar uma visão mais ampla das suas finanças sem depender apenas de lançamentos manuais.",
-  },
 };
 
 export default function RecursoPremiumBloqueado({
