@@ -934,30 +934,79 @@ export default async function handler(
                         1
                     ) {
 
+                        /*
+                         * Prioridade máxima:
+                         * conta que já está integrada ao Rumo.
+                         */
                         contaExistente =
                             vinculados[0];
 
                     } else {
 
-                        console.warn(
-                            "[RUMO OPEN FINANCE] Reconexão ambígua de conta.",
-                            {
-                                usuario_id:
-                                    user.id,
+                        /*
+                         * Cartões de crédito normalmente não possuem
+                         * conta_rumo_id.
+                         *
+                         * Duplicatas antigas, criadas antes da implantação
+                         * dos fingerprints, possuem fingerprint_conta NULL.
+                         *
+                         * Se existir exatamente uma candidata que já tenha
+                         * fingerprint, ela passa a ser considerada a conta
+                         * canônica daquele cartão.
+                         */
+                        const candidatosComFingerprint =
+                            candidatosConta
+                                .filter(
+                                    (contaLocal) =>
+                                        Boolean(
+                                            contaLocal
+                                                .fingerprint_conta
+                                        )
+                                );
 
-                                conexao_id:
-                                    conexao.id,
 
-                                tipo:
-                                    registro.tipo_pluggy,
+                        if (
+                            candidatosComFingerprint.length ===
+                            1
+                        ) {
 
-                                numero:
-                                    registro.numero_mascarado,
+                            contaExistente =
+                                candidatosComFingerprint[0];
 
-                                candidatos:
-                                    candidatosConta.length,
-                            }
-                        );
+                        } else {
+
+                            /*
+                             * Continuamos sem escolher arbitrariamente se
+                             * houver mais de uma candidata válida.
+                             *
+                             * Isso protege contra duas contas reais que,
+                             * por coincidência, terminem com os mesmos
+                             * dígitos.
+                             */
+                            console.warn(
+                                "[RUMO OPEN FINANCE] Reconexão ambígua de conta.",
+                                {
+                                    usuario_id:
+                                        user.id,
+
+                                    conexao_id:
+                                        conexao.id,
+
+                                    tipo:
+                                        registro.tipo_pluggy,
+
+                                    numero:
+                                        registro.numero_mascarado,
+
+                                    candidatos:
+                                        candidatosConta.length,
+
+                                    candidatos_com_fingerprint:
+                                        candidatosComFingerprint.length,
+                                }
+                            );
+
+                        }
 
                     }
 
