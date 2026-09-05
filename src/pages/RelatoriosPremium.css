@@ -471,9 +471,27 @@
 
 .rel-premium-insights-header {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    align-items: flex-start;
+
+    gap: 10px;
+
     color: #0891b2;
+}
+
+
+.rel-premium-insights-header>div {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.rel-premium-insights-header span {
+    color: #64748b;
+
+    font-size: 12px;
+    font-weight: 500;
 }
 
 .rel-premium-insights-grid {

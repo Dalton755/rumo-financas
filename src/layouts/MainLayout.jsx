@@ -49,6 +49,13 @@ const recursosPremium = [
     rota: "/dividas",
     Icone: CreditCard,
   },
+
+  {
+    codigo: "CARTOES",
+    nome: "Cartões",
+    rota: "/cartoes",
+    Icone: WalletCards,
+  },
   {
     codigo: "PROJECOES",
     nome: "Projeções",
@@ -67,7 +74,7 @@ const recursosPremium = [
     rota: "/alertas",
     Icone: BellRing,
   },
-  
+
 ];
 
 function MainLayout({ children }) {

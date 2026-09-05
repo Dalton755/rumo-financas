@@ -1,0 +1,1348 @@
+.cartoes-novo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    min-height: 44px;
+    padding: 0 17px;
+
+    border: none;
+    border-radius: 13px;
+
+    background: #22b8cf;
+    color: #fff;
+
+    font-weight: 800;
+    cursor: pointer;
+}
+
+
+.cartoes-resumo {
+    display: grid;
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 16px;
+
+    margin-bottom: 24px;
+}
+
+
+.cartoes-resumo-card {
+    position: relative;
+
+    padding: 20px;
+
+    border: 1px solid #edf1f5;
+    border-radius: 20px;
+
+    background: #fff;
+
+    box-shadow:
+        0 12px 30px rgba(15, 23, 42, .05);
+}
+
+
+.cartoes-resumo-card>span {
+    display: block;
+
+    color: #64748b;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+.cartoes-resumo-card>strong {
+    display: block;
+
+    margin-top: 8px;
+
+    color: #172033;
+
+    font-size: 24px;
+}
+
+
+.cartoes-resumo-card>svg {
+    position: absolute;
+
+    top: 20px;
+    right: 20px;
+
+    color: #0891b2;
+}
+
+
+.cartoes-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,
+            minmax(270px,
+                1fr));
+
+    gap: 20px;
+}
+
+
+.cartao-item {
+    padding: 20px;
+
+    border: 1px solid #e8edf2;
+    border-radius: 22px;
+
+    background:
+        linear-gradient(145deg,
+            #ffffff,
+            #f8fafc);
+
+    box-shadow:
+        0 14px 35px rgba(15, 23, 42, .07);
+}
+
+
+.cartao-item-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.cartao-item-acoes {
+    display: flex;
+    gap: 6px;
+}
+
+
+.cartao-item-acoes button {
+    width: 34px;
+    height: 34px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+
+    background: #fff;
+
+    color: #64748b;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+
+.cartao-item-identidade {
+    margin-top: 22px;
+}
+
+
+.cartao-item-identidade h2 {
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 18px;
+}
+
+
+.cartao-item-identidade span {
+    display: block;
+
+    margin-top: 6px;
+
+    color: #475569;
+
+    font-size: 15px;
+
+    letter-spacing: 2px;
+}
+
+
+.cartao-item-identidade small {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #94a3b8;
+
+    text-transform: capitalize;
+}
+
+
+.cartao-item-limite {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    gap: 12px;
+
+    margin-top: 24px;
+}
+
+
+.cartao-item-limite>div span {
+    display: block;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+.cartao-item-limite strong {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #172033;
+
+    font-size: 18px;
+}
+
+
+.cartao-item-limite>span {
+    color: #64748b;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+.cartao-item-barra {
+    height: 7px;
+
+    margin-top: 10px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background: #e9eef3;
+}
+
+
+.cartao-item-barra>div {
+    height: 100%;
+
+    border-radius: inherit;
+
+    background: #22b8cf;
+}
+
+.cartao-item-botoes {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+
+    margin-top: 16px;
+}
+
+
+.cartao-item-botoes button {
+    min-height: 40px;
+
+    border-radius: 11px;
+
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+
+.cartao-item-compra {
+    border: none;
+
+    background: #22b8cf;
+    color: #fff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+}
+
+
+.cartao-item-compra:hover {
+    background: #0891b2;
+}
+
+
+.cartao-item-fatura {
+    border:
+        1px solid #dce4ec;
+
+    background: #fff;
+
+    color: #475569;
+}
+
+
+.cartao-item-fatura:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+
+.cartoes-compra-cartao {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 13px;
+
+    border:
+        1px solid #e2e8f0;
+    border-radius: 14px;
+
+    background: #f8fafc;
+}
+
+
+.cartoes-compra-cartao>div {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.cartoes-compra-cartao span {
+    color: #94a3b8;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+.cartoes-compra-cartao strong {
+    margin-top: 2px;
+
+    color: #334155;
+
+    font-size: 13px;
+}
+
+
+.cartoes-compra-cartao small {
+    margin-top: 2px;
+
+    color: #64748b;
+
+    font-size: 10px;
+}
+
+
+.cartoes-form textarea {
+    width: 100%;
+
+    padding: 12px 13px;
+
+    border:
+        1px solid #dce4ec;
+    border-radius: 12px;
+
+    background: #fff;
+
+    color: #334155;
+
+    font: inherit;
+
+    resize: vertical;
+}
+
+
+.cartoes-parcela-preview {
+    padding: 13px 15px;
+
+    border:
+        1px solid rgba(34, 184, 207, .2);
+
+    border-radius: 13px;
+
+    background: #ecfeff;
+}
+
+
+.cartoes-parcela-preview span {
+    display: block;
+
+    color: #64748b;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+.cartoes-parcela-preview strong {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #0891b2;
+
+    font-size: 18px;
+}
+
+
+.cartoes-parcela-preview small {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #64748b;
+
+    font-size: 9px;
+}
+
+
+.cartao-item-rodape {
+    display: flex;
+    justify-content: space-between;
+
+    margin-top: 18px;
+    padding-top: 15px;
+
+    border-top: 1px solid #edf1f5;
+
+    color: #64748b;
+
+    font-size: 11px;
+}
+
+
+.cartoes-vazio,
+.cartoes-estado {
+    padding: 55px 20px;
+
+    border: 1px dashed #dce4ec;
+    border-radius: 22px;
+
+    background: #fff;
+
+    color: #64748b;
+
+    text-align: center;
+}
+
+
+.cartoes-vazio h2 {
+    margin: 14px 0 6px;
+
+    color: #334155;
+
+    font-size: 18px;
+}
+
+
+.cartoes-vazio p {
+    margin: 0 0 18px;
+}
+
+
+.cartoes-vazio button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 11px 15px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: #22b8cf;
+    color: #fff;
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+
+.cartoes-modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    z-index: 3000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(15,
+            23,
+            42,
+            .45);
+
+    backdrop-filter:
+        blur(4px);
+}
+
+
+.cartoes-modal {
+    width: min(620px,
+            100%);
+
+    max-height: 92vh;
+    overflow: auto;
+
+    border-radius: 22px;
+
+    background: #fff;
+
+    box-shadow:
+        0 30px 80px rgba(15, 23, 42, .2);
+}
+
+
+.cartoes-modal-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding: 22px;
+
+    border-bottom:
+        1px solid #eef2f7;
+}
+
+
+.cartoes-modal-header h2 {
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 20px;
+}
+
+
+.cartoes-modal-header p {
+    margin: 4px 0 0;
+
+    color: #94a3b8;
+
+    font-size: 12px;
+}
+
+
+.cartoes-modal-header>button {
+    width: 36px;
+    height: 36px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #f8fafc;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+
+.cartoes-form {
+    padding: 22px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+.cartoes-form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2,
+            minmax(0, 1fr));
+
+    gap: 14px;
+}
+
+
+.cartoes-form label {
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+
+    color: #475569;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+.cartoes-form input,
+.cartoes-form select {
+    width: 100%;
+
+    min-height: 46px;
+
+    padding: 0 13px;
+
+    border:
+        1px solid #dce4ec;
+    border-radius: 12px;
+
+    background: #fff;
+
+    color: #334155;
+
+    font: inherit;
+}
+
+
+.cartoes-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding: 18px 22px;
+
+    border-top:
+        1px solid #eef2f7;
+}
+
+
+.cartoes-modal-actions button {
+    min-height: 42px;
+
+    padding: 0 16px;
+
+    border-radius: 11px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+
+.cartoes-modal-actions .secundario {
+    border:
+        1px solid #dce4ec;
+
+    background: #fff;
+
+    color: #475569;
+}
+
+
+.cartoes-modal-actions .primario {
+    border: none;
+
+    background: #22b8cf;
+
+    color: #fff;
+}
+
+.cartoes-modal-fatura {
+    width: min(700px, 100%);
+}
+
+
+.cartoes-fatura-conteudo {
+    padding: 22px;
+}
+
+
+.cartoes-fatura-resumo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 18px;
+
+    border-radius: 17px;
+
+    background:
+        linear-gradient(135deg,
+            #ecfeff,
+            #ffffff);
+
+    border:
+        1px solid rgba(34, 184, 207, .2);
+}
+
+
+.cartoes-fatura-identidade {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.cartoes-fatura-identidade>div {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.cartoes-fatura-identidade span,
+.cartoes-fatura-total span {
+    color: #64748b;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+.cartoes-fatura-identidade strong {
+    margin-top: 2px;
+
+    color: #172033;
+
+    font-size: 16px;
+}
+
+
+.cartoes-fatura-identidade small {
+    margin-top: 3px;
+
+    color: #64748b;
+}
+
+
+.cartoes-fatura-total {
+    text-align: right;
+}
+
+
+.cartoes-fatura-total strong {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #172033;
+
+    font-size: 24px;
+}
+
+
+.cartoes-fatura-secao {
+    margin-top: 24px;
+}
+
+
+.cartoes-fatura-secao-titulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 10px;
+}
+
+
+.cartoes-fatura-secao-titulo h3 {
+    margin: 0;
+
+    color: #334155;
+
+    font-size: 14px;
+}
+
+
+.cartoes-fatura-secao-titulo span {
+    color: #94a3b8;
+
+    font-size: 10px;
+}
+
+
+.cartoes-fatura-itens {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.cartoes-fatura-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 14px 0;
+
+    border-bottom:
+        1px solid #eef2f7;
+}
+
+
+.cartoes-fatura-item:last-child {
+    border-bottom: none;
+}
+
+
+.cartoes-fatura-item-info {
+    min-width: 0;
+}
+
+
+.cartoes-fatura-item-info strong {
+    display: block;
+
+    color: #334155;
+
+    font-size: 13px;
+}
+
+
+.cartoes-fatura-item-info span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+}
+
+
+.cartoes-fatura-item-valor {
+    color: #334155;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+}
+
+
+.cartoes-proximas-faturas {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.cartoes-proxima-fatura {
+    display: block;
+
+    padding: 13px 14px;
+
+    border: 1px solid #eef2f7;
+    border-radius: 13px;
+
+    background: #f8fafc;
+
+    cursor: pointer;
+
+    transition: .18s ease;
+}
+
+
+.cartoes-proxima-fatura-linha > div:first-child {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+
+.cartoes-proxima-fatura-linha > div:first-child strong {
+    color: #334155;
+    font-size: 12px;
+}
+
+
+.cartoes-proxima-fatura-linha > div:first-child span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #94a3b8;
+    font-size: 9px;
+}
+
+
+.cartoes-proxima-fatura strong {
+    color: #334155;
+
+    font-size: 12px;
+}
+
+
+.cartoes-proxima-fatura span {
+    margin-top: 2px;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+}
+
+
+.cartoes-proxima-fatura-valor {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+}
+
+
+.cartoes-fatura-actions {
+    margin-top: 22px;
+}
+
+
+.cartoes-pagar-fatura {
+    width: 100%;
+
+    min-height: 46px;
+
+    border: none;
+    border-radius: 13px;
+
+    background: #22b8cf;
+
+    color: #fff;
+
+    font-family: inherit;
+    font-weight: 800;
+}
+
+.cartoes-pagamento {
+    width: 100%;
+
+    padding: 18px;
+
+    border:
+        1px solid #e2e8f0;
+    border-radius: 16px;
+
+    background: #f8fafc;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+
+.cartoes-pagamento-topo {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding-bottom: 14px;
+
+    border-bottom:
+        1px solid #e2e8f0;
+}
+
+
+.cartoes-pagamento-topo span {
+    display: block;
+
+    color: #64748b;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+.cartoes-pagamento-topo strong {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #172033;
+
+    font-size: 24px;
+}
+
+
+.cartoes-pagamento-topo small {
+    color: #64748b;
+
+    font-size: 10px;
+}
+
+
+.cartoes-pagamento label {
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+
+    color: #475569;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+.cartoes-pagamento select,
+.cartoes-pagamento input {
+    width: 100%;
+
+    min-height: 44px;
+
+    padding: 0 12px;
+
+    border:
+        1px solid #dce4ec;
+    border-radius: 11px;
+
+    background: #fff;
+
+    color: #334155;
+
+    font: inherit;
+}
+
+
+.cartoes-pagamento-conta {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 11px;
+
+    border-radius: 12px;
+
+    background: #fff;
+
+    border:
+        1px solid #edf1f5;
+}
+
+
+.cartoes-pagamento-conta>div {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.cartoes-pagamento-conta span {
+    color: #94a3b8;
+
+    font-size: 9px;
+}
+
+
+.cartoes-pagamento-conta strong {
+    margin-top: 2px;
+
+    color: #334155;
+
+    font-size: 12px;
+}
+
+
+.cartoes-pagamento-aviso {
+    padding: 11px 12px;
+
+    border-radius: 11px;
+
+    background: #ecfeff;
+
+    color: #64748b;
+
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+
+.cartoes-pagamento-aviso strong {
+    color: #0891b2;
+}
+
+
+.cartoes-pagamento-botoes {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2,
+            minmax(0, 1fr));
+
+    gap: 9px;
+}
+
+
+.cartoes-pagamento-botoes button {
+    min-height: 42px;
+
+    border-radius: 11px;
+
+    font-family: inherit;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+
+.cartoes-pagamento-botoes .secundario {
+    border:
+        1px solid #dce4ec;
+
+    background: #fff;
+
+    color: #475569;
+}
+
+
+.cartoes-pagamento-botoes .primario {
+    border: none;
+
+    background: #22b8cf;
+
+    color: #fff;
+}
+
+
+.cartoes-pagamento-botoes button:disabled {
+    opacity: .55;
+
+    cursor: not-allowed;
+}
+
+
+.cartoes-sem-conta-pagamento {
+    display: block;
+
+    margin-top: 7px;
+
+    color: #94a3b8;
+
+    text-align: center;
+
+    font-size: 9px;
+}
+
+
+.cartoes-pagar-fatura:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+
+.cartoes-fatura-estado {
+    min-height: 260px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 30px;
+
+    color: #94a3b8;
+
+    text-align: center;
+}
+
+
+.cartoes-fatura-estado strong {
+    color: #475569;
+}
+
+.cartoes-proxima-fatura {
+    cursor: pointer;
+    transition: .18s ease;
+}
+
+
+.cartoes-proxima-fatura:hover {
+    border-color:
+        rgba(34, 184, 207, .35);
+
+    background: #f0fdff;
+}
+
+
+.cartoes-proxima-fatura.aberta {
+    border-color:
+        rgba(34, 184, 207, .35);
+}
+
+
+.cartoes-proxima-fatura-linha {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+
+.cartoes-proxima-fatura-valor svg {
+    transition:
+        transform .18s ease;
+}
+
+
+.cartoes-proxima-fatura-valor svg.aberto {
+    transform:
+        rotate(90deg);
+}
+
+
+.cartoes-fatura-expandida {
+    margin-top: 12px;
+    padding-top: 10px;
+
+    border-top:
+        1px solid #e2e8f0;
+}
+
+
+.cartoes-fatura-expandida-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 9px 0;
+}
+
+
+.cartoes-fatura-expandida-item > div {
+    min-width: 0;
+}
+
+
+.cartoes-fatura-expandida-item > div > strong {
+    display: block;
+
+    color: #334155;
+
+    font-size: 11px;
+}
+
+
+.cartoes-fatura-expandida-item span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+}
+
+
+.cartoes-fatura-expandida-item > strong {
+    color: #334155;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+}
+
+
+.cartoes-historico-faturas {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.cartoes-historico-fatura {
+    padding: 13px 14px;
+
+    border:
+        1px solid #dcfce7;
+    border-radius: 13px;
+
+    background: #f0fdf4;
+
+    cursor: pointer;
+
+    transition: .18s ease;
+}
+
+
+.cartoes-historico-fatura:hover,
+.cartoes-historico-fatura.aberta {
+    border-color: #86efac;
+}
+
+
+.cartoes-historico-fatura
+.cartoes-proxima-fatura-linha
+> div:first-child
+> strong {
+    color: #15803d;
+
+    font-size: 12px;
+}
+
+
+.cartoes-historico-fatura
+.cartoes-proxima-fatura-linha
+> div:first-child
+> span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #64748b;
+
+    font-size: 9px;
+}
+
+
+@media (max-width: 1100px) {
+
+    .cartoes-grid {
+        grid-template-columns:
+            repeat(2,
+                minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .cartoes-resumo,
+    .cartoes-grid,
+    .cartoes-form-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .cartoes-modal-actions {
+        flex-direction: column-reverse;
+    }
+
+
+    .cartoes-modal-actions button {
+        width: 100%;
+    }
+
+    .cartao-item-botoes {
+        grid-template-columns: 1fr;
+    }
+
+    .cartoes-pagamento-botoes {
+        grid-template-columns: 1fr;
+    }
+
+}

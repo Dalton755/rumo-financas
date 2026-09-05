@@ -9,6 +9,7 @@ import Inteligencia from "../pages/Inteligencia";
 import Metas from "../pages/Metas";
 import Objetivos from "../pages/Objetivos";
 import Dividas from "../pages/Dividas";
+import Cartoes from "../pages/Cartoes";
 import Premium from "../pages/Premium";
 import Orcamento from "../pages/Orcamento";
 import Projecoes from "../pages/Projecoes";
@@ -124,6 +125,20 @@ function AppRoutes() {
                                 titulo="Gestão de Dívidas"
                             >
                                 <Dividas />
+                            </RecursoRoute>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/cartoes"
+                    element={
+                        <ProtectedRoute>
+                            <RecursoRoute
+                                codigo="CARTOES"
+                                titulo="Cartões de Crédito"
+                            >
+                                <Cartoes />
                             </RecursoRoute>
                         </ProtectedRoute>
                     }

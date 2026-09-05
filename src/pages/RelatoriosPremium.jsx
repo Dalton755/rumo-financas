@@ -583,34 +583,36 @@ function RelatoriosPremium() {
 
 
             const {
-                data,
-                error
+                data: movimentacoesBanco,
+                error: erroMovimentacoes
             } =
                 await supabase
                     .schema("rumo")
                     .from("movimentacoes")
                     .select(`
-            id,
-            descricao,
-            valor,
-            tipo,
-            data_movimentacao,
-            conta_id,
-            categoria_id,
+                        id,
+                        descricao,
+                        valor,
+                        tipo,
+                        data_movimentacao,
+                        conta_id,
+                        categoria_id,
+                        origem,
+                        origem_referencia,
 
-            conta:contas!movimentacoes_conta_id_fkey(
-              id,
-              nome,
-              banco
-            ),
+                        conta:contas!movimentacoes_conta_id_fkey(
+                            id,
+                            nome,
+                            banco
+                        ),
 
-            categoria:categorias!movimentacoes_categoria_id_fkey(
-              id,
-              nome,
-              icone,
-              cor
-            )
-          `)
+                        categoria:categorias!movimentacoes_categoria_id_fkey(
+                            id,
+                            nome,
+                            icone,
+                            cor
+                        )
+        `)
                     .eq(
                         "usuario_id",
                         user.id
@@ -618,22 +620,358 @@ function RelatoriosPremium() {
                     .lte(
                         "data_movimentacao",
                         hoje
-                    )
-                    .order(
-                        "data_movimentacao",
-                        {
-                            ascending: true
-                        }
                     );
 
 
-            if (error) {
-                throw error;
+            if (erroMovimentacoes) {
+                throw erroMovimentacoes;
             }
 
 
+            /*
+             * ==========================================================
+             * DADOS DE CARTÕES
+             * ==========================================================
+             *
+             * Compras no cartão representam DESPESA econômica.
+             *
+             * O pagamento da fatura representa apenas
+             * a saída do dinheiro da conta bancária.
+             *
+             * Por isso:
+             *
+             * - parcelas entram no relatório;
+             * - pagamento de fatura não entra como nova despesa.
+             */
+            const [
+                resultadoCartoes,
+                resultadoCompras,
+                resultadoParcelas,
+                resultadoCategorias
+            ] =
+                await Promise.all([
+
+                    supabase
+                        .schema("rumo")
+                        .from("cartoes")
+                        .select(`
+                            id,
+                            nome,
+                            banco
+                        `)
+                        .eq(
+                            "usuario_id",
+                            user.id
+                        ),
+
+
+                    supabase
+                        .schema("rumo")
+                        .from("compras_cartao")
+                        .select(`
+                            id,
+                            cartao_id,
+                            categoria_id,
+                            descricao,
+                            valor_total,
+                            data_compra,
+                            parcelas_total,
+                            status
+                        `)
+                        .eq(
+                            "usuario_id",
+                            user.id
+                        )
+                        .eq(
+                            "status",
+                            "ativa"
+                        ),
+
+
+                    supabase
+                        .schema("rumo")
+                        .from("parcelas_cartao")
+                        .select(`
+                            id,
+                            compra_id,
+                            numero_parcela,
+                            valor,
+                            competencia,
+                            vencimento,
+                            status,
+                            pago_em
+                        `)
+                        .eq(
+                            "usuario_id",
+                            user.id
+                        )
+                        .in(
+                            "status",
+                            [
+                                "pendente",
+                                "paga"
+                            ]
+                        )
+                        .lte(
+                            "competencia",
+                            hoje
+                        ),
+
+
+                    supabase
+                        .schema("rumo")
+                        .from("categorias")
+                        .select(`
+                            id,
+                            nome,
+                            icone,
+                            cor
+                        `)
+                        .eq(
+                            "usuario_id",
+                            user.id
+                        )
+
+                ]);
+
+
+            if (resultadoCartoes.error) {
+                throw resultadoCartoes.error;
+            }
+
+
+            if (resultadoCompras.error) {
+                throw resultadoCompras.error;
+            }
+
+
+            if (resultadoParcelas.error) {
+                throw resultadoParcelas.error;
+            }
+
+
+            if (resultadoCategorias.error) {
+                throw resultadoCategorias.error;
+            }
+
+
+            const cartoesPorId =
+                new Map(
+                    (
+                        resultadoCartoes.data ||
+                        []
+                    ).map(
+                        (cartao) => [
+                            cartao.id,
+                            cartao
+                        ]
+                    )
+                );
+
+
+            const comprasPorId =
+                new Map(
+                    (
+                        resultadoCompras.data ||
+                        []
+                    ).map(
+                        (compra) => [
+                            compra.id,
+                            compra
+                        ]
+                    )
+                );
+
+
+            const categoriasPorId =
+                new Map(
+                    (
+                        resultadoCategorias.data ||
+                        []
+                    ).map(
+                        (categoria) => [
+                            categoria.id,
+                            categoria
+                        ]
+                    )
+                );
+
+
+            /*
+             * Converte cada parcela em algo que o relatório
+             * já sabe analisar como uma movimentação.
+             */
+            const movimentacoesCartao =
+                (
+                    resultadoParcelas.data ||
+                    []
+                )
+                    .map(
+                        (parcela) => {
+
+                            const compra =
+                                comprasPorId.get(
+                                    parcela.compra_id
+                                );
+
+
+                            if (!compra) {
+                                return null;
+                            }
+
+
+                            const cartao =
+                                cartoesPorId.get(
+                                    compra.cartao_id
+                                );
+
+
+                            const categoria =
+                                compra.categoria_id
+                                    ? categoriasPorId.get(
+                                        compra.categoria_id
+                                    )
+                                    : null;
+
+
+                            const idContaCartao =
+                                `cartao:${compra.cartao_id}`;
+
+
+                            return {
+                                /*
+                                 * Prefixo impede colisão com IDs
+                                 * reais de movimentações.
+                                 */
+                                id:
+                                    `parcela-cartao:${parcela.id}`,
+
+                                descricao:
+                                    Number(
+                                        compra.parcelas_total ||
+                                        1
+                                    ) > 1
+                                        ? `${compra.descricao} · ${parcela.numero_parcela}/${compra.parcelas_total}`
+                                        : compra.descricao,
+
+                                valor:
+                                    Number(
+                                        parcela.valor ||
+                                        0
+                                    ),
+
+                                tipo:
+                                    "despesa",
+
+                                /*
+                                 * A despesa é reconhecida pela
+                                 * competência da parcela.
+                                 *
+                                 * Portanto:
+                                 * 1/3 → setembro
+                                 * 2/3 → outubro
+                                 * 3/3 → novembro
+                                 */
+                                data_movimentacao:
+                                    parcela.competencia,
+
+                                conta_id:
+                                    idContaCartao,
+
+                                categoria_id:
+                                    compra.categoria_id ||
+                                    null,
+
+                                origem:
+                                    "cartao_compra",
+
+                                origem_referencia:
+                                    parcela.id,
+
+                                conta: {
+                                    id:
+                                        idContaCartao,
+
+                                    nome:
+                                        cartao?.nome ||
+                                        "Cartão",
+
+                                    banco:
+                                        cartao?.banco ||
+                                        null
+                                },
+
+                                categoria:
+                                    categoria
+                                        ? {
+                                            id:
+                                                categoria.id,
+
+                                            nome:
+                                                categoria.nome,
+
+                                            icone:
+                                                categoria.icone,
+
+                                            cor:
+                                                categoria.cor
+                                        }
+                                        : null,
+
+                                /*
+                                 * Campos auxiliares.
+                                 */
+                                cartao_id:
+                                    compra.cartao_id,
+
+                                data_compra:
+                                    compra.data_compra,
+
+                                vencimento:
+                                    parcela.vencimento,
+
+                                status_parcela:
+                                    parcela.status
+                            };
+
+                        }
+                    )
+                    .filter(Boolean);
+
+
+            /*
+             * Remove do RELATÓRIO o pagamento da fatura.
+             *
+             * A movimentação continua existindo normalmente
+             * na tela Movimentações e continua alterando
+             * o saldo bancário.
+             */
+            const movimentacoesNormais =
+                (
+                    movimentacoesBanco ||
+                    []
+                ).filter(
+                    (item) =>
+                        item.origem !==
+                        "cartao_fatura"
+                );
+
+
+            const movimentacoesConsolidadas =
+                [
+                    ...movimentacoesNormais,
+                    ...movimentacoesCartao
+                ].sort(
+                    (a, b) =>
+                        b.data_movimentacao
+                            .localeCompare(
+                                a.data_movimentacao
+                            )
+                );
+
+
             setMovimentacoes(
-                data || []
+                movimentacoesConsolidadas
             );
 
         } catch (error) {
@@ -1305,6 +1643,40 @@ function RelatoriosPremium() {
     const maiorConta =
         analise
             .gastosContas[0];
+
+    const maiorDespesa =
+        analise
+            .maioresDespesas[0];
+
+
+    const percentualMaiorCategoria =
+        maiorCategoria &&
+            analise.despesas > 0
+            ? (
+                maiorCategoria.total /
+                analise.despesas
+            ) * 100
+            : 0;
+
+
+    const percentualMaiorConta =
+        maiorConta &&
+            analise.despesas > 0
+            ? (
+                maiorConta.total /
+                analise.despesas
+            ) * 100
+            : 0;
+
+
+    const percentualMaiorDespesa =
+        maiorDespesa &&
+            analise.despesas > 0
+            ? (
+                Number(maiorDespesa.valor) /
+                analise.despesas
+            ) * 100
+            : 0;
 
     const contaSelecionada =
         contasDisponiveis.find(
@@ -2237,9 +2609,17 @@ function RelatoriosPremium() {
 
                                     <Crown size={19} />
 
-                                    <strong>
-                                        Insights do período
-                                    </strong>
+                                    <div>
+
+                                        <strong>
+                                            Insights do período
+                                        </strong>
+
+                                        <span>
+                                            O Rumo analisou os dados selecionados para destacar o que mais importa.
+                                        </span>
+
+                                    </div>
 
                                 </div>
 
@@ -2249,18 +2629,16 @@ function RelatoriosPremium() {
                                     <div>
 
                                         <span>
-                                            Maior categoria de gasto
+                                            Maior concentração por categoria
                                         </span>
 
                                         <strong>
                                             {
                                                 maiorCategoria
-                                                    ? (
-                                                        `${maiorCategoria.nome} · ${formatarMoeda(
-                                                            maiorCategoria.total
-                                                        )}`
-                                                    )
-                                                    : "Sem despesas"
+                                                    ? `${maiorCategoria.nome} representa ${formatarPercentual(
+                                                        percentualMaiorCategoria
+                                                    )} das suas despesas.`
+                                                    : "Não há despesas suficientes para esta análise."
                                             }
                                         </strong>
 
@@ -2270,18 +2648,103 @@ function RelatoriosPremium() {
                                     <div>
 
                                         <span>
-                                            Conta com mais despesas
+                                            Conta mais utilizada
                                         </span>
 
                                         <strong>
                                             {
                                                 maiorConta
-                                                    ? (
-                                                        `${maiorConta.nome} · ${formatarMoeda(
-                                                            maiorConta.total
-                                                        )}`
-                                                    )
-                                                    : "Sem despesas"
+                                                    ? `${maiorConta.nome} concentrou ${formatarPercentual(
+                                                        percentualMaiorConta
+                                                    )} dos gastos do período.`
+                                                    : "Nenhuma conta concentrou despesas neste período."
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            Maior despesa
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                maiorDespesa
+                                                    ? `${maiorDespesa.descricao} foi sua maior despesa: ${formatarMoeda(
+                                                        maiorDespesa.valor
+                                                    )}, equivalente a ${formatarPercentual(
+                                                        percentualMaiorDespesa
+                                                    )} do total gasto.`
+                                                    : "Nenhuma despesa registrada."
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            Capacidade de economia
+                                        </span>
+
+                                        <strong
+                                            className={
+                                                analise.taxaEconomia >= 0
+                                                    ? "positivo"
+                                                    : "negativo"
+                                            }
+                                        >
+                                            {
+                                                analise.receitas <= 0
+                                                    ? "Não há receitas no período para calcular sua taxa de economia."
+                                                    : analise.taxaEconomia >= 0
+                                                        ? `Você preservou ${formatarPercentual(
+                                                            analise.taxaEconomia
+                                                        )} das receitas do período.`
+                                                        : `Seus gastos ultrapassaram suas receitas em ${formatarPercentual(
+                                                            Math.abs(
+                                                                analise.taxaEconomia
+                                                            )
+                                                        )}.`
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            Comparação de despesas
+                                        </span>
+
+                                        <strong
+                                            className={
+                                                variacaoDespesas === null
+                                                    ? ""
+                                                    : variacaoDespesas <= 0
+                                                        ? "positivo"
+                                                        : "negativo"
+                                            }
+                                        >
+                                            {
+                                                variacaoDespesas === null
+                                                    ? "Ainda não há histórico suficiente para comparar despesas."
+                                                    : variacaoDespesas < 0
+                                                        ? `Você gastou ${formatarPercentual(
+                                                            Math.abs(
+                                                                variacaoDespesas
+                                                            )
+                                                        )} menos que no período anterior.`
+                                                        : variacaoDespesas > 0
+                                                            ? `Suas despesas aumentaram ${formatarPercentual(
+                                                                variacaoDespesas
+                                                            )} em relação ao período anterior.`
+                                                            : "Suas despesas permaneceram iguais ao período anterior."
                                             }
                                         </strong>
 
@@ -2301,13 +2764,17 @@ function RelatoriosPremium() {
                                                     : "negativo"
                                             }
                                         >
-
                                             {
                                                 analise.resultado >= 0
-                                                    ? "Você terminou o período no positivo"
-                                                    : "Suas despesas superaram suas receitas"
+                                                    ? `O período terminou positivo em ${formatarMoeda(
+                                                        analise.resultado
+                                                    )}.`
+                                                    : `O período terminou negativo em ${formatarMoeda(
+                                                        Math.abs(
+                                                            analise.resultado
+                                                        )
+                                                    )}.`
                                             }
-
                                         </strong>
 
                                     </div>
