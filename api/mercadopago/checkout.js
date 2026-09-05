@@ -497,6 +497,9 @@ export default async function handler(req, res) {
             back_url:
                 backUrl,
 
+            status:
+                "pending",
+
             auto_recurring: {
 
                 frequency,
