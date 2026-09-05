@@ -223,16 +223,19 @@ export async function listarGastosMes(
 
 
     // =====================================================
-    // CONSULTA DAS MOVIMENTAÇÕES REALIZADAS
+    // MOVIMENTAÇÕES NORMAIS
     // =====================================================
 
-    let consulta =
+    let consultaMovimentacoes =
         supabase
             .schema("rumo")
             .from("movimentacoes")
-            .select(
-                "categoria_id,valor,data_movimentacao"
-            )
+            .select(`
+                categoria_id,
+                valor,
+                data_movimentacao,
+                origem
+            `)
             .eq(
                 "usuario_id",
                 user.id
@@ -259,16 +262,16 @@ export async function listarGastosMes(
         hojeFinanceiro
     ) {
 
-        consulta =
-            consulta.lt(
+        consultaMovimentacoes =
+            consultaMovimentacoes.lt(
                 "data_movimentacao",
                 proximoMes
             );
 
     } else {
 
-        consulta =
-            consulta.lte(
+        consultaMovimentacoes =
+            consultaMovimentacoes.lte(
                 "data_movimentacao",
                 hojeFinanceiro
             );
@@ -277,39 +280,28 @@ export async function listarGastosMes(
 
 
     const {
-        data,
-        error
-    } = await consulta;
+        data: movimentacoes,
+        error: erroMovimentacoes
+    } =
+        await consultaMovimentacoes;
 
 
-    if (error) {
-        throw error;
+    if (erroMovimentacoes) {
+        throw erroMovimentacoes;
     }
 
 
     const gastosPorCategoria = {};
 
 
-    for (
-        const movimentacao
-        of data || []
+    function somarGasto(
+        categoriaId,
+        valor
     ) {
 
-        if (
-            !movimentacao.categoria_id
-        ) {
-            continue;
+        if (!categoriaId) {
+            return;
         }
-
-
-        const categoriaId =
-            movimentacao.categoria_id;
-
-
-        const valor =
-            Number(
-                movimentacao.valor || 0
-            );
 
 
         gastosPorCategoria[
@@ -317,11 +309,172 @@ export async function listarGastosMes(
         ] =
             (
                 gastosPorCategoria[
-                categoriaId
+                    categoriaId
                 ] || 0
             )
             +
-            valor;
+            Number(
+                valor || 0
+            );
+
+    }
+
+
+    /*
+     * Pagamento de fatura movimenta a conta,
+     * mas não representa uma nova despesa.
+     */
+    for (
+        const movimentacao
+        of movimentacoes || []
+    ) {
+
+        if (
+            movimentacao.origem ===
+            "cartao_fatura"
+        ) {
+            continue;
+        }
+
+
+        somarGasto(
+            movimentacao.categoria_id,
+            movimentacao.valor
+        );
+
+    }
+
+
+    // =====================================================
+    // COMPRAS NO CARTÃO
+    // =====================================================
+
+    const {
+        data: comprasCartao,
+        error: erroCompras
+    } =
+        await supabase
+            .schema("rumo")
+            .from("compras_cartao")
+            .select(`
+                id,
+                categoria_id,
+                data_compra,
+                status
+            `)
+            .eq(
+                "usuario_id",
+                user.id
+            )
+            .eq(
+                "status",
+                "ativa"
+            )
+            .lte(
+                "data_compra",
+                hojeFinanceiro
+            );
+
+
+    if (erroCompras) {
+        throw erroCompras;
+    }
+
+
+    const comprasValidas =
+        (
+            comprasCartao ||
+            []
+        ).filter(
+            (compra) =>
+                compra.categoria_id
+        );
+
+
+    if (
+        comprasValidas.length ===
+        0
+    ) {
+        return gastosPorCategoria;
+    }
+
+
+    const compraParaCategoria =
+        new Map(
+            comprasValidas.map(
+                (compra) => [
+                    compra.id,
+                    compra.categoria_id
+                ]
+            )
+        );
+
+
+    const {
+        data: parcelasCartao,
+        error: erroParcelas
+    } =
+        await supabase
+            .schema("rumo")
+            .from("parcelas_cartao")
+            .select(`
+                compra_id,
+                valor,
+                competencia,
+                status
+            `)
+            .eq(
+                "usuario_id",
+                user.id
+            )
+            .in(
+                "status",
+                [
+                    "pendente",
+                    "paga"
+                ]
+            )
+            .in(
+                "compra_id",
+                comprasValidas.map(
+                    (compra) =>
+                        compra.id
+                )
+            )
+            .gte(
+                "competencia",
+                inicio
+            )
+            .lt(
+                "competencia",
+                proximoMes
+            );
+
+
+    if (erroParcelas) {
+        throw erroParcelas;
+    }
+
+
+    /*
+     * Cada parcela consome o orçamento
+     * da categoria na sua competência.
+     */
+    for (
+        const parcela
+        of parcelasCartao || []
+    ) {
+
+        const categoriaId =
+            compraParaCategoria.get(
+                parcela.compra_id
+            );
+
+
+        somarGasto(
+            categoriaId,
+            parcela.valor
+        );
 
     }
 
