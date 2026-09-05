@@ -1,5 +1,8 @@
 ﻿import { NavLink } from "react-router-dom";
-import { useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
 import "./MainLayout.css";
 
@@ -80,6 +83,18 @@ const recursosPremium = [
 function MainLayout({ children }) {
   const [menuAberto, setMenuAberto] = useState(false);
 
+  useEffect(() => {
+    if (menuAberto) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuAberto]);
+
   const {
     premium,
     temRecurso,
@@ -96,7 +111,13 @@ function MainLayout({ children }) {
 
   return (
     <div className="container-fluid">
-      <div className="d-md-none p-2">
+      <div
+        className="d-md-none p-2"
+        style={{
+          position: "relative",
+          zIndex: 1100,
+        }}
+      >
         <button
           className="btn btn-dark"
           onClick={() => setMenuAberto(!menuAberto)}
@@ -256,7 +277,10 @@ function MainLayout({ children }) {
           </div>
         </div>
 
-        <div className="col-md-10 p-4">
+        <div
+          className={`col-md-10 p-4 rumo-main-content ${menuAberto ? "rumo-main-content-menu-open" : ""
+            }`}
+        >
           {children}
         </div>
       </div>
