@@ -2,7 +2,8 @@
 
     position: relative;
 
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 
     min-height: 100vh;
 
@@ -181,6 +182,146 @@
         opacity: 1;
         transform: translateY(0);
 
+    }
+
+}
+
+/* ======================================
+   RECUPERAÇÃO DE SENHA
+====================================== */
+
+.login-forgot-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.login-forgot {
+    border: none;
+    background: transparent;
+    padding: 0;
+    color: #21C7D9;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.login-forgot:hover {
+    text-decoration: underline;
+}
+
+.login-forgot:disabled {
+    opacity: .55;
+    cursor: default;
+}
+
+
+/* ======================================
+   DIVISOR
+====================================== */
+
+.login-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #94A3B8;
+
+    font-size: 13px;
+}
+
+.login-divider::before,
+.login-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #E2E8F0;
+}
+
+.login-divider span {
+    padding: 0 14px;
+}
+
+
+/* ======================================
+   GOOGLE
+====================================== */
+
+.login-google-button {
+    width: 100%;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    border: 1px solid #CBD5E1;
+    border-radius: 14px;
+
+    background: #FFFFFF;
+    color: #0F172A;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.login-google-button:hover {
+    border-color: #94A3B8;
+    background: #F8FAFC;
+    transform: translateY(-1px);
+}
+
+.login-google-button:disabled {
+    opacity: .55;
+    cursor: default;
+    transform: none;
+}
+
+.login-google-note {
+    margin: -7px 8px 0;
+
+    color: #94A3B8;
+
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+
+/* ======================================
+   OLHO DA SENHA
+====================================== */
+
+button.login-input-password {
+    border: none;
+    background: transparent;
+    padding: 0;
+}
+
+
+/* ======================================
+   ESTADO DESABILITADO
+====================================== */
+
+.login-button:disabled,
+.login-link:disabled {
+    opacity: .55;
+    cursor: default;
+}
+
+@media (max-height: 900px) {
+
+    .login-page {
+        align-items: flex-start;
+    }
+
+    .login-card {
+        margin-top: 24px;
+        margin-bottom: 24px;
     }
 
 }

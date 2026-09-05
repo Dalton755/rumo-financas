@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "../pages/Login";
+import RedefinirSenha from "../pages/RedefinirSenha";
 import Dashboard from "../pages/Dashboard";
 import Contas from "../pages/Contas";
 import Movimentacoes from "../pages/Movimentacoes";
@@ -27,6 +28,11 @@ function AppRoutes() {
                 <Route
                     path="/"
                     element={<Login />}
+                />
+
+                <Route
+                    path="/redefinir-senha"
+                    element={<RedefinirSenha />}
                 />
 
                 <Route

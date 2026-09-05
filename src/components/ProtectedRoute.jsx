@@ -15,7 +15,41 @@ export default function ProtectedRoute({ children }) {
                 data: { session }
             } = await supabase.auth.getSession();
 
-            setAutenticado(!!session);
+
+            if (!session) {
+
+                setAutenticado(false);
+                setCarregando(false);
+
+                return;
+
+            }
+
+
+            const { error } =
+                await supabase
+                    .schema("rumo")
+                    .rpc(
+                        "garantir_usuario_rumo"
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Erro ao preparar usuário do Rumo:",
+                    error
+                );
+
+                setAutenticado(false);
+                setCarregando(false);
+
+                return;
+
+            }
+
+
+            setAutenticado(true);
             setCarregando(false);
 
         }
