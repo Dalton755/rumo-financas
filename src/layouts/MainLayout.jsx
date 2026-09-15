@@ -17,7 +17,9 @@ import {
   ArrowLeftRight,
   BarChart3,
   BrainCircuit,
+  CalendarClock,
   Target,
+  FileInput,
   Trophy,
   CreditCard,
   TrendingUp,
@@ -25,6 +27,7 @@ import {
   BellRing,
   LockKeyhole,
   LogOut,
+
 } from "lucide-react";
 
 const recursosPremium = [
@@ -71,6 +74,14 @@ const recursosPremium = [
     rota: "/orcamento",
     Icone: PieChart,
   },
+  
+  {
+  codigo: "IMPORTADOR_FINANCEIRO",
+  nome: "Importador",
+  rota: "/importador",
+  Icone: FileInput,
+},
+
   {
     codigo: "ALERTAS_INTELIGENTES",
     nome: "Alertas",
@@ -195,6 +206,19 @@ function MainLayout({ children }) {
             >
               <ArrowLeftRight size={20} />
               <span>Movimentações</span>
+            </NavLink>
+
+            <NavLink
+              to="/compromissos"
+              onClick={fecharMenuMobile}
+              className={({ isActive }) =>
+                isActive
+                  ? "rumo-sidebar-item active"
+                  : "rumo-sidebar-item"
+              }
+            >
+              <CalendarClock size={20} />
+              <span>Compromissos</span>
             </NavLink>
 
             <NavLink

@@ -1,0 +1,9 @@
+.env
+.env.*
+.vercel
+*.local
+
+OpenFinance-conferencia.txt
+OpenFinance-css-conferencia.txt
+AppRoutes-conferencia.txt
+Login-antes-recuperacao.txt

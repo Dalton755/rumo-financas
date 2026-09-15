@@ -1,0 +1,422 @@
+.compromissos-page {
+    width: 100%;
+}
+
+.compromissos-btn-novo {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 11px;
+    background: #0891b2;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.compromissos-resumo {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 230px));
+    gap: 14px;
+    margin: 28px 0;
+}
+
+.compromissos-resumo-card {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #fff;
+}
+
+.compromissos-resumo-card > svg {
+    color: #0891b2;
+}
+
+.compromissos-resumo-card.atrasado > svg {
+    color: #dc2626;
+}
+
+.compromissos-resumo-card div {
+    display: flex;
+    flex-direction: column;
+}
+
+.compromissos-resumo-card span,
+.compromissos-resumo-card small {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.compromissos-resumo-card strong {
+    color: #172033;
+    font-size: 18px;
+}
+
+.compromissos-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.compromisso-card {
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    background: #fff;
+}
+
+.compromisso-card-topo {
+    display: flex;
+    gap: 11px;
+    align-items: center;
+}
+
+.compromisso-card-icone {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #ecfeff;
+    color: #0891b2;
+}
+
+.compromisso-card-titulo h3 {
+    margin: 0;
+    color: #172033;
+    font-size: 15px;
+}
+
+.compromisso-card-titulo span {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.compromisso-card-valor {
+    margin-top: 18px;
+    color: #172033;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.compromisso-card-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 7px;
+    color: #64748b;
+    font-size: 11px;
+}
+
+.compromisso-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 14px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.compromisso-status.pago {
+    background: #ecfdf5;
+    color: #15803d;
+}
+
+.compromisso-status.atrasado {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.compromisso-status.pendente,
+.compromisso-status.proximo {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.compromisso-status.neutro {
+    background: #f8fafc;
+    color: #64748b;
+}
+
+.compromisso-btn-detalhes {
+    width: 100%;
+    margin-top: 16px;
+    padding: 9px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    color: #0891b2;
+    font-size: 12px;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.compromissos-vazio {
+    padding: 50px 20px;
+    text-align: center;
+    color: #64748b;
+}
+
+.compromissos-vazio h3 {
+    color: #172033;
+}
+
+.compromissos-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 15000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, .55);
+}
+
+.compromissos-overlay-frente {
+    z-index: 16000;
+}
+
+.compromissos-modal {
+    width: min(94vw, 480px);
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, .24);
+}
+
+.compromissos-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.compromissos-modal-header h2 {
+    margin: 0;
+    color: #172033;
+    font-size: 18px;
+}
+
+.compromissos-modal-header p {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.compromissos-modal-header > button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.compromissos-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px;
+}
+
+.compromissos-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.compromissos-form label small {
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.compromissos-form input,
+.compromissos-form select {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 11px;
+    border: 1px solid #dbe4ea;
+    border-radius: 11px;
+    background: #fff;
+}
+
+.compromissos-tipo-valor > span {
+    display: block;
+    margin-bottom: 7px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.compromissos-tipo-valor > div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.compromissos-tipo-valor button {
+    min-height: 40px;
+    border: 1px solid #dbe4ea;
+    border-radius: 10px;
+    background: #fff;
+    color: #64748b;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.compromissos-tipo-valor button.ativo {
+    border-color: #22b8cf;
+    background: #ecfeff;
+    color: #0891b2;
+}
+
+.compromissos-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    padding: 16px 20px;
+    border-top: 1px solid #eef2f7;
+}
+
+.compromissos-modal-footer button {
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.compromissos-modal-footer .cancelar {
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #64748b;
+}
+
+.compromissos-modal-footer .salvar {
+    border: none;
+    background: #0891b2;
+    color: #fff;
+}
+
+.compromissos-ocorrencias {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 20px 20px;
+}
+
+.compromisso-ocorrencia {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid #edf2f7;
+    border-radius: 12px;
+}
+
+.compromisso-ocorrencia > div:first-child {
+    display: flex;
+    flex-direction: column;
+}
+
+.compromisso-ocorrencia strong {
+    color: #172033;
+    font-size: 12px;
+}
+
+.compromisso-ocorrencia span {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.ocorrencia-acoes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ocorrencia-acoes button {
+    padding: 7px 10px;
+    border: none;
+    border-radius: 9px;
+    background: #0891b2;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.ocorrencia-atrasada {
+    color: #dc2626 !important;
+    font-weight: 800;
+}
+
+.ocorrencia-paga {
+    padding: 5px 8px;
+    border-radius: 999px;
+    background: #ecfdf5;
+    color: #15803d !important;
+    font-weight: 800;
+}
+
+@media (max-width: 600px) {
+
+    .compromissos-resumo {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+    }
+
+    .compromissos-resumo-card {
+        padding: 12px;
+    }
+
+    .compromissos-resumo-card strong {
+        font-size: 15px;
+    }
+
+    .compromissos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .compromissos-btn-novo {
+        width: 100%;
+        justify-content: center;
+        margin-top: 10px;
+    }
+
+}
+
+.ocorrencia-btn-valor {
+    background: #f8fafc !important;
+    color: #0891b2 !important;
+    border: 1px solid #dbe4ea !important;
+}
+
+.ocorrencia-estimativa {
+    margin-left: 6px;
+    color: #94a3b8 !important;
+    font-size: 9px !important;
+    font-weight: 600;
+}
+
+.compromissos-estimativa-info {
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 11px;
+}
+
+.compromissos-estimativa-info strong {
+    color: #172033;
+}

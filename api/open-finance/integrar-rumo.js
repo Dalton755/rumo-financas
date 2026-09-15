@@ -472,125 +472,58 @@ export default async function handler(
                             "CREDIT"
                     );
 
-            /*
-* Migração dos registros que já foram integrados
-* anteriormente usando pluggy_transaction_id.
-*
-* Transformamos a origem_referencia existente no
-* fingerprint estável antes do novo upsert.
-*/
-            for (
-                const movimentacao of
-                movimentacoesValidas
-            ) {
+    
 
-                if (
-                    !movimentacao
-                        .fingerprint_movimentacao
-                ) {
+                // =================================================
+                // EFEITO DO HISTÓRICO IMPORTADO
+                // =================================================
 
-                    throw new Error(
-                        "A movimentação Open Finance não possui fingerprint."
-                    );
-
-                }
-
-
-                if (
-                    !movimentacao
-                        .movimentacao_rumo_id
-                ) {
-                    continue;
-                }
-
-
-                const {
-                    error: referenciaMovimentacaoError,
-                } =
-                    await supabaseAdmin
-                        .schema("rumo")
-                        .from("movimentacoes")
-                        .update({
-                            origem_referencia:
+                const efeitoHistorico =
+                    movimentacoesValidas
+                        .reduce(
+                            (
+                                total,
                                 movimentacao
-                                    .fingerprint_movimentacao,
-                        })
-                        .eq(
-                            "id",
-                            movimentacao
-                                .movimentacao_rumo_id
-                        )
-                        .eq(
-                            "usuario_id",
-                            user.id
-                        )
-                        .eq(
-                            "origem",
-                            "OPEN_FINANCE"
+                            ) =>
+                                total +
+                                efeitoMovimentacao(
+                                    movimentacao
+                                ),
+                            0
                         );
 
 
-                if (
-                    referenciaMovimentacaoError
-                ) {
-
-                    throw referenciaMovimentacaoError;
-
-                }
-
-            }
-
-
-            // =================================================
-            // EFEITO DO HISTÓRICO IMPORTADO
-            // =================================================
-
-            const efeitoHistorico =
-                movimentacoesValidas
-                    .reduce(
-                        (
-                            total,
-                            movimentacao
-                        ) =>
-                            total +
-                            efeitoMovimentacao(
-                                movimentacao
-                            ),
+                const saldoAtualPluggy =
+                    Number(
+                        contaExterna.saldo ??
                         0
                     );
 
 
-            const saldoAtualPluggy =
-                Number(
-                    contaExterna.saldo ??
-                    0
-                );
+                const saldoInicialCalculado =
+                    arredondar2(
+                        saldoAtualPluggy -
+                        efeitoHistorico
+                    );
 
 
-            const saldoInicialCalculado =
-                arredondar2(
-                    saldoAtualPluggy -
-                    efeitoHistorico
-                );
+                // =================================================
+                // PROCURAR CONTA JÁ IMPORTADA
+                //
+                // ISSO PROTEGE TAMBÉM UMA EXECUÇÃO ANTERIOR PARCIAL.
+                // =================================================
+
+                if (!contaExterna.fingerprint_conta) {
+
+                    throw new Error(
+                        "A conta Open Finance não possui fingerprint."
+                    );
+
+                }
 
 
-            // =================================================
-            // PROCURAR CONTA JÁ IMPORTADA
-            //
-            // ISSO PROTEGE TAMBÉM UMA EXECUÇÃO ANTERIOR PARCIAL.
-            // =================================================
-
-            if (!contaExterna.fingerprint_conta) {
-
-                throw new Error(
-                    "A conta Open Finance não possui fingerprint."
-                );
-
-            }
-
-
-           let contaExistente =
-    null;
+            let contaExistente =
+        null;
 
 
 /*

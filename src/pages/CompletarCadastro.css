@@ -1,0 +1,142 @@
+.completar-cadastro-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    linear-gradient(
+      135deg,
+      #f8fafc,
+      #eefcff
+    );
+}
+
+.completar-cadastro-card {
+  width: min(460px, 100%);
+  padding: 32px;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow:
+    0 24px 70px
+    rgba(15, 23, 42, 0.10);
+}
+
+.completar-cadastro-icone {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 28px;
+  border-radius: 15px;
+  background: #ecfeff;
+  color: #0891b2;
+}
+
+.completar-cadastro-card h1 {
+  margin: 18px 0 0;
+  color: #0f172a;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.completar-cadastro-card > p {
+  margin: 8px 0 24px;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.completar-cadastro-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.completar-cadastro-card label span {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.completar-cadastro-card input {
+  min-height: 50px;
+  padding: 0 14px;
+  border: 1px solid #dbe4ea;
+  border-radius: 12px;
+  outline: none;
+  font-size: 14px;
+}
+
+.completar-cadastro-card input:focus {
+  border-color: #22b8cf;
+  box-shadow:
+    0 0 0 3px
+    rgba(34, 184, 207, 0.10);
+}
+
+.completar-cadastro-card small {
+  color: #94a3b8;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.completar-cadastro-card > button {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 22px;
+  border: none;
+  border-radius: 12px;
+  background: #0891b2;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.completar-cadastro-card > button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.completar-cadastro-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.completar-cadastro-spin {
+  animation:
+    completar-cadastro-spin
+    1s linear infinite;
+}
+
+@keyframes completar-cadastro-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 600px) {
+
+  .completar-cadastro-page {
+    padding: 16px;
+  }
+
+  .completar-cadastro-card {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+
+  .completar-cadastro-card h1 {
+    font-size: 24px;
+  }
+
+}

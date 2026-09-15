@@ -67,7 +67,7 @@ export default function CardFluxoMes({
 
                     Mensal
 
-                    <ChevronDown size={18}/>
+                    <ChevronDown size={18} />
 
                 </button>
 
@@ -77,18 +77,18 @@ export default function CardFluxoMes({
 
                 <ResponsiveContainer
                     width="100%"
-                    height={260}
+                    height="100%"
                 >
 
                     <LineChart data={dados}>
 
-                        <CartesianGrid strokeDasharray="4 4"/>
+                        <CartesianGrid strokeDasharray="4 4" />
 
-                        <XAxis dataKey="nome"/>
+                        <XAxis dataKey="nome" />
 
-                        <YAxis/>
+                        <YAxis />
 
-                        <Tooltip/>
+                        <Tooltip />
 
                         <Line
 
@@ -101,7 +101,7 @@ export default function CardFluxoMes({
                             strokeWidth={4}
 
                             dot={{
-                                r:6
+                                r: 6
                             }}
 
                         />
@@ -127,8 +127,8 @@ export default function CardFluxoMes({
                         {receitas.toLocaleString(
                             "pt-BR",
                             {
-                                style:"currency",
-                                currency:"BRL"
+                                style: "currency",
+                                currency: "BRL"
                             }
                         )}
 
@@ -149,8 +149,8 @@ export default function CardFluxoMes({
                         {despesas.toLocaleString(
                             "pt-BR",
                             {
-                                style:"currency",
-                                currency:"BRL"
+                                style: "currency",
+                                currency: "BRL"
                             }
                         )}
 
@@ -171,8 +171,8 @@ export default function CardFluxoMes({
                         {resultado.toLocaleString(
                             "pt-BR",
                             {
-                                style:"currency",
-                                currency:"BRL"
+                                style: "currency",
+                                currency: "BRL"
                             }
                         )}
 

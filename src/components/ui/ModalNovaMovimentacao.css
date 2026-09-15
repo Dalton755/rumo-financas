@@ -175,6 +175,161 @@
         0 0 0 2px #334155;
 }
 
+/* =====================================================
+   COMPRA NO CRÉDITO
+===================================================== */
+
+.movimentacao-credito {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+
+    padding: 16px;
+
+    border:
+        1px solid rgba(59, 201, 219, .18);
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(145deg,
+            #f8fdff,
+            #ffffff);
+}
+
+
+.movimentacao-credito-header strong {
+    display: block;
+
+    color: #172033;
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+
+.movimentacao-credito-header span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #64748b;
+
+    font-size: 11px;
+}
+
+
+.movimentacao-credito-forma {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 8px;
+}
+
+
+.movimentacao-credito-forma button {
+    height: 42px;
+
+    border:
+        1px solid #dfe7ec;
+
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    color: #64748b;
+
+    font-size: 12px;
+    font-weight: 750;
+
+    cursor: pointer;
+
+    transition: .18s ease;
+}
+
+
+.movimentacao-credito-forma button.ativo {
+    border-color:
+        rgba(34, 184, 207, .45);
+
+    background: #ecfeff;
+
+    color: #0891b2;
+
+    box-shadow:
+        0 0 0 2px rgba(34, 184, 207, .08);
+}
+
+
+.movimentacao-credito-parcelas {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+
+.movimentacao-credito-parcelas>span {
+    color: #475569;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+.movimentacao-credito-parcelas select {
+    width: 100%;
+}
+
+
+.movimentacao-credito-resumo {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding:
+        11px 12px;
+
+    border-radius: 12px;
+
+    background: #f2fbfd;
+}
+
+
+.movimentacao-credito-resumo span {
+    color: #64748b;
+
+    font-size: 11px;
+}
+
+
+.movimentacao-credito-resumo strong {
+    color: #0891b2;
+
+    font-size: 14px;
+    font-weight: 850;
+
+    white-space: nowrap;
+}
+
+
+@media (max-width: 520px) {
+
+    .movimentacao-credito {
+        padding: 14px;
+    }
+
+}
+
 
 @media (max-width: 520px) {
 

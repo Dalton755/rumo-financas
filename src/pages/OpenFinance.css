@@ -173,6 +173,38 @@
     border: 1px solid rgba(220, 53, 69, 0.2);
 }
 
+.open-finance-alert-warning {
+    background: rgba(255, 193, 7, 0.12);
+    border: 1px solid rgba(255, 193, 7, 0.28);
+}
+
+.open-finance-alert-warning span {
+    margin-top: 3px;
+    color: var(--bs-secondary-color);
+}
+
+.open-finance-premium-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 12px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    background: var(--bs-primary);
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.open-finance-premium-button:hover {
+    color: #fff;
+    transform: translateY(-1px);
+    opacity: 0.92;
+}
+
 .open-finance-conectado {
     display: flex;
     align-items: flex-start;
@@ -415,10 +447,10 @@
     }
 
     .open-finance-conexao-acoes {
-    width: 100%;
-    padding-left: 60px;
-    justify-content: flex-start;
-}
+        width: 100%;
+        padding-left: 60px;
+        justify-content: flex-start;
+    }
 
 
 

@@ -54,6 +54,34 @@ export async function atualizarAlertasInteligentes() {
 
 }
 
+export async function atualizarAlertasCompromissos() {
+
+  const {
+    data,
+    error
+  } = await supabase
+    .schema("rumo")
+    .rpc(
+      "atualizar_alertas_compromissos"
+    );
+
+
+  if (error) {
+
+    console.error(
+      "[RUMO ALERTAS] Erro ao atualizar compromissos:",
+      error
+    );
+
+    throw error;
+
+  }
+
+
+  return data;
+
+}
+
 
 export async function listarAlertasAtivos() {
 
@@ -125,14 +153,19 @@ export async function listarAlertasAtivos() {
 export async function carregarCentralAlertas() {
 
   /*
-   * Primeiro o motor verifica a situação
-   * financeira atual do usuário.
+   * Motor financeiro já existente.
    */
   await atualizarAlertasInteligentes();
 
 
   /*
-   * Depois buscamos somente os alertas
+   * Motor de compromissos recorrentes.
+   */
+  await atualizarAlertasCompromissos();
+
+
+  /*
+   * Depois buscamos todos os alertas
    * que continuam ativos.
    */
   return listarAlertasAtivos();

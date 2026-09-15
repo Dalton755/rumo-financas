@@ -1,12 +1,12 @@
-.dashboard-cards{
+.dashboard-cards {
 
-    display:grid;
+    display: grid;
 
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 
-    gap:24px;
+    gap: 24px;
 
-    margin:32px 0;
+    margin: 32px 0;
 
 }
 
@@ -14,96 +14,1080 @@
 HEADER ACTIONS
 ==================================*/
 
-.dashboard-header-actions{
+.dashboard-header-actions {
 
-    display:flex;
+    display: flex;
 
-    align-items:center;
+    align-items: center;
 
-    gap:14px;
-
-}
-
-.dashboard-periodo{
-
-    height:52px;
-
-    padding:0 18px;
-
-    border:none;
-
-    border-radius:16px;
-
-    background:white;
-
-    color:var(--text);
-
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
-
-    font-weight:600;
-
-    box-shadow:var(--shadow-sm);
-
-    transition:var(--transition);
-
-    cursor:pointer;
+    gap: 14px;
 
 }
 
-.dashboard-periodo:hover{
+.dashboard-periodo {
 
-    transform:translateY(-2px);
+    height: 52px;
 
-    box-shadow:var(--shadow-md);
+    padding: 0 18px;
 
-}
+    border: none;
 
-.dashboard-notificacao{
+    border-radius: 16px;
 
-    width:52px;
+    background: white;
 
-    height:52px;
+    color: var(--text);
 
-    border:none;
+    display: flex;
 
-    border-radius:16px;
+    align-items: center;
 
-    background:white;
+    gap: 10px;
 
-    display:flex;
+    font-weight: 600;
 
-    align-items:center;
+    box-shadow: var(--shadow-sm);
 
-    justify-content:center;
+    transition: var(--transition);
 
-    box-shadow:var(--shadow-sm);
-
-    transition:var(--transition);
-
-    cursor:pointer;
+    cursor: pointer;
 
 }
 
-.dashboard-notificacao:hover{
+.dashboard-periodo:hover {
 
-    transform:translateY(-2px);
+    transform: translateY(-2px);
 
-    box-shadow:var(--shadow-md);
+    box-shadow: var(--shadow-md);
 
 }
 
-@media(max-width:768px){
+.dashboard-notificacao {
 
-    .dashboard-header-actions{
+    width: 52px;
 
-        width:100%;
+    height: 52px;
 
-        justify-content:space-between;
+    border: none;
+
+    border-radius: 16px;
+
+    background: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    box-shadow: var(--shadow-sm);
+
+    transition: var(--transition);
+
+    cursor: pointer;
+
+}
+
+.dashboard-notificacao:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow: var(--shadow-md);
+
+}
+
+@media(max-width:768px) {
+
+    .dashboard-header-actions {
+
+        width: 100%;
+
+        justify-content: space-between;
 
     }
 
+}
+
+/* =====================================================
+   DASHBOARD - EXPERIÊNCIA MOBILE
+===================================================== */
+
+.dashboard-indice-mobile {
+    display: none;
+}
+
+
+@media (max-width: 768px) {
+
+    /* =================================================
+       PÁGINA
+    ================================================= */
+
+    .dashboard-page {
+        width: 100%;
+    }
+
+
+    /* =================================================
+       CABEÇALHO / SAUDAÇÃO
+    ================================================= */
+
+    .dashboard-page .page-header {
+        margin-bottom: 18px;
+    }
+
+    .dashboard-page .page-header-top {
+        gap: 14px;
+    }
+
+    .dashboard-page .page-title {
+        max-width: 290px;
+
+        font-size: 28px;
+        line-height: 1.08;
+
+        letter-spacing: -0.8px;
+    }
+
+    .dashboard-page .page-subtitle {
+        max-width: 290px;
+
+        margin-top: 7px;
+
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+
+    /* =================================================
+       MÊS + NOTIFICAÇÕES
+    ================================================= */
+
+    .dashboard-page .dashboard-header-actions {
+        width: 100%;
+
+        display: grid;
+
+        grid-template-columns:
+            minmax(0, 1fr) 44px;
+
+        gap: 10px;
+    }
+
+    .dashboard-page .rumo-mes-container {
+        width: 100%;
+    }
+
+    .dashboard-page .rumo-mes-filtro {
+        width: 100%;
+        height: 46px;
+
+        justify-content: flex-start;
+
+        gap: 9px;
+
+        padding: 0 14px;
+
+        border-radius: 14px;
+
+        font-size: 14px;
+
+        box-shadow:
+            0 5px 16px rgba(15, 23, 42, .055);
+    }
+
+    .dashboard-page .rumo-mes-filtro span {
+        flex: 1;
+
+        text-align: left;
+    }
+
+    .dashboard-page .rumo-mes-filtro svg {
+        width: 17px;
+        height: 17px;
+    }
+
+    .dashboard-page .rumo-mes-dropdown {
+        top: 54px;
+
+        width: 100%;
+
+        border-radius: 15px;
+    }
+
+    .dashboard-page .dashboard-notificacao {
+        width: 44px;
+        height: 46px;
+
+        border-radius: 14px;
+
+        box-shadow:
+            0 5px 16px rgba(15, 23, 42, .055);
+    }
+
+
+    /* =================================================
+       GRID DOS INDICADORES
+    ================================================= */
+
+    .dashboard-page .dashboard-cards {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2,
+                minmax(0, 1fr));
+
+        gap: 10px;
+
+        margin:
+            18px 0 20px;
+    }
+
+    .dashboard-card {
+        min-width: 0;
+    }
+
+
+    /* =================================================
+       SALDO - HERO
+    ================================================= */
+
+    .dashboard-card-saldo {
+        grid-column: 1 / -1;
+    }
+
+    .dashboard-card-saldo .rumo-resumo-card {
+        min-height: 155px;
+
+        padding: 18px;
+
+        border-radius: 22px;
+
+        background:
+            linear-gradient(145deg,
+                #ffffff 0%,
+                #f7fdff 100%);
+
+        box-shadow:
+            0 12px 32px rgba(15, 23, 42, .065);
+    }
+
+    .dashboard-card-saldo .rumo-resumo-topo {
+        align-items: center;
+    }
+
+    .dashboard-card-saldo .rumo-resumo-icon {
+        width: 43px;
+        height: 43px;
+
+        margin: 0;
+
+        border-radius: 13px;
+    }
+
+    .dashboard-card-saldo .rumo-resumo-icon svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .dashboard-card-saldo .rumo-resumo-info {
+        margin-top: 15px;
+    }
+
+    .dashboard-card-saldo .rumo-resumo-info h3 {
+        font-size: 13px;
+
+        font-weight: 700;
+    }
+
+    .dashboard-card-saldo .rumo-resumo-info p {
+        margin-top: 3px;
+
+        font-size: 11px;
+    }
+
+    .dashboard-card-saldo .rumo-resumo-valor {
+        margin-top: 11px;
+
+        font-size: clamp(29px,
+                8vw,
+                36px);
+
+        letter-spacing: -1.5px;
+    }
+
+    .dashboard-card-saldo .rumo-resumo-badge {
+        margin-top: 10px;
+
+        padding: 5px 9px;
+
+        font-size: 10px;
+    }
+
+
+    /* =================================================
+       RECEITAS / DESPESAS
+    ================================================= */
+
+    .dashboard-card-receitas .rumo-resumo-card,
+
+    .dashboard-card-despesas .rumo-resumo-card {
+        min-height: 112px;
+
+        padding: 14px;
+
+        border-radius: 18px;
+
+        box-shadow:
+            0 7px 20px rgba(15, 23, 42, .05);
+    }
+
+    .dashboard-card-receitas .rumo-resumo-icon,
+
+    .dashboard-card-despesas .rumo-resumo-icon {
+        width: 34px;
+        height: 34px;
+
+        margin: 0 0 8px;
+
+        border-radius: 11px;
+    }
+
+    .dashboard-card-receitas .rumo-resumo-icon svg,
+
+    .dashboard-card-despesas .rumo-resumo-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .dashboard-card-receitas .rumo-resumo-info,
+
+    .dashboard-card-despesas .rumo-resumo-info {
+        margin-top: 0;
+    }
+
+    .dashboard-card-receitas .rumo-resumo-info h3,
+
+    .dashboard-card-despesas .rumo-resumo-info h3 {
+        font-size: 12px;
+
+        font-weight: 700;
+    }
+
+    .dashboard-card-receitas .rumo-resumo-info p,
+
+    .dashboard-card-despesas .rumo-resumo-info p {
+        display: none;
+    }
+
+    .dashboard-card-receitas .rumo-resumo-valor,
+
+    .dashboard-card-despesas .rumo-resumo-valor {
+        margin-top: 8px;
+
+        font-size: clamp(18px,
+                5.1vw,
+                22px);
+
+        letter-spacing: -0.8px;
+    }
+
+
+    /* =================================================
+       MENU DOS CARDS
+    ================================================= */
+
+    .dashboard-page .rumo-card-menu {
+        display: none;
+    }
+
+
+    /* =================================================
+       ÍNDICE DE RUMO
+    ================================================= */
+
+    .dashboard-card-indice {
+        grid-column: 1 / -1;
+    }
+
+    .dashboard-card-indice>.rumo-resumo-card {
+        display: none;
+    }
+
+    .dashboard-indice-mobile {
+        display: block;
+
+        padding: 17px 18px;
+
+        border:
+            1px solid rgba(124, 58, 237, .10);
+
+        border-radius: 20px;
+
+        background:
+            linear-gradient(145deg,
+                #ffffff,
+                #fbf9ff);
+
+        box-shadow:
+            0 8px 24px rgba(15, 23, 42, .045);
+    }
+
+    .dashboard-indice-mobile-topo {
+        display: flex;
+
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 14px;
+    }
+
+    .dashboard-indice-mobile-topo>div {
+        min-width: 0;
+    }
+
+    .dashboard-indice-mobile-topo span {
+        display: block;
+
+        color: #172033;
+
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .dashboard-indice-mobile-topo>div small {
+        display: block;
+
+        margin-top: 3px;
+
+        color: #7b8797;
+
+        font-size: 11px;
+    }
+
+    .dashboard-indice-mobile-topo>strong {
+        flex-shrink: 0;
+
+        color: #6d28d9;
+
+        font-size: 23px;
+        font-weight: 850;
+
+        letter-spacing: -1px;
+    }
+
+    .dashboard-indice-mobile-topo>strong small {
+        margin-left: 2px;
+
+        color: #9ca3af;
+
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .dashboard-indice-barra {
+        width: 100%;
+        height: 7px;
+
+        margin-top: 14px;
+
+        overflow: hidden;
+
+        border-radius: 999px;
+
+        background: #eee9fb;
+    }
+
+    .dashboard-indice-barra>div {
+        height: 100%;
+
+        min-width: 0;
+
+        border-radius: inherit;
+
+        background:
+            linear-gradient(90deg,
+                #8b5cf6,
+                #6d28d9);
+
+        transition:
+            width .45s ease;
+    }
+
+
+    /* =================================================
+       ÚLTIMAS MOVIMENTAÇÕES
+    ================================================= */
+
+    .dashboard-page .rumo-mov-card {
+        margin-top: 0;
+
+        padding: 17px 0;
+
+        border-radius: 0;
+
+        background: transparent;
+
+        box-shadow: none;
+    }
+
+    .dashboard-page .rumo-mov-header {
+        margin-bottom: 12px;
+    }
+
+    .dashboard-page .rumo-mov-header h3 {
+        font-size: 17px;
+
+        font-weight: 800;
+
+        letter-spacing: -0.3px;
+    }
+
+    .dashboard-page .rumo-mov-header p {
+        margin-top: 2px;
+
+        font-size: 11px;
+    }
+
+    .dashboard-page .rumo-mov-header button {
+        gap: 4px;
+
+        padding: 6px 0;
+
+        font-size: 11px;
+    }
+
+    .dashboard-page .rumo-mov-header button svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .dashboard-page .rumo-mov-lista {
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 8px;
+    }
+
+
+    /* =================================================
+       FLUXO DO MÊS
+    ================================================= */
+
+    .dashboard-page .rumo-fluxo-card {
+        margin-top: 6px;
+
+        padding: 17px;
+
+        gap: 16px;
+
+        border-radius: 20px;
+
+        box-shadow:
+            0 8px 26px rgba(15, 23, 42, .05);
+    }
+
+    .dashboard-page .rumo-fluxo-header h3 {
+        font-size: 17px;
+
+        font-weight: 800;
+    }
+
+    .dashboard-page .rumo-fluxo-header p {
+        margin-top: 3px;
+
+        font-size: 11px;
+    }
+
+    .dashboard-page .rumo-fluxo-header button {
+        height: 34px;
+
+        padding: 0 10px;
+
+        border-radius: 10px;
+
+        gap: 4px;
+
+        font-size: 11px;
+    }
+
+    .dashboard-page .rumo-fluxo-header button svg {
+        width: 14px;
+        height: 14px;
+    }
+
+
+    /* gráfico menor */
+
+    .dashboard-page .rumo-fluxo-chart {
+        height: 160px;
+    }
+
+
+    /* três números na mesma linha */
+
+    .dashboard-page .rumo-fluxo-resumo {
+        grid-template-columns:
+            repeat(3,
+                minmax(0, 1fr));
+
+        gap: 7px;
+    }
+
+    .dashboard-page .rumo-fluxo-resumo div {
+        min-width: 0;
+
+        padding:
+            10px 8px;
+
+        border-radius: 12px;
+    }
+
+    .dashboard-page .rumo-fluxo-resumo small {
+        margin-bottom: 4px;
+
+        overflow: hidden;
+
+        color: #718096;
+
+        font-size: 9px;
+
+        white-space: nowrap;
+
+        text-overflow: ellipsis;
+    }
+
+    .dashboard-page .rumo-fluxo-resumo strong {
+        display: block;
+
+        overflow: hidden;
+
+        font-size: clamp(11px,
+                3.3vw,
+                14px);
+
+        font-weight: 800;
+
+        white-space: nowrap;
+
+        text-overflow: ellipsis;
+    }
+
+}
+
+
+/* =====================================================
+   CELULARES ESTREITOS
+===================================================== */
+
+@media (max-width: 390px) {
+
+    .dashboard-page .page-title {
+        font-size: 26px;
+    }
+
+    .dashboard-card-saldo .rumo-resumo-card {
+        min-height: 150px;
+    }
+
+    .dashboard-card-receitas .rumo-resumo-card,
+
+    .dashboard-card-despesas .rumo-resumo-card {
+        padding: 12px;
+    }
+
+    .dashboard-page .rumo-fluxo-chart {
+        height: 145px;
+    }
+
+}
+
+/* =====================================================
+   ÍNDICE DE RUMO - EXPLICAÇÃO
+===================================================== */
+
+.dashboard-indice-entenda {
+    margin-top: 12px;
+
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 6px;
+
+    color: #6d28d9;
+
+    font-size: 11px;
+    font-weight: 750;
+
+    cursor: pointer;
+}
+
+
+.dashboard-indice-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 4000;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: center;
+
+    background:
+        rgba(15, 23, 42, .38);
+
+    backdrop-filter:
+        blur(5px);
+}
+
+
+.dashboard-indice-modal {
+    width: 100%;
+
+    max-width: 520px;
+    max-height: 92dvh;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    border-radius:
+        28px 28px 0 0;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 -25px 70px rgba(15, 23, 42, .20);
+}
+
+
+.dashboard-indice-modal-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding:
+        21px 20px 16px;
+
+    border-bottom:
+        1px solid #edf1f5;
+}
+
+
+.dashboard-indice-modal-header>div>span {
+    color: #7c3aed;
+
+    font-size: 10px;
+    font-weight: 850;
+
+    letter-spacing: .12em;
+
+    text-transform: uppercase;
+}
+
+
+.dashboard-indice-modal-header h2 {
+    margin:
+        3px 0 0;
+
+    color: #0f172a;
+
+    font-size: 24px;
+    font-weight: 850;
+}
+
+
+.dashboard-indice-modal-header>button {
+    width: 40px;
+    height: 40px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border: none;
+
+    border-radius: 13px;
+
+    background: #f4f6f8;
+
+    color: #334155;
+}
+
+
+/* Conteúdo */
+
+.dashboard-indice-modal-body {
+    padding:
+        18px 20px 24px;
+
+    overflow-y: auto;
+}
+
+
+.dashboard-indice-atual {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 17px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(145deg,
+            #faf7ff,
+            #f5f3ff);
+}
+
+
+.dashboard-indice-atual>div>span {
+    display: block;
+
+    color: #64748b;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+.dashboard-indice-atual strong {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #6d28d9;
+
+    font-size: 34px;
+    font-weight: 900;
+
+    letter-spacing: -1.5px;
+}
+
+
+.dashboard-indice-atual strong small {
+    margin-left: 3px;
+
+    color: #94a3b8;
+
+    font-size: 12px;
+}
+
+
+.dashboard-indice-status {
+    padding:
+        6px 10px;
+
+    border-radius: 999px;
+
+    background: #ede9fe;
+
+    color: #6d28d9;
+
+    font-size: 11px;
+    font-weight: 850;
+}
+
+
+.dashboard-indice-status-texto {
+    margin:
+        11px 2px 0;
+
+    color: #64748b;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+.dashboard-indice-modal-body section {
+    margin-top: 23px;
+}
+
+
+.dashboard-indice-modal-body section h3 {
+    margin:
+        0 0 8px;
+
+    color: #172033;
+
+    font-size: 15px;
+    font-weight: 850;
+}
+
+
+.dashboard-indice-modal-body section p {
+    margin:
+        0 0 7px;
+
+    color: #64748b;
+
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+
+/* Fórmula */
+
+.dashboard-indice-formula {
+    position: relative;
+
+    width: max-content;
+
+    max-width: 100%;
+
+    margin:
+        15px auto;
+
+    display: grid;
+
+    grid-template-columns:
+        auto auto;
+
+    text-align: center;
+
+    color: #334155;
+
+    font-size: 13px;
+    font-weight: 750;
+}
+
+
+.dashboard-indice-formula>span {
+    grid-column: 1;
+}
+
+
+.dashboard-indice-formula>div {
+    grid-column: 1;
+
+    width: 100%;
+    height: 1px;
+
+    margin: 5px 0;
+
+    background: #64748b;
+}
+
+
+.dashboard-indice-formula>strong {
+    grid-column: 2;
+    grid-row: 1 / 4;
+
+    display: flex;
+
+    align-items: center;
+
+    padding-left: 10px;
+
+    color: #6d28d9;
+}
+
+
+/* Faixas */
+
+.dashboard-indice-faixas {
+    display: grid;
+
+    grid-template-columns:
+        repeat(5,
+            minmax(0, 1fr));
+
+    gap: 5px;
+}
+
+
+.dashboard-indice-faixas div {
+    min-width: 0;
+
+    padding:
+        9px 3px;
+
+    border-radius: 10px;
+
+    background: #f8fafc;
+
+    text-align: center;
+}
+
+
+.dashboard-indice-faixas strong {
+    display: block;
+
+    color: #334155;
+
+    font-size: 10px;
+}
+
+
+.dashboard-indice-faixas span {
+    display: block;
+
+    margin-top: 3px;
+
+    overflow: hidden;
+
+    color: #64748b;
+
+    font-size: 8px;
+
+    text-overflow: ellipsis;
+}
+
+
+/* Rodapé */
+
+.dashboard-indice-modal-footer {
+    padding:
+        13px 20px calc(13px + env(safe-area-inset-bottom));
+
+    border-top:
+        1px solid #edf1f5;
+
+    background: #ffffff;
+}
+
+
+.dashboard-indice-modal-footer button {
+    width: 100%;
+    height: 48px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(135deg,
+            #8b5cf6,
+            #6d28d9);
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 850;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 9px 22px rgba(109, 40, 217, .20);
 }

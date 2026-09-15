@@ -183,3 +183,42 @@
 
     letter-spacing: 0.06em;
 }
+
+.item-credito-badge {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 3px 7px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(124, 58, 237, .08);
+
+    color: #7c3aed;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: .04em;
+
+    white-space: nowrap;
+}
+
+.item-icon.transferencia {
+    color: #64748b;
+}
+
+.item-valor.transferencia {
+    color: #64748b;
+}
+
+.item-transferencia-contas {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary, #64748b);
+}

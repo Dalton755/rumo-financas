@@ -1,10 +1,11 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+﻿import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "../pages/Login";
+import CompletarCadastro from "../pages/CompletarCadastro";
 import RedefinirSenha from "../pages/RedefinirSenha";
 import Dashboard from "../pages/Dashboard";
 import Contas from "../pages/Contas";
 import Movimentacoes from "../pages/Movimentacoes";
+import Compromissos from "../pages/Compromissos";
 import Relatorios from "../pages/Relatorios";
 import Inteligencia from "../pages/Inteligencia";
 import Metas from "../pages/Metas";
@@ -16,6 +17,8 @@ import Orcamento from "../pages/Orcamento";
 import Projecoes from "../pages/Projecoes";
 import Alertas from "../pages/Alertas";
 import OpenFinance from "../pages/OpenFinance";
+import Importador from "../pages/Importador";
+
 
 import ProtectedRoute from "../components/ProtectedRoute";
 import RecursoRoute from "../components/RecursoRoute";
@@ -28,6 +31,15 @@ function AppRoutes() {
                 <Route
                     path="/"
                     element={<Login />}
+                />
+
+                <Route
+                    path="/completar-cadastro"
+                    element={
+                        <ProtectedRoute>
+                            <CompletarCadastro />
+                        </ProtectedRoute>
+                    }
                 />
 
                 <Route
@@ -58,6 +70,15 @@ function AppRoutes() {
                     element={
                         <ProtectedRoute>
                             <Movimentacoes />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/compromissos"
+                    element={
+                        <ProtectedRoute>
+                            <Compromissos />
                         </ProtectedRoute>
                     }
                 />
@@ -193,15 +214,24 @@ function AppRoutes() {
                 />
 
                 <Route
-                    path="/open-finance"
+                    path="/importador"
                     element={
                         <ProtectedRoute>
                             <RecursoRoute
-                                codigo="OPEN_FINANCE"
-                                titulo="Open Finance"
+                                codigo="IMPORTADOR_FINANCEIRO"
+                                titulo="Importador Financeiro"
                             >
-                                <OpenFinance />
+                                <Importador />
                             </RecursoRoute>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/open-finance"
+                    element={
+                        <ProtectedRoute>
+                            <OpenFinance />
                         </ProtectedRoute>
                     }
                 />

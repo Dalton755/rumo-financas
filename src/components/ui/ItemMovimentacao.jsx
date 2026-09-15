@@ -4,7 +4,8 @@ import {
 
     MoreVertical,
     Pencil,
-    Trash2
+    Trash2,
+    ArrowRightLeft
 } from "lucide-react";
 
 import "./ItemMovimentacao.css";
@@ -64,10 +65,17 @@ export default function ItemMovimentacao({
     const receita =
         movimentacao?.tipo === "receita";
 
+    const transferencia =
+        movimentacao?.tipo === "transferencia";
+
     const prevista =
         Boolean(
             movimentacao?.prevista
         );
+
+    const credito =
+        movimentacao?.origem ===
+        "credito";
 
     function editar() {
 
@@ -94,30 +102,44 @@ export default function ItemMovimentacao({
         <div className="item-mov">
 
             <div
-                className={`item-icon ${receita
-                    ? "receita"
-                    : "despesa"
+                className={`item-icon ${transferencia
+                    ? "transferencia"
+                    : receita
+                        ? "receita"
+                        : "despesa"
                     }`}
                 style={{
                     backgroundColor:
-                        corComTransparencia(
-                            movimentacao?.categoriaCor ||
-                            (
-                                receita
-                                    ? "#22C55E"
-                                    : "#EF4444"
+                        transferencia
+                            ? "rgba(100, 116, 139, 0.12)"
+                            : corComTransparencia(
+                                movimentacao?.categoriaCor ||
+                                (
+                                    receita
+                                        ? "#22C55E"
+                                        : "#EF4444"
+                                )
                             )
-                        )
                 }}
             >
 
-                <IconeCategoria
-                    nome={movimentacao?.categoria}
-                    icone={movimentacao?.categoriaIcone}
-                    cor={movimentacao?.categoriaCor}
-                    tipo={movimentacao?.tipo}
-                    size={22}
-                />
+                {
+                    transferencia
+                        ? (
+                            <ArrowRightLeft
+                                size={22}
+                            />
+                        )
+                        : (
+                            <IconeCategoria
+                                nome={movimentacao?.categoria}
+                                icone={movimentacao?.categoriaIcone}
+                                cor={movimentacao?.categoriaCor}
+                                tipo={movimentacao?.tipo}
+                                size={22}
+                            />
+                        )
+                }
 
             </div>
 
@@ -130,8 +152,35 @@ export default function ItemMovimentacao({
                 <div className="item-info-meta">
 
                     <span>
-                        {movimentacao?.categoria}
+                        {
+                            transferencia
+                                ? "Transferência entre contas"
+                                : movimentacao?.categoria
+                        }
                     </span>
+
+
+                    {
+                        credito && (
+
+                            <span className="item-credito-badge">
+
+                                CRÉDITO
+
+                                {
+                                    Number(
+                                        movimentacao?.parcelasTotal ||
+                                        1
+                                    ) > 1
+                                        ? ` · ${movimentacao.parcelasTotal}x`
+                                        : ""
+                                }
+
+                            </span>
+
+                        )
+                    }
+
 
                     {
                         prevista && (
@@ -149,14 +198,40 @@ export default function ItemMovimentacao({
 
             <div
                 className="item-conta item-conta-logo"
-                title={movimentacao?.conta}
+                title={
+                    transferencia
+                        ? `${movimentacao?.conta || ""} → ${movimentacao?.contaDestino || ""}`
+                        : movimentacao?.conta
+                }
             >
 
-                <LogoBanco
-                    banco={movimentacao?.contaBanco}
-                    size={38}
-                    radius={10}
-                />
+                {
+                    transferencia
+                        ? (
+                            <div className="item-transferencia-contas">
+
+                                <span>
+                                    {movimentacao?.conta}
+                                </span>
+
+                                <ArrowRightLeft
+                                    size={16}
+                                />
+
+                                <span>
+                                    {movimentacao?.contaDestino}
+                                </span>
+
+                            </div>
+                        )
+                        : (
+                            <LogoBanco
+                                banco={movimentacao?.contaBanco}
+                                size={38}
+                                radius={10}
+                            />
+                        )
+                }
 
             </div>
 
@@ -167,9 +242,11 @@ export default function ItemMovimentacao({
             </div>
 
             <div
-                className={`item-valor ${receita
-                    ? "receita"
-                    : "despesa"
+                className={`item-valor ${transferencia
+                        ? "transferencia"
+                        : receita
+                            ? "receita"
+                            : "despesa"
                     }`}
             >
 
@@ -179,61 +256,75 @@ export default function ItemMovimentacao({
 
             </div>
 
-            <div className="item-menu-container">
+            {
+                (onEditar || onExcluir) && (
 
-                <button
-                    type="button"
-                    className="item-menu"
-                    onClick={() =>
-                        setMenuAberto(
-                            !menuAberto
-                        )
-                    }
-                >
+                    <div className="item-menu-container">
 
-                    <MoreVertical size={18} />
+                        <button
+                            type="button"
+                            className="item-menu"
+                            onClick={() =>
+                                setMenuAberto(
+                                    !menuAberto
+                                )
+                            }
+                        >
+                            <MoreVertical size={18} />
+                        </button>
 
-                </button>
 
-                {
-                    menuAberto && (
+                        {
+                            menuAberto && (
 
-                        <div className="item-menu-dropdown">
+                                <div className="item-menu-dropdown">
 
-                            <button
-                                type="button"
-                                className="item-menu-opcao"
-                                onClick={editar}
-                            >
+                                    {
+                                        onEditar && (
 
-                                <Pencil size={16} />
+                                            <button
+                                                type="button"
+                                                className="item-menu-opcao"
+                                                onClick={editar}
+                                            >
+                                                <Pencil size={16} />
 
-                                <span>
-                                    Editar
-                                </span>
+                                                <span>
+                                                    Editar
+                                                </span>
+                                            </button>
 
-                            </button>
+                                        )
+                                    }
 
-                            <button
-                                type="button"
-                                className="item-menu-opcao excluir"
-                                onClick={excluir}
-                            >
 
-                                <Trash2 size={16} />
+                                    {
+                                        onExcluir && (
 
-                                <span>
-                                    Excluir
-                                </span>
+                                            <button
+                                                type="button"
+                                                className="item-menu-opcao excluir"
+                                                onClick={excluir}
+                                            >
+                                                <Trash2 size={16} />
 
-                            </button>
+                                                <span>
+                                                    Excluir
+                                                </span>
+                                            </button>
 
-                        </div>
+                                        )
+                                    }
 
-                    )
-                }
+                                </div>
 
-            </div>
+                            )
+                        }
+
+                    </div>
+
+                )
+            }
 
         </div>
 

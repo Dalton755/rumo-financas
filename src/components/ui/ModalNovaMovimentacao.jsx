@@ -2,6 +2,10 @@ import "./ModalNovaMovimentacao.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase";
 import { editarMovimentacao } from "../../services/movimentacoes";
+import {
+    listarCartoes,
+    criarCompraCartao
+} from "../../services/cartoes";
 import { useToast } from "../../context/ToastContext";
 import ModalConta from "./ModalConta";
 import IconeCategoria, {
@@ -12,42 +16,69 @@ import IconeCategoria, {
 export default function ModalNovaMovimentacao({
     onFechar,
     onSalvou,
-    movimentacao = null
+    movimentacao = null,
+    dadosIniciais = null
 }) {
 
     const { showToast } = useToast();
 
     const editando = Boolean(movimentacao?.id);
 
+    const dadosBase =
+        movimentacao ||
+        dadosIniciais ||
+        {};
+
     const [contas, setContas] = useState([]);
+    const [cartoes, setCartoes] = useState([]);
     const [categorias, setCategorias] = useState([]);
 
+    const [origemPagamento, setOrigemPagamento] =
+        useState(
+            dadosBase?.conta_id
+                ? `conta:${dadosBase.conta_id}`
+                : ""
+        );
+
+    const [cartaoId, setCartaoId] =
+        useState("");
+
+    const [formaCredito, setFormaCredito] =
+        useState("avista");
+
+    const [parcelasTotal, setParcelasTotal] =
+        useState(1);
+
     const [tipo, setTipo] = useState(
-        movimentacao?.tipo || "receita"
+        dadosBase?.tipo || "receita"
     );
 
     const [descricao, setDescricao] = useState(
-        movimentacao?.descricao || ""
+        dadosBase?.descricao || ""
     );
 
     const [valor, setValor] = useState(
-        movimentacao?.valor ?? ""
+        dadosBase?.valor ?? ""
     );
 
     const [contaId, setContaId] = useState(
-        movimentacao?.conta_id || ""
+        dadosBase?.conta_id || ""
+    );
+
+    const [contaDestinoId, setContaDestinoId] = useState(
+        dadosBase?.conta_destino_id || ""
     );
 
     const [categoriaId, setCategoriaId] = useState(
-        movimentacao?.categoria_id || ""
+        dadosBase?.categoria_id || ""
     );
 
     const [dataMovimento, setDataMovimento] = useState(
-        movimentacao?.data_movimentacao || ""
+        dadosBase?.data_movimentacao || ""
     );
 
     const [observacao, setObservacao] = useState(
-        movimentacao?.observacao || ""
+        dadosBase?.observacao || ""
     );
 
     const [modalContaAberto, setModalContaAberto] = useState(false);
@@ -70,9 +101,153 @@ export default function ModalNovaMovimentacao({
     useEffect(() => {
 
         carregarContas();
+        carregarCartoes();
         carregarCategorias();
 
     }, []);
+
+    function selecionarOrigemPagamento(valorSelecionado) {
+
+        setOrigemPagamento(
+            valorSelecionado
+        );
+
+        if (
+            valorSelecionado.startsWith(
+                "conta:"
+            )
+        ) {
+
+            const id =
+                valorSelecionado.replace(
+                    "conta:",
+                    ""
+                );
+
+            setContaId(id);
+
+            setCartaoId("");
+
+            setFormaCredito(
+                "avista"
+            );
+
+            setParcelasTotal(1);
+
+            return;
+        }
+
+
+        if (
+            valorSelecionado.startsWith(
+                "cartao:"
+            )
+        ) {
+
+            const id =
+                valorSelecionado.replace(
+                    "cartao:",
+                    ""
+                );
+
+            setCartaoId(id);
+
+            setContaId("");
+
+            return;
+        }
+
+
+        setContaId("");
+        setCartaoId("");
+
+    }
+
+    function alterarTipoMovimentacao(
+        novoTipo
+    ) {
+
+        setTipo(
+            novoTipo
+        );
+
+
+        /*
+         * Transferência não utiliza categoria
+         * nem cartão de crédito.
+         */
+        if (
+            novoTipo === "transferencia"
+        ) {
+
+            setCategoriaId("");
+
+            setCartaoId("");
+
+            setFormaCredito(
+                "avista"
+            );
+
+            setParcelasTotal(
+                1
+            );
+
+
+            /*
+             * Se a origem atual era um cartão,
+             * limpamos a seleção.
+             *
+             * Se já era uma conta, podemos
+             * preservá-la como conta de origem.
+             */
+            if (
+                origemPagamento.startsWith(
+                    "cartao:"
+                )
+            ) {
+
+                setOrigemPagamento("");
+
+                setContaId("");
+
+            }
+
+            return;
+
+        }
+
+
+        /*
+         * Ao sair de transferência,
+         * a conta de destino deixa de existir.
+         */
+        setContaDestinoId("");
+
+
+        /*
+         * Cartão de crédito só pode
+         * ser usado para despesas.
+         */
+        if (
+            novoTipo !== "despesa" &&
+            cartaoId
+        ) {
+
+            setCartaoId("");
+
+            setOrigemPagamento("");
+
+            setFormaCredito(
+                "avista"
+            );
+
+            setParcelasTotal(
+                1
+            );
+
+        }
+
+    }
 
     async function salvarMovimentacao() {
 
@@ -113,18 +288,70 @@ export default function ModalNovaMovimentacao({
             return;
         }
 
-        if (!contaId) {
+        if (
+            tipo === "transferencia"
+        ) {
+
+            if (!contaId) {
+
+                showToast(
+                    "Erro",
+                    "Selecione a conta de origem.",
+                    "danger"
+                );
+
+                return;
+
+            }
+
+
+            if (!contaDestinoId) {
+
+                showToast(
+                    "Erro",
+                    "Selecione a conta de destino.",
+                    "danger"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                contaId ===
+                contaDestinoId
+            ) {
+
+                showToast(
+                    "Erro",
+                    "A conta de origem e a conta de destino devem ser diferentes.",
+                    "danger"
+                );
+
+                return;
+
+            }
+
+        } else if (
+            !contaId &&
+            !cartaoId
+        ) {
 
             showToast(
                 "Erro",
-                "Selecione uma conta.",
+                "Selecione uma conta ou cartão.",
                 "danger"
             );
 
             return;
+
         }
 
-        if (!categoriaId) {
+        if (
+            tipo !== "transferencia" &&
+            !categoriaId
+        ) {
 
             showToast(
                 "Erro",
@@ -133,6 +360,7 @@ export default function ModalNovaMovimentacao({
             );
 
             return;
+
         }
 
         if (!dataMovimento) {
@@ -146,27 +374,162 @@ export default function ModalNovaMovimentacao({
             return;
         }
 
+        const compraCredito =
+            tipo === "despesa" &&
+            Boolean(cartaoId) &&
+            !editando;
+
+
+        if (
+            compraCredito &&
+            formaCredito === "parcelado" &&
+            (
+                !parcelasTotal ||
+                Number(parcelasTotal) < 2
+            )
+        ) {
+
+            showToast(
+                "Erro",
+                "Informe a quantidade de parcelas.",
+                "danger"
+            );
+
+            return;
+        }
+
         const dados = {
 
             tipo,
 
-            descricao: descricao.trim(),
+            descricao:
+                descricao.trim(),
 
-            valor: Number(valor),
+            valor:
+                Number(valor),
 
-            conta_id: contaId,
+            conta_id:
+                contaId,
 
-            categoria_id: categoriaId,
+            conta_destino_id:
+                tipo === "transferencia"
+                    ? contaDestinoId
+                    : null,
 
-            data_movimentacao: dataMovimento,
+            categoria_id:
+                tipo === "transferencia"
+                    ? null
+                    : categoriaId,
 
-            observacao: observacao.trim() || null
+            data_movimentacao:
+                dataMovimento,
+
+            observacao:
+                observacao.trim() || null
 
         };
 
         try {
 
-            if (editando) {
+            if (compraCredito) {
+
+                const quantidadeParcelas =
+                    formaCredito === "parcelado"
+                        ? Number(parcelasTotal)
+                        : 1;
+
+
+                await criarCompraCartao({
+
+                    cartaoId,
+
+                    categoriaId,
+
+                    descricao:
+                        descricao.trim(),
+
+                    valorTotal:
+                        Number(valor),
+
+                    dataCompra:
+                        dataMovimento,
+
+                    parcelasTotal:
+                        quantidadeParcelas,
+
+                    observacao:
+                        observacao.trim()
+
+                });
+
+
+                showToast(
+                    "Compra registrada",
+                    quantidadeParcelas > 1
+                        ? `Compra registrada em ${quantidadeParcelas} parcelas.`
+                        : "Compra no crédito registrada com sucesso.",
+                    "success"
+                );
+
+
+                if (onSalvou) {
+                    await onSalvou();
+                }
+
+
+                onFechar();
+
+                return;
+
+            }
+
+            if (
+                tipo === "transferencia" &&
+                !editando
+            ) {
+
+                const {
+                    error
+                } =
+                    await supabase
+                        .schema("rumo")
+                        .rpc(
+                            "criar_transferencia",
+                            {
+
+                                p_conta_origem_id:
+                                    contaId,
+
+                                p_conta_destino_id:
+                                    contaDestinoId,
+
+                                p_valor:
+                                    Number(valor),
+
+                                p_data_movimentacao:
+                                    dataMovimento,
+
+                                p_descricao:
+                                    descricao.trim(),
+
+                                p_observacao:
+                                    observacao.trim() || null,
+
+                                p_origem:
+                                    "manual",
+
+                                p_origem_referencia:
+                                    null
+
+                            }
+                        );
+
+
+                if (error) {
+                    throw error;
+                }
+
+            } else if (editando) {
 
                 await editarMovimentacao(
                     movimentacao.id,
@@ -175,16 +538,21 @@ export default function ModalNovaMovimentacao({
 
             } else {
 
-                const { error } = await supabase
-                    .schema("rumo")
-                    .from("movimentacoes")
-                    .insert({
+                const {
+                    error
+                } =
+                    await supabase
+                        .schema("rumo")
+                        .from("movimentacoes")
+                        .insert({
 
-                        usuario_id: user.id,
+                            usuario_id:
+                                user.id,
 
-                        ...dados
+                            ...dados
 
-                    });
+                        });
+
 
                 if (error) {
                     throw error;
@@ -230,7 +598,7 @@ export default function ModalNovaMovimentacao({
         const { data, error } = await supabase
             .schema("rumo")
             .from("contas")
-            .select("id,nome")
+            .select("id,nome,banco,tipo")
             .eq("ativo", true)
             .order("nome");
 
@@ -248,6 +616,30 @@ export default function ModalNovaMovimentacao({
         }
 
         setContas(data || []);
+
+    }
+
+    async function carregarCartoes() {
+
+        try {
+
+            const dados =
+                await listarCartoes();
+
+            setCartoes(
+                dados || []
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao carregar cartões:",
+                error
+            );
+
+            setCartoes([]);
+
+        }
 
     }
 
@@ -355,6 +747,12 @@ export default function ModalNovaMovimentacao({
              * a conta recém-criada.
              */
             setContaId(novaConta.id);
+
+            setOrigemPagamento(
+                `conta:${novaConta.id}`
+            );
+
+            setCartaoId("");
 
             setModalContaAberto(false);
 
@@ -544,7 +942,9 @@ export default function ModalNovaMovimentacao({
                         <select
                             value={tipo}
                             onChange={(e) =>
-                                setTipo(e.target.value)
+                                alterarTipoMovimentacao(
+                                    e.target.value
+                                )
                             }
                         >
 
@@ -554,6 +954,10 @@ export default function ModalNovaMovimentacao({
 
                             <option value="despesa">
                                 Despesa
+                            </option>
+
+                            <option value="transferencia">
+                                Transferência entre contas
                             </option>
 
                         </select>
@@ -581,30 +985,75 @@ export default function ModalNovaMovimentacao({
                         <div className="movimentacao-campo-com-acao">
 
                             <select
-                                value={contaId}
+                                value={origemPagamento}
                                 onChange={(e) =>
-                                    setContaId(
+                                    selecionarOrigemPagamento(
                                         e.target.value
                                     )
                                 }
                             >
 
                                 <option value="">
-                                    Selecione uma conta
+                                    {
+                                        tipo === "transferencia"
+                                            ? "Selecione a conta de origem"
+                                            : "Selecione uma conta ou cartão"
+                                    }
                                 </option>
 
-                                {contas.map((conta) => (
 
-                                    <option
-                                        key={conta.id}
-                                        value={conta.id}
-                                    >
-                                        {conta.nome}
-                                    </option>
+                                {contas.length > 0 && (
 
-                                ))}
+                                    <optgroup label="Contas">
+
+                                        {contas.map((conta) => (
+
+                                            <option
+                                                key={`conta-${conta.id}`}
+                                                value={`conta:${conta.id}`}
+                                            >
+                                                {conta.nome}
+                                            </option>
+
+                                        ))}
+
+                                    </optgroup>
+
+                                )}
+
+
+
+
+                                {
+                                    tipo === "despesa" &&
+                                    !editando &&
+                                    cartoes.length > 0 && (
+
+                                        <optgroup label="Cartões de crédito">
+
+                                            {cartoes.map((cartao) => (
+
+                                                <option
+                                                    key={`cartao-${cartao.id}`}
+                                                    value={`cartao:${cartao.id}`}
+                                                >
+                                                    {cartao.nome}
+                                                    {
+                                                        cartao.final_cartao
+                                                            ? ` •••• ${cartao.final_cartao}`
+                                                            : ""
+                                                    }
+                                                </option>
+
+                                            ))}
+
+                                        </optgroup>
+
+                                    )
+                                }
 
                             </select>
+
 
                             <button
                                 type="button"
@@ -616,48 +1065,306 @@ export default function ModalNovaMovimentacao({
 
                         </div>
 
-                        <div className="movimentacao-campo-com-acao">
+                        {
+                            tipo === "transferencia" && (
 
-                            <select
-                                value={categoriaId}
-                                onChange={(e) =>
-                                    setCategoriaId(
-                                        e.target.value
-                                    )
-                                }
-                            >
+                                <select
+                                    value={
+                                        contaDestinoId
+                                    }
+                                    onChange={(e) =>
+                                        setContaDestinoId(
+                                            e.target.value
+                                        )
+                                    }
+                                >
 
-                                <option value="">
-                                    Selecione uma categoria
-                                </option>
+                                    <option value="">
+                                        Selecione a conta de destino
+                                    </option>
 
-                                {categorias
-                                    .filter(
-                                        (categoria) =>
-                                            categoria.tipo === tipo
-                                    )
-                                    .map((categoria) => (
 
-                                        <option
-                                            key={categoria.id}
-                                            value={categoria.id}
+                                    {
+                                        contas
+                                            .filter(
+                                                (conta) =>
+                                                    conta.id !==
+                                                    contaId
+                                            )
+                                            .map(
+                                                (conta) => (
+
+                                                    <option
+                                                        key={
+                                                            `destino-${conta.id}`
+                                                        }
+                                                        value={
+                                                            conta.id
+                                                        }
+                                                    >
+                                                        {conta.nome}
+                                                    </option>
+
+                                                )
+                                            )
+                                    }
+
+                                </select>
+
+                            )
+                        }
+
+                        {
+                            tipo === "despesa" &&
+                            cartaoId &&
+                            !editando && (
+
+                                <div className="movimentacao-credito">
+
+                                    <div className="movimentacao-credito-header">
+
+                                        <div>
+                                            <strong>
+                                                Compra no crédito
+                                            </strong>
+
+                                            <span>
+                                                Defina como a compra foi realizada.
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+
+                                    <div className="movimentacao-credito-forma">
+
+                                        <button
+                                            type="button"
+                                            className={
+                                                formaCredito === "avista"
+                                                    ? "ativo"
+                                                    : ""
+                                            }
+                                            onClick={() => {
+
+                                                setFormaCredito(
+                                                    "avista"
+                                                );
+
+                                                setParcelasTotal(
+                                                    1
+                                                );
+
+                                            }}
                                         >
-                                            {categoria.nome}
+                                            À vista
+                                        </button>
+
+
+                                        <button
+                                            type="button"
+                                            className={
+                                                formaCredito === "parcelado"
+                                                    ? "ativo"
+                                                    : ""
+                                            }
+                                            onClick={() => {
+
+                                                setFormaCredito(
+                                                    "parcelado"
+                                                );
+
+                                                if (
+                                                    Number(
+                                                        parcelasTotal
+                                                    ) < 2
+                                                ) {
+                                                    setParcelasTotal(
+                                                        2
+                                                    );
+                                                }
+
+                                            }}
+                                        >
+                                            Parcelado
+                                        </button>
+
+                                    </div>
+
+
+                                    {
+                                        formaCredito === "parcelado" && (
+
+                                            <label className="movimentacao-credito-parcelas">
+
+                                                <span>
+                                                    Quantidade de parcelas
+                                                </span>
+
+                                                <select
+                                                    value={
+                                                        parcelasTotal
+                                                    }
+                                                    onChange={(e) =>
+                                                        setParcelasTotal(
+                                                            Number(
+                                                                e.target.value
+                                                            )
+                                                        )
+                                                    }
+                                                >
+
+                                                    {
+                                                        Array.from(
+                                                            {
+                                                                length: 23
+                                                            },
+                                                            (_, index) =>
+                                                                index + 2
+                                                        ).map(
+                                                            (quantidade) => (
+
+                                                                <option
+                                                                    key={
+                                                                        quantidade
+                                                                    }
+                                                                    value={
+                                                                        quantidade
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        quantidade
+                                                                    }x
+                                                                </option>
+
+                                                            )
+                                                        )
+                                                    }
+
+                                                </select>
+
+                                            </label>
+
+                                        )
+                                    }
+
+
+                                    {
+                                        Number(valor) > 0 && (
+
+                                            <div className="movimentacao-credito-resumo">
+
+                                                <span>
+                                                    {
+                                                        formaCredito === "parcelado"
+                                                            ? `${parcelasTotal}x de aproximadamente`
+                                                            : "Compra em"
+                                                    }
+                                                </span>
+
+                                                <strong>
+
+                                                    {
+                                                        formaCredito === "parcelado"
+                                                            ? (
+                                                                Number(valor) /
+                                                                Number(
+                                                                    parcelasTotal ||
+                                                                    1
+                                                                )
+                                                            ).toLocaleString(
+                                                                "pt-BR",
+                                                                {
+                                                                    style:
+                                                                        "currency",
+                                                                    currency:
+                                                                        "BRL"
+                                                                }
+                                                            )
+                                                            : Number(
+                                                                valor
+                                                            ).toLocaleString(
+                                                                "pt-BR",
+                                                                {
+                                                                    style:
+                                                                        "currency",
+                                                                    currency:
+                                                                        "BRL"
+                                                                }
+                                                            )
+                                                    }
+
+                                                </strong>
+
+                                            </div>
+
+                                        )
+                                    }
+
+                                </div>
+
+                            )
+                        }
+
+                        {
+                            tipo !== "transferencia" && (
+
+                                <div className="movimentacao-campo-com-acao">
+
+                                    <select
+                                        value={categoriaId}
+                                        onChange={(e) =>
+                                            setCategoriaId(
+                                                e.target.value
+                                            )
+                                        }
+                                    >
+
+                                        <option value="">
+                                            Selecione uma categoria
                                         </option>
 
-                                    ))}
+                                        {
+                                            categorias
+                                                .filter(
+                                                    (categoria) =>
+                                                        categoria.tipo ===
+                                                        tipo
+                                                )
+                                                .map(
+                                                    (categoria) => (
 
-                            </select>
+                                                        <option
+                                                            key={
+                                                                categoria.id
+                                                            }
+                                                            value={
+                                                                categoria.id
+                                                            }
+                                                        >
+                                                            {categoria.nome}
+                                                        </option>
 
-                            <button
-                                type="button"
-                                className="movimentacao-btn-adicionar"
-                                onClick={abrirNovaCategoria}
-                            >
-                                + Nova
-                            </button>
+                                                    )
+                                                )
+                                        }
 
-                        </div>
+                                    </select>
+
+                                    <button
+                                        type="button"
+                                        className="movimentacao-btn-adicionar"
+                                        onClick={
+                                            abrirNovaCategoria
+                                        }
+                                    >
+                                        + Nova
+                                    </button>
+
+                                </div>
+
+                            )
+                        }
 
                         <input
                             type="date"
