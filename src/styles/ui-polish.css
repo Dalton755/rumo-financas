@@ -1,0 +1,454 @@
+/* =========================================================
+   RUMO — HARMONIZAÇÃO VISUAL FINAL
+   Mantém layouts específicos, unifica escala e acabamento.
+========================================================= */
+
+.metas-premium-badge,
+.objetivos-premium-badge,
+.dividas-premium-badge,
+.inteligencia-premium-badge,
+.projecoes-premium-badge,
+.alertas-premium-badge,
+.orcamento-premium-badge {
+  min-height: 28px;
+  padding: 0 9px;
+
+  border: 1px solid #d8eaed;
+  border-radius: 999px;
+
+  background: #f1f9fa;
+  color: #0b7f91;
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.metas-btn-nova,
+.objetivos-btn-novo,
+.dividas-btn-nova,
+.cartoes-novo,
+.alertas-marcar-todos,
+.open-finance-connect-button {
+  min-height: 42px;
+  padding: 0 13px;
+
+  border-radius: 11px;
+
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.metas-btn-nova,
+.objetivos-btn-novo,
+.dividas-btn-nova,
+.cartoes-novo,
+.open-finance-connect-button {
+  border: 1px solid #0d93a7;
+
+  background: var(--rumo-gradient);
+  color: #ffffff;
+
+  box-shadow:
+    0 7px 18px
+    rgba(15, 159, 179, .14);
+}
+
+.metas-resumo-grid,
+.objetivos-resumo-grid,
+.dividas-resumo-grid,
+.projecoes-cards,
+.alertas-resumo {
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.metas-resumo-card,
+.objetivos-resumo-card,
+.dividas-resumo-card,
+.projecoes-card,
+.alertas-resumo article,
+.inteligencia-metrica,
+.orcamento-resumo-card,
+.cartoes-resumo-card {
+  border-color: var(--border);
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-shadow: var(--shadow-xs);
+}
+
+.metas-resumo-card,
+.objetivos-resumo-card,
+.dividas-resumo-card,
+.alertas-resumo article,
+.orcamento-resumo-card,
+.cartoes-resumo-card {
+  padding: 16px;
+}
+
+.metas-resumo-icon,
+.metas-resumo-card > svg,
+.objetivos-resumo-card > svg,
+.dividas-resumo-card > svg,
+.alertas-resumo-icone,
+.inteligencia-metrica-icone,
+.orcamento-resumo-icon {
+  width: 38px;
+  height: 38px;
+  flex-basis: 38px;
+
+  border-radius: 11px;
+}
+
+.metas-section,
+.meta-card,
+.objetivo-card,
+.divida-card,
+.projecoes-painel,
+.alertas-painel,
+.inteligencia-painel,
+.inteligencia-destaques article,
+.orcamento-card,
+.cartao-item,
+.open-finance-hero,
+.open-finance-conexoes,
+.open-finance-beneficios article {
+  border-color: var(--border);
+  border-radius: 17px;
+
+  box-shadow: var(--shadow-xs);
+}
+
+.metas-section,
+.projecoes-painel,
+.alertas-painel,
+.inteligencia-painel {
+  padding: 20px;
+}
+
+.meta-card,
+.objetivo-card,
+.divida-card,
+.orcamento-card,
+.cartao-item {
+  padding: 18px;
+}
+
+.metas-section-heading h2,
+.objetivos-section-heading h2,
+.dividas-section-heading h2,
+.alertas-painel-cabecalho h2,
+.inteligencia-painel-cabecalho h2 {
+  font-size: 18px;
+  letter-spacing: -.02em;
+}
+
+.inteligencia-resumo-grid {
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.inteligencia-metrica {
+  padding: 17px;
+}
+
+.inteligencia-metrica strong {
+  font-size: 21px;
+}
+
+.inteligencia-painel {
+  margin-bottom: 16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(15, 159, 179, .055),
+      rgba(91, 111, 216, .03)
+    );
+}
+
+.inteligencia-painel-icone {
+  width: 44px;
+  height: 44px;
+
+  border-radius: 13px;
+
+  background: var(--rumo-gradient);
+
+  box-shadow:
+    0 8px 20px
+    rgba(15, 159, 179, .14);
+}
+
+.projecoes-card {
+  min-height: 164px;
+  padding: 18px;
+}
+
+.projecoes-card > strong {
+  margin-top: 15px;
+
+  font-size: 22px;
+}
+
+.projecoes-card-topo {
+  font-size: 10px;
+}
+
+.alertas-resumo article {
+  min-height: 88px;
+}
+
+.alertas-resumo article strong {
+  font-size: 21px;
+}
+
+.alertas-painel {
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
+
+.orcamento-resumo-grid {
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.orcamento-grid {
+  gap: 13px;
+}
+
+.cartoes-resumo {
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.cartoes-grid {
+  gap: 13px;
+}
+
+.cartao-item-identidade {
+  margin-top: 17px;
+}
+
+.cartao-item-limite {
+  margin-top: 18px;
+}
+
+.open-finance-page {
+  gap: 16px;
+  padding-bottom: 20px;
+}
+
+.open-finance-header h1 {
+  margin: 5px 0 5px;
+
+  color: var(--text-strong);
+
+  font-size: 30px;
+  letter-spacing: -.035em;
+}
+
+.open-finance-header p,
+.open-finance-hero-content p,
+.open-finance-beneficios p,
+.open-finance-conexoes-header p {
+  color: var(--text-light);
+
+  font-size: 11px;
+}
+
+.open-finance-premium,
+.open-finance-label {
+  color: var(--primary-dark);
+
+  font-size: 8px;
+}
+
+.open-finance-hero {
+  gap: 16px;
+  padding: 20px;
+
+  background: #ffffff;
+}
+
+.open-finance-hero-icon {
+  width: 48px;
+  height: 48px;
+  flex-basis: 48px;
+
+  border-radius: 14px;
+
+  background: #eaf7f9;
+  color: #0b879b;
+}
+
+.open-finance-hero-content h2 {
+  margin: 5px 0 7px;
+
+  color: #334155;
+
+  font-size: 18px;
+}
+
+.open-finance-beneficios {
+  gap: 12px;
+}
+
+.open-finance-beneficios article {
+  padding: 16px;
+
+  background: #ffffff;
+}
+
+.open-finance-conexoes {
+  padding: 18px;
+
+  background: #ffffff;
+}
+
+.premium-page-hero {
+  gap: 34px;
+  padding: 28px 0 42px;
+}
+
+.premium-page-badge {
+  padding: 6px 10px;
+
+  background: #f1f9fa;
+  color: #0b7f91;
+
+  font-size: 8px;
+}
+
+.premium-page-hero h1 {
+  margin: 16px 0 13px;
+
+  font-size:
+    clamp(32px, 3.3vw, 48px);
+
+  letter-spacing: -.045em;
+}
+
+.premium-page-hero h1 span {
+  background:
+    linear-gradient(
+      135deg,
+      #0b879b,
+      #5868bd
+    );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.premium-page-hero-conteudo > p {
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.premium-page-cta {
+  min-height: 46px;
+
+  padding: 0 17px;
+
+  border-radius: 12px;
+
+  background: var(--rumo-gradient);
+
+  font-size: 11px;
+
+  box-shadow:
+    0 9px 22px
+    rgba(15, 159, 179, .17);
+}
+
+.premium-page-preview-card {
+  padding: 21px;
+
+  border-radius: 21px;
+
+  box-shadow:
+    0 20px 54px
+    rgba(15, 23, 42, .09);
+}
+
+.rel-premium {
+  padding-bottom: 24px;
+}
+
+.rel-premium-header {
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.rel-premium h1 {
+  font-size: 30px;
+  letter-spacing: -.035em;
+}
+
+.rel-premium-header p {
+  margin-top: 5px;
+
+  font-size: 11px;
+}
+
+.rel-premium-badge {
+  padding: 5px 9px;
+
+  background: #f1f9fa;
+  color: #0b7f91;
+
+  font-size: 8px;
+}
+
+.rel-premium-periodo,
+.rel-premium-data,
+.rel-premium-limpar,
+.rel-premium-exportar-botao {
+  min-height: 40px;
+
+  padding: 0 11px;
+
+  border-radius: 10px;
+
+  font-size: 9px;
+}
+
+.rel-premium-exportar-botao {
+  background: var(--rumo-gradient);
+}
+
+.rel-premium-indicadores {
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.rel-premium-indicador {
+  padding: 16px;
+
+  border-color: var(--border);
+  border-radius: 16px;
+
+  box-shadow: var(--shadow-xs);
+}
+
+@media (max-width: 767.98px) {
+  .metas-btn-nova,
+  .objetivos-btn-novo,
+  .dividas-btn-nova,
+  .cartoes-novo {
+    flex: 1;
+  }
+
+  .premium-page-hero {
+    padding-top: 12px;
+  }
+
+  .open-finance-header h1,
+  .rel-premium h1 {
+    font-size: 25px;
+  }
+}
