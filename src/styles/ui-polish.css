@@ -452,3 +452,109 @@
     font-size: 25px;
   }
 }
+
+
+/* Premium locked previews */
+.premium-preview {
+  padding: 8px 0 24px;
+}
+
+.premium-preview-grid {
+  gap: 32px;
+}
+
+.premium-preview-badge {
+  padding: 6px 10px;
+
+  background: #f1f9fa;
+  color: #0b7f91;
+
+  font-size: 8px;
+}
+
+.premium-preview-lock {
+  width: 46px;
+  height: 46px;
+
+  margin-top: 18px;
+
+  border-radius: 14px;
+
+  background: var(--rumo-gradient);
+
+  box-shadow:
+    0 9px 22px
+    rgba(15, 159, 179, .16);
+}
+
+.premium-preview-conteudo h1 {
+  margin: 16px 0 6px;
+
+  font-size: clamp(28px, 3vw, 38px);
+  letter-spacing: -.04em;
+}
+
+.premium-preview-conteudo h2 {
+  margin-bottom: 10px;
+
+  font-size: 17px;
+}
+
+.premium-preview-descricao {
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.premium-preview-beneficios {
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.premium-preview-beneficio {
+  font-size: 10px;
+}
+
+.premium-preview-cta {
+  min-height: 44px;
+
+  margin-top: 22px;
+  padding: 0 15px;
+
+  border-radius: 11px;
+
+  background: var(--rumo-gradient);
+
+  font-size: 10px;
+
+  box-shadow:
+    0 8px 20px
+    rgba(15, 159, 179, .16);
+}
+
+.premium-preview-browser {
+  border-radius: 20px;
+
+  box-shadow:
+    0 20px 54px
+    rgba(15, 23, 42, .09);
+}
+
+.premium-preview-browser-body {
+  padding: 20px;
+}
+
+.premium-preview-card {
+  min-height: 104px;
+
+  padding: 14px;
+
+  border-radius: 14px;
+
+  box-shadow: var(--shadow-xs);
+}
+
+@media (max-width: 767.98px) {
+  .premium-preview-grid {
+    gap: 22px;
+  }
+}
