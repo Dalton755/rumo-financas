@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  Backspace,
   Calculator,
   Check,
   Delete
@@ -292,7 +291,6 @@ export default function MoneyCalculatorInput({
                   setExpressao("")
                 }
               >
-                <Delete size={18} />
                 AC
               </button>
 
@@ -306,7 +304,7 @@ export default function MoneyCalculatorInput({
                   )
                 }
               >
-                <Backspace size={19} />
+                <Delete size={19} />
               </button>
 
               <button
