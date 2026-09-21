@@ -1,74 +1,57 @@
-.rumo-input-wrapper{
-
-    position:relative;
-
-    width:100%;
-
+.rumo-input-wrapper {
+    position: relative;
+    width: 100%;
 }
 
-.rumo-input{
+.rumo-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 44px;
 
-    width:100%;
-    height:56px;
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    outline: none;
 
-    border:1px solid #CBD5E1;
+    background: #ffffff;
+    color: var(--text);
 
-    border-radius:14px;
+    font-size: 13px;
 
-    padding-left:48px;
-    padding-right:48px;
-
-    font-size:15px;
-
-    background:#FFF;
-
-    transition:.25s;
-
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition);
 }
 
-.rumo-input:focus{
-
-    outline:none;
-
-    border-color:#21C7D9;
-
-    box-shadow:
-    0 0 0 4px rgba(33,199,217,.15);
-
+.rumo-input::placeholder {
+    color: #a0aab7;
 }
 
-.rumo-input-icon{
-
-    position:absolute;
-
-    left:18px;
-    top:50%;
-
-    transform:translateY(-50%);
-
-    color:#94A3B8;
-
+.rumo-input:hover {
+    border-color: #c6d1db;
 }
 
-.rumo-input-right-icon{
-
-    position:absolute;
-
-    right:18px;
-    top:50%;
-
-    transform:translateY(-50%);
-
-    color:#94A3B8;
-
-    cursor:pointer;
-
-    transition:.2s;
-
+.rumo-input:focus {
+    border-color: #58afbb;
+    box-shadow: 0 0 0 4px rgba(15, 159, 179, .10);
 }
 
-.rumo-input-right-icon:hover{
+.rumo-input-icon,
+.rumo-input-right-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
 
-    color:#21C7D9;
+.rumo-input-icon {
+    left: 15px;
+}
 
+.rumo-input-right-icon {
+    right: 15px;
+    cursor: pointer;
+}
+
+.rumo-input-right-icon:hover {
+    color: var(--primary);
 }
