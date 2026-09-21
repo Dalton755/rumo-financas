@@ -1,8 +1,8 @@
-import AppRoutes from './routes/AppRoutes'
-import Relatorios from './pages/Relatorios'
+import AppRoutes from "./routes/AppRoutes";
+import "./styles/ui-polish.css";
 
 function App() {
-  return <AppRoutes />
+  return <AppRoutes />;
 }
 
-export default App
+export default App;
