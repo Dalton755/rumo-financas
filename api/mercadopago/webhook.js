@@ -349,7 +349,19 @@ function mapearStatusPagamento(
                 return "ESTORNADO";
             }
 
-            return "APROVADO";
+            if (
+                statusDetail ===
+                "reimbursed"
+            ) {
+                return "APROVADO";
+            }
+
+            /*
+             * in_process = contestação ainda em análise.
+             * Não tratamos como aprovado até existir
+             * uma decisão favorável ao vendedor.
+             */
+            return "PENDENTE";
 
 
         default:
@@ -380,6 +392,144 @@ function assinaturaFoiCancelada(statusMP) {
 
 
 // ============================================================
+// VALIDAR PAGAMENTO APROVADO CONTRA A INTENÇÃO DO RUMO
+// ============================================================
+
+function validarPagamentoAprovado(
+    pagamento,
+    pagamentoMP
+) {
+
+    const valorEsperado =
+        Number(
+            pagamento?.valor
+        );
+
+    const valorRecebido =
+        Number(
+            pagamentoMP
+                ?.transaction_amount
+        );
+
+
+    if (
+        !Number.isFinite(
+            valorEsperado
+        ) ||
+        valorEsperado <= 0 ||
+        !Number.isFinite(
+            valorRecebido
+        ) ||
+        valorRecebido <= 0 ||
+        Math.abs(
+            valorEsperado -
+            valorRecebido
+        ) > 0.01
+    ) {
+
+        throw new Error(
+            "Pagamento aprovado com valor divergente da intenção registrada no Rumo."
+        );
+    }
+
+
+    const moedaEsperada =
+        String(
+            pagamento?.moeda ??
+            "BRL"
+        )
+            .trim()
+            .toUpperCase();
+
+    const moedaRecebida =
+        String(
+            pagamentoMP
+                ?.currency_id ??
+            ""
+        )
+            .trim()
+            .toUpperCase();
+
+
+    if (
+        !moedaRecebida ||
+        moedaRecebida !==
+        moedaEsperada
+    ) {
+
+        throw new Error(
+            "Pagamento aprovado com moeda divergente da intenção registrada no Rumo."
+        );
+    }
+
+
+    const paymentIdEsperado =
+        pagamento
+            ?.mercado_pago_payment_id
+            ? String(
+                pagamento
+                    .mercado_pago_payment_id
+            )
+            : null;
+
+    const paymentIdRecebido =
+        pagamentoMP?.id !==
+            undefined &&
+        pagamentoMP?.id !==
+            null
+            ? String(
+                pagamentoMP.id
+            )
+            : null;
+
+
+    if (
+        paymentIdEsperado &&
+        paymentIdRecebido &&
+        paymentIdEsperado !==
+        paymentIdRecebido
+    ) {
+
+        throw new Error(
+            "Pagamento aprovado com identificador divergente."
+        );
+    }
+
+
+    const referenciaEsperada =
+        pagamento
+            ?.mercado_pago_external_reference
+            ? String(
+                pagamento
+                    .mercado_pago_external_reference
+            )
+            : null;
+
+    const referenciaRecebida =
+        pagamentoMP
+            ?.external_reference
+            ? String(
+                pagamentoMP
+                    .external_reference
+            )
+            : null;
+
+
+    if (
+        referenciaEsperada &&
+        referenciaRecebida &&
+        referenciaEsperada !==
+        referenciaRecebida
+    ) {
+
+        throw new Error(
+            "Pagamento aprovado com referência externa divergente."
+        );
+    }
+}
+
+
+// ============================================================
 // ATIVAR / RENOVAR PREMIUM
 //
 // IMPORTANTE:
@@ -390,6 +540,12 @@ async function ativarOuRenovarPremium({
     pagamento,
     pagamentoMP,
 }) {
+
+    validarPagamentoAprovado(
+        pagamento,
+        pagamentoMP
+    );
+
 
     const preapprovalId =
         pagamento
