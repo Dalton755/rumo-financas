@@ -14,7 +14,8 @@ import {
     Wallet,
     Download,
     FileText,
-    FileSpreadsheet
+    FileSpreadsheet,
+    SlidersHorizontal
 } from "lucide-react";
 
 import {
@@ -545,6 +546,9 @@ function RelatoriosPremium() {
 
     const [exportando, setExportando] =
         useState("");
+
+    const [filtrosAbertos, setFiltrosAbertos] =
+        useState(false);
 
 
     useEffect(() => {
@@ -1878,111 +1882,135 @@ function RelatoriosPremium() {
 
                         </select>
 
-                        {
-                            periodo === "personalizado" && (
-
-                                <>
-
-                                    <input
-                                        type="date"
-                                        className="rel-premium-data"
-                                        value={dataInicio}
-                                        onChange={(e) =>
-                                            setDataInicio(
-                                                e.target.value
-                                            )
-                                        }
-                                    />
-
-                                    <input
-                                        type="date"
-                                        className="rel-premium-data"
-                                        value={dataFim}
-                                        min={dataInicio || undefined}
-                                        onChange={(e) =>
-                                            setDataFim(
-                                                e.target.value
-                                            )
-                                        }
-                                    />
-
-                                </>
-
-                            )
-                        }
-
-
-
-                        <select
-                            className="rel-premium-periodo"
-                            value={contaFiltro}
-                            onChange={(e) =>
-                                setContaFiltro(
-                                    e.target.value
-                                )
-                            }
-                        >
-
-                            <option value="">
-                                Todas as contas
-                            </option>
-
-                            {
-                                contasDisponiveis.map(
-                                    (conta) => (
-
-                                        <option
-                                            key={conta.id}
-                                            value={conta.id}
-                                        >
-                                            {conta.nome}
-                                        </option>
-
-                                    )
-                                )
-                            }
-
-                        </select>
-
-
-                        <select
-                            className="rel-premium-periodo"
-                            value={categoriaFiltro}
-                            onChange={(e) =>
-                                setCategoriaFiltro(
-                                    e.target.value
-                                )
-                            }
-                        >
-
-                            <option value="">
-                                Todas as categorias
-                            </option>
-
-                            {
-                                categoriasDisponiveis.map(
-                                    (categoria) => (
-
-                                        <option
-                                            key={categoria.id}
-                                            value={categoria.id}
-                                        >
-                                            {categoria.nome}
-                                        </option>
-
-                                    )
-                                )
-                            }
-
-                        </select>
-
                         <button
                             type="button"
-                            className="rel-premium-limpar"
-                            onClick={limparFiltros}
+                            className="rel-premium-filtros-toggle"
+                            onClick={() =>
+                                setFiltrosAbertos(
+                                    (atual) => !atual
+                                )
+                            }
+                            aria-expanded={filtrosAbertos}
                         >
-                            Limpar
+                            <SlidersHorizontal size={16} />
+                            Filtros
                         </button>
+
+                        <div
+                            className={
+                                filtrosAbertos
+                                    ? "rel-premium-filtros-secundarios aberto"
+                                    : "rel-premium-filtros-secundarios"
+                            }
+                        >
+                            {
+                                periodo === "personalizado" && (
+    
+                                    <>
+    
+                                        <input
+                                            type="date"
+                                            className="rel-premium-data"
+                                            value={dataInicio}
+                                            onChange={(e) =>
+                                                setDataInicio(
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
+    
+                                        <input
+                                            type="date"
+                                            className="rel-premium-data"
+                                            value={dataFim}
+                                            min={dataInicio || undefined}
+                                            onChange={(e) =>
+                                                setDataFim(
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
+    
+                                    </>
+    
+                                )
+                            }
+    
+    
+    
+                            <select
+                                className="rel-premium-periodo"
+                                value={contaFiltro}
+                                onChange={(e) =>
+                                    setContaFiltro(
+                                        e.target.value
+                                    )
+                                }
+                            >
+    
+                                <option value="">
+                                    Todas as contas
+                                </option>
+    
+                                {
+                                    contasDisponiveis.map(
+                                        (conta) => (
+    
+                                            <option
+                                                key={conta.id}
+                                                value={conta.id}
+                                            >
+                                                {conta.nome}
+                                            </option>
+    
+                                        )
+                                    )
+                                }
+    
+                            </select>
+    
+    
+                            <select
+                                className="rel-premium-periodo"
+                                value={categoriaFiltro}
+                                onChange={(e) =>
+                                    setCategoriaFiltro(
+                                        e.target.value
+                                    )
+                                }
+                            >
+    
+                                <option value="">
+                                    Todas as categorias
+                                </option>
+    
+                                {
+                                    categoriasDisponiveis.map(
+                                        (categoria) => (
+    
+                                            <option
+                                                key={categoria.id}
+                                                value={categoria.id}
+                                            >
+                                                {categoria.nome}
+                                            </option>
+    
+                                        )
+                                    )
+                                }
+    
+                            </select>
+    
+                            <button
+                                type="button"
+                                className="rel-premium-limpar"
+                                onClick={limparFiltros}
+                            >
+                                Limpar
+                            </button>
+    
+    
+                        </div>
 
                         <div className="rel-premium-exportar">
 
