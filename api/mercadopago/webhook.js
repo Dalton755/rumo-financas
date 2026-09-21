@@ -297,6 +297,298 @@ async function buscarPagamentoMercadoPago(
 
 
 // ============================================================
+// CANCELAR PREAPPROVAL NO MERCADO PAGO
+// ============================================================
+
+async function cancelarPreapprovalMercadoPago(
+    preapprovalId
+) {
+
+    const resposta =
+        await fetch(
+            `https://api.mercadopago.com/preapproval/${encodeURIComponent(preapprovalId)}`,
+            {
+                method:
+                    "PUT",
+
+                headers: {
+                    Authorization:
+                        `Bearer ${ACCESS_TOKEN}`,
+
+                    "Content-Type":
+                        "application/json",
+                },
+
+                body:
+                    JSON.stringify({
+                        status:
+                            "canceled",
+                    }),
+            }
+        );
+
+
+    let dados =
+        null;
+
+
+    try {
+
+        dados =
+            await resposta.json();
+
+    } catch {
+
+        dados =
+            null;
+    }
+
+
+    if (resposta.ok) {
+
+        return {
+            cancelado:
+                true,
+
+            jaCancelado:
+                false,
+
+            status:
+                dados?.status ??
+                "canceled",
+        };
+    }
+
+
+    /*
+     * Em retries do webhook a assinatura pode já estar
+     * cancelada. Confirmamos o estado atual antes de falhar.
+     */
+    const assinaturaAtual =
+        await buscarAssinaturaMercadoPago(
+            preapprovalId
+        );
+
+
+    if (
+        assinaturaFoiCancelada(
+            assinaturaAtual?.status
+        )
+    ) {
+
+        return {
+            cancelado:
+                true,
+
+            jaCancelado:
+                true,
+
+            status:
+                assinaturaAtual?.status ??
+                "canceled",
+        };
+    }
+
+
+    const erro =
+        new Error(
+            dados?.message ??
+            `Erro HTTP ${resposta.status} ao cancelar preapproval.`
+        );
+
+    erro.statusHttp =
+        resposta.status;
+
+    throw erro;
+}
+
+
+// ============================================================
+// TRATAR REEMBOLSO / CHARGEBACK PERDIDO
+// ============================================================
+
+async function tratarEstornoPagamento(
+    pagamento
+) {
+
+    const preapprovalId =
+        pagamento
+            ?.mercado_pago_preapproval_id
+            ? String(
+                pagamento
+                    .mercado_pago_preapproval_id
+            )
+            : null;
+
+
+    if (!preapprovalId) {
+
+        return {
+            cancelado:
+                false,
+
+            motivo:
+                "Pagamento sem preapproval_id.",
+        };
+    }
+
+
+    const cancelamentoProvedor =
+        await cancelarPreapprovalMercadoPago(
+            preapprovalId
+        );
+
+
+    const {
+        data: assinaturaAtual,
+        error: assinaturaError,
+    } =
+        await supabaseAdmin
+            .schema("rumo")
+            .from("assinaturas")
+            .select(`
+                id,
+                usuario_id,
+                plano_id,
+                status,
+                vence_em,
+                mercado_pago_preapproval_id
+            `)
+            .eq(
+                "usuario_id",
+                pagamento.usuario_id
+            )
+            .maybeSingle();
+
+
+    if (assinaturaError) {
+        throw assinaturaError;
+    }
+
+
+    if (
+        !assinaturaAtual ||
+        String(
+            assinaturaAtual
+                .mercado_pago_preapproval_id ??
+            ""
+        ) !==
+        preapprovalId
+    ) {
+
+        return {
+            cancelado:
+                true,
+
+            assinaturaAtualizada:
+                false,
+
+            cancelamentoProvedor,
+        };
+    }
+
+
+    const agora =
+        new Date();
+
+    const vencimentoAtual =
+        assinaturaAtual?.vence_em
+            ? new Date(
+                assinaturaAtual.vence_em
+            )
+            : null;
+
+    const vencimentoPagamento =
+        pagamento?.vencimento_em
+            ? new Date(
+                pagamento.vencimento_em
+            )
+            : null;
+
+
+    const existePeriodoPosteriorPago =
+        vencimentoAtual &&
+        vencimentoPagamento &&
+        !Number.isNaN(
+            vencimentoAtual.getTime()
+        ) &&
+        !Number.isNaN(
+            vencimentoPagamento.getTime()
+        ) &&
+        vencimentoAtual.getTime() >
+        (
+            vencimentoPagamento.getTime() +
+            60_000
+        );
+
+
+    const atualizacao = {
+
+        renovacao_automatica:
+            false,
+
+        cancelamento_provedor_pendente:
+            false,
+
+        cancelamento_provedor_em:
+            agora.toISOString(),
+
+        cancelamento_provedor_erro:
+            null,
+
+        updated_at:
+            agora.toISOString(),
+    };
+
+
+    if (!existePeriodoPosteriorPago) {
+
+        atualizacao.status =
+            "ENCERRADA";
+
+        atualizacao.vence_em =
+            agora.toISOString();
+    }
+
+
+    const {
+        error: atualizarError,
+    } =
+        await supabaseAdmin
+            .schema("rumo")
+            .from("assinaturas")
+            .update(
+                atualizacao
+            )
+            .eq(
+                "id",
+                assinaturaAtual.id
+            );
+
+
+    if (atualizarError) {
+        throw atualizarError;
+    }
+
+
+    return {
+        cancelado:
+            true,
+
+        assinaturaAtualizada:
+            true,
+
+        periodoPosteriorPreservado:
+            Boolean(
+                existePeriodoPosteriorPago
+            ),
+
+        cancelamentoProvedor,
+    };
+}
+
+
+// ============================================================
 // MAPEAR STATUS
 // ============================================================
 
