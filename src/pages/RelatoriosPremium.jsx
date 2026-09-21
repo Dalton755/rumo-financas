@@ -2087,6 +2087,108 @@ function RelatoriosPremium() {
 
                         <>
 
+                            <section
+                                className={
+                                    analise.resultado >= 0
+                                        ? "rel-premium-resumo-executivo positivo"
+                                        : "rel-premium-resumo-executivo atencao"
+                                }
+                            >
+                                <div className="rel-premium-resumo-principal">
+                                    <span>Resultado do período</span>
+
+                                    <strong>
+                                        {formatarMoeda(
+                                            analise.resultado
+                                        )}
+                                    </strong>
+
+                                    <p>
+                                        {
+                                            analise.receitas <= 0
+                                                ? "Ainda não há receitas suficientes para uma leitura completa."
+                                                : analise.resultado >= 0
+                                                    ? `Você preservou ${formatarPercentual(
+                                                        analise.taxaEconomia
+                                                    )} das receitas.`
+                                                    : `As despesas superaram as receitas em ${formatarMoeda(
+                                                        Math.abs(
+                                                            analise.resultado
+                                                        )
+                                                    )}.`
+                                        }
+                                    </p>
+                                </div>
+
+                                <div className="rel-premium-resumo-sinais">
+                                    <div>
+                                        <span>Maior categoria</span>
+                                        <strong>
+                                            {
+                                                maiorCategoria
+                                                    ? maiorCategoria.nome
+                                                    : "Sem dados"
+                                            }
+                                        </strong>
+                                        <small>
+                                            {
+                                                maiorCategoria
+                                                    ? formatarPercentual(
+                                                        percentualMaiorCategoria
+                                                    ) + " dos gastos"
+                                                    : "—"
+                                            }
+                                        </small>
+                                    </div>
+
+                                    <div>
+                                        <span>Despesas vs. anterior</span>
+                                        <strong
+                                            className={
+                                                variacaoDespesas === null
+                                                    ? ""
+                                                    : variacaoDespesas <= 0
+                                                        ? "positivo"
+                                                        : "negativo"
+                                            }
+                                        >
+                                            {
+                                                variacaoDespesas === null
+                                                    ? "Sem histórico"
+                                                    : variacaoDespesas === 0
+                                                        ? "Sem mudança"
+                                                        : `${variacaoDespesas > 0 ? "+" : "-"}${formatarPercentual(
+                                                            Math.abs(
+                                                                variacaoDespesas
+                                                            )
+                                                        )}`
+                                            }
+                                        </strong>
+                                        <small>comparação do período</small>
+                                    </div>
+
+                                    <div>
+                                        <span>Maior despesa</span>
+                                        <strong>
+                                            {
+                                                maiorDespesa
+                                                    ? formatarMoeda(
+                                                        maiorDespesa.valor
+                                                    )
+                                                    : "—"
+                                            }
+                                        </strong>
+                                        <small>
+                                            {
+                                                maiorDespesa
+                                                    ? maiorDespesa.descricao
+                                                    : "Sem despesas"
+                                            }
+                                        </small>
+                                    </div>
+                                </div>
+                            </section>
+
                             <div className="rel-premium-indicadores">
 
                                 <CardIndicador
