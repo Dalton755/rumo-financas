@@ -414,15 +414,15 @@ function MainLayout({ children }) {
         </NavLink>
 
         <NavLink
-          to="/contas"
+          to="/calculos"
           className={({ isActive }) =>
             isActive
               ? "rumo-bottom-item active"
               : "rumo-bottom-item"
           }
         >
-          <WalletCards size={20} />
-          <span>Contas</span>
+          <Calculator size={20} />
+          <span>Cálculos</span>
         </NavLink>
 
         <NavLink
