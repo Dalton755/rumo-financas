@@ -1417,3 +1417,144 @@
     width: 100%;
   }
 }
+
+/* =========================================================
+   PREMIUM MOBILE VALUE PASS
+========================================================= */
+
+@media (max-width: 640px) {
+  .metas-header-actions {
+    gap: 7px;
+  }
+
+  .metas-premium-badge {
+    padding: 5px 8px;
+
+    font-size: 8px;
+  }
+
+  .metas-btn-nova {
+    min-height: 38px;
+
+    padding: 0 11px;
+
+    border-radius: 10px;
+
+    font-size: 9px;
+  }
+
+  .metas-resumo-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+
+    margin-top: 12px;
+  }
+
+  .metas-resumo-card {
+    gap: 8px;
+
+    min-height: 82px;
+
+    padding: 11px;
+
+    border-radius: 13px;
+  }
+
+  .metas-resumo-icon {
+    width: 32px;
+    height: 32px;
+
+    flex-basis: 32px;
+
+    border-radius: 9px;
+  }
+
+  .metas-resumo-card span {
+    margin-bottom: 2px;
+
+    font-size: 7px;
+  }
+
+  .metas-resumo-card strong {
+    font-size: 14px;
+  }
+
+  .metas-section {
+    margin-top: 10px;
+    padding: 12px;
+
+    border-radius: 15px;
+  }
+
+  .metas-section-heading {
+    flex-direction: row;
+    align-items: center;
+
+    margin-bottom: 10px;
+  }
+
+  .metas-section-heading h2 {
+    font-size: 14px;
+  }
+
+  .metas-section-heading >
+  div:first-child > span {
+    font-size: 7px;
+  }
+
+  .metas-section-contagem {
+    padding: 5px 8px;
+
+    font-size: 7px;
+  }
+
+  .metas-grid {
+    gap: 8px;
+  }
+
+  .meta-card {
+    padding: 13px;
+
+    border-radius: 14px;
+  }
+
+  .meta-card-titulo h3 {
+    font-size: 11px;
+  }
+
+  .meta-card-icon {
+    width: 34px;
+    height: 34px;
+
+    border-radius: 10px;
+  }
+
+  .meta-valores {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 7px;
+  }
+
+  .meta-informacoes {
+    gap: 7px;
+  }
+
+  .meta-card-acoes {
+    flex-direction: row;
+    align-items: center;
+
+    gap: 6px;
+
+    overflow-x: auto;
+  }
+
+  .meta-card-acoes button {
+    width: auto;
+    min-width: max-content;
+
+    flex: 0 0 auto;
+  }
+}
