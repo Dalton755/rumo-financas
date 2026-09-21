@@ -4,6 +4,7 @@ import { supabase } from "../../services/supabase";
 import { editarMovimentacao } from "../../services/movimentacoes";
 import { useToast } from "../../context/ToastContext";
 import ModalConta from "./ModalConta";
+import MoneyCalculatorInput from "./MoneyCalculatorInput";
 import IconeCategoria, {
     CORES_CATEGORIA,
     OPCOES_ICONES_CATEGORIA,
@@ -567,15 +568,11 @@ export default function ModalNovaMovimentacao({
                             }
                         />
 
-                        <input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            placeholder="Valor"
+                        <MoneyCalculatorInput
                             value={valor}
-                            onChange={(e) =>
-                                setValor(e.target.value)
-                            }
+                            onChange={setValor}
+                            placeholder="Valor"
+                            ariaLabel="Valor da movimentação"
                         />
 
                         <div className="movimentacao-campo-com-acao">
