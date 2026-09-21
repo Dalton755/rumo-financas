@@ -29,6 +29,7 @@ import {
 import MainLayout from "../layouts/MainLayout";
 import PageContainer from "../components/ui/PageContainer";
 import PageHeader from "../components/ui/PageHeader";
+import MoneyCalculatorInput from "../components/ui/MoneyCalculatorInput";
 
 import { useToast } from "../context/ToastContext";
 
@@ -1759,21 +1760,11 @@ function Dividas() {
                       Valor original
                     </span>
 
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={
-                        valorOriginal
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        setValorOriginal(
-                          event.target.value
-                        )
-                      }
-                      placeholder="0,00"
+                                        <MoneyCalculatorInput
+                        value={valorOriginal}
+                        onChange={setValorOriginal}
+                        placeholder="R$ 0,00"
+                        ariaLabel="Valor original da dívida"
                     />
                   </label>
 
@@ -1783,21 +1774,11 @@ function Dividas() {
                       Saldo devedor atual
                     </span>
 
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={
-                        saldoAtual
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        setSaldoAtual(
-                          event.target.value
-                        )
-                      }
-                      placeholder="Se vazio, usa o valor original"
+                                        <MoneyCalculatorInput
+                        value={saldoAtual}
+                        onChange={setSaldoAtual}
+                        placeholder="R$ 0,00"
+                        ariaLabel="Saldo devedor atual"
                     />
                   </label>
                 </div>
@@ -1833,21 +1814,11 @@ function Dividas() {
                       Parcela mínima
                     </span>
 
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={
-                        parcelaMinima
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        setParcelaMinima(
-                          event.target.value
-                        )
-                      }
-                      placeholder="0,00"
+                                        <MoneyCalculatorInput
+                        value={parcelaMinima}
+                        onChange={setParcelaMinima}
+                        placeholder="R$ 0,00"
+                        ariaLabel="Parcela mínima"
                     />
                   </label>
                 </div>
@@ -2270,21 +2241,11 @@ function Dividas() {
                             Previsto
                           </span>
 
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={
-                              valorPrevisto
-                            }
-                            onChange={(
-                              event
-                            ) =>
-                              setValorPrevisto(
-                                event.target.value
-                              )
-                            }
-                            placeholder="0,00"
+                                                    <MoneyCalculatorInput
+                              value={valorPrevisto}
+                              onChange={setValorPrevisto}
+                              placeholder="R$ 0,00"
+                              ariaLabel="Valor previsto"
                           />
                         </label>
 
@@ -2293,21 +2254,11 @@ function Dividas() {
                             Já pago
                           </span>
 
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={
-                              valorPagoPlano
-                            }
-                            onChange={(
-                              event
-                            ) =>
-                              setValorPagoPlano(
-                                event.target.value
-                              )
-                            }
-                            placeholder="0,00"
+                                                    <MoneyCalculatorInput
+                              value={valorPagoPlano}
+                              onChange={setValorPagoPlano}
+                              placeholder="R$ 0,00"
+                              ariaLabel="Valor pago"
                           />
                         </label>
 
