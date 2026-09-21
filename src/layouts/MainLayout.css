@@ -1,485 +1,191 @@
-/*==================================
-SIDEBAR
-==================================*/
+.rumo-shell {
+    min-height: 100vh;
+    background: var(--background);
+}
 
 .rumo-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 1040;
 
-    min-height: 100vh;
-
-    padding: 34px 22px;
-
-    background:
-        linear-gradient(180deg,
-            #30D4F5 0%,
-            #28C8EB 40%,
-            #27C0E6 100%);
-
-    position: relative;
-
-    overflow: hidden;
-
-    box-shadow:
-        12px 0 40px rgba(0, 0, 0, .08);
-
-    border-right:
-
-        1px solid rgba(255, 255, 255, .18);
+    width: 248px;
+    height: 100dvh;
 
     display: flex;
-
     flex-direction: column;
 
-    color: white;
+    padding: 22px 16px 16px;
 
-    position: sticky;
+    background: #ffffff;
+    border-right: 1px solid var(--border);
 
-    top: 0;
+    color: var(--text);
 
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
-.sidebar::before {
-
-    content: "";
-
-    position: absolute;
-
-    top: -150px;
-
-    right: -120px;
-
-    width: 300px;
-
-    height: 300px;
-
-    background:
-
-        radial-gradient(circle,
-
-            rgba(255, 255, 255, .22),
-
-            transparent 70%);
-
-    pointer-events: none;
-
-}
-
-.sidebar::after {
-
-    content: "";
-
-    position: absolute;
-
-    bottom: -120px;
-
-    left: -80px;
-
-    width: 240px;
-
-    height: 240px;
-
-    background:
-
-        radial-gradient(circle,
-
-            rgba(255, 255, 255, .12),
-
-            transparent 70%);
-
-    pointer-events: none;
-
-}
-
-.rumo-logo {
-
-    text-align: center;
-
-    margin-bottom: 40px;
-
-}
-
-.rumo-logo h2 {
-
-    font-size: 52px;
-
-    font-weight: 800;
-
-    margin: 0;
-
-}
-
-.rumo-logo p {
-
-    margin-top: 18px;
-
-    line-height: 1.7;
-
-    opacity: .92;
-
-    font-size: 15px;
-
-}
-
-.rumo-sidebar-menu {
+.rumo-sidebar-brand {
+    min-height: 58px;
 
     display: flex;
-
-    flex-direction: column;
-
-    gap: 14px;
-
-}
-
-.rumo-sidebar-item {
-
-    display: flex;
-
     align-items: center;
+    gap: 11px;
 
-    gap: 14px;
-
-    padding: 16px 20px;
-
-    border-radius: 18px;
-
-    color: white;
-
-    text-decoration: none;
-
-    transition: .28s;
-
-    font-size: 17px;
-
-    font-weight: 600;
-
+    padding: 4px 6px 18px;
 }
 
-.rumo-sidebar-item:hover {
+.rumo-brand-mark,
+.rumo-mobile-brand-mark {
+    flex: 0 0 auto;
 
-    transform: translateX(8px);
-
-    background: rgba(255, 255, 255, .14);
-
-    color: white;
-
-}
-
-.rumo-sidebar-item.active {
-
-    background: rgba(255, 255, 255, .20);
-
-    backdrop-filter: blur(18px);
-
-    box-shadow:
-
-        0 10px 30px rgba(0, 0, 0, .15);
-
-}
-
-.rumo-sidebar-logout {
-
-    margin-top: auto;
-
-    border: none;
-
-    background: rgba(255, 255, 255, .15);
-
-    color: white;
-
-    border-radius: 18px;
-
-    padding: 16px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 10px;
-
-    transition: .25s;
-
-    cursor: pointer;
-
-    font-size: 16px;
-
-    font-weight: 600;
-
-}
-
-.rumo-sidebar-logout:hover {
-
-    background: white;
-
-    color: #18AFCF;
-
-}
-
-.sidebar-logo {
-
-    display: flex;
-
-    justify-content: center;
-
-    margin-bottom: 22px;
-
-}
-
-.sidebar-subtitle {
-
-    max-width: 180px;
-
-    margin: 0 auto 34px;
-
-    text-align: center;
-
-    line-height: 1.6;
-
-    font-size: 15px;
-
-    color: rgba(255, 255, 255, .92);
-
-}
-
-.sidebar-link {
-
-    height: 62px;
-
-    padding: 0 22px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 16px;
-
-    border-radius: 20px;
-
-    font-size: 19px;
-
-    font-weight: 600;
-
-    transition: var(--transition);
-
-}
-
-/*==========================
-    INDICE DE RUMO
-==========================*/
-
-.indice-card {
-
-    margin-top: 40px;
-
-    padding: 22px;
-
-    border-radius: 24px;
-
-    background:
-
-        rgba(255, 255, 255, .14);
-
-    backdrop-filter: blur(18px);
-
-    border: 1px solid rgba(255, 255, 255, .25);
-
-    text-align: center;
-
-    color: #FFF;
-
-    box-shadow:
-
-        0 20px 45px rgba(0, 0, 0, .12);
-
-}
-
-.indice-card small {
-
-    display: block;
-
-    font-size: .75rem;
-
-    letter-spacing: .08em;
-
-    opacity: .9;
-
-}
-
-.indice-card strong {
-
-    display: block;
-
-    margin-top: 12px;
-
-    font-size: 1.15rem;
-
-}
-
-.indice-card p {
-
-    margin-top: 6px;
-
-    font-size: .82rem;
-
-    opacity: .9;
-
-}
-
-.indice-circle {
-
-    width: 130px;
-
-    height: 130px;
-
-    margin: 18px auto;
-
-    border-radius: 50%;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    position: relative;
-
-    background:
-
-        radial-gradient(circle,
-
-            #6EF4F3,
-
-            #28C8EB);
-
-    box-shadow:
-
-        inset 0 8px 18px rgba(255, 255, 255, .30),
-
-        0 18px 35px rgba(0, 0, 0, .15);
-
-}
-
-.indice-circle::before {
-
-    content: "";
-
-    position: absolute;
-
-    inset: 12px;
-
-    border-radius: 50%;
-
-    background: #30D4F5;
-
-}
-
-.indice-circle span {
-
-    position: relative;
-
-    z-index: 2;
-
-    font-size: 2rem;
-
-    font-weight: 700;
-
-    color: #FFF;
-
-}
-/* ==================================
-   IDENTIFICAÇÃO DO PLANO PREMIUM
-================================== */
-
-.rumo-plan-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    margin-top: 10px;
+    width: 38px;
+    height: 38px;
 
-    padding: 6px 13px;
+    border-radius: 12px;
 
-    border-radius: 999px;
-
-    background: rgba(255, 255, 255, .20);
-
-    border: 1px solid rgba(255, 255, 255, .40);
-
-    backdrop-filter: blur(12px);
-
+    background: var(--rumo-gradient);
     color: #ffffff;
 
-    font-size: 11px;
-
+    font-size: 21px;
     font-weight: 800;
-
-    letter-spacing: .12em;
-
-    text-transform: uppercase;
 
     box-shadow:
-        0 8px 20px rgba(0, 0, 0, .10);
+        0 8px 20px rgba(15, 159, 179, .18);
 }
 
+.rumo-brand-copy {
+    min-width: 0;
+    flex: 1;
+}
 
-/* ==================================
-   MENU PREMIUM
-================================== */
+.rumo-brand-line {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
 
-.rumo-sidebar-premium-label {
-    margin-top: 12px;
-    padding: 4px 18px 0;
+.rumo-brand-copy strong {
+    color: var(--text-strong);
 
-    color: rgba(255, 255, 255, .72);
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -.03em;
+}
+
+.rumo-brand-copy > span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--text-muted);
 
     font-size: 10px;
-    font-weight: 800;
-
-    letter-spacing: .14em;
-    text-transform: uppercase;
+    font-weight: 600;
 }
 
-.rumo-sidebar-item-premium {
-    position: relative;
-}
-
-.rumo-sidebar-premium-pill {
-    margin-left: auto;
+.rumo-plan-badge,
+.rumo-mobile-plan {
+    display: inline-flex;
+    align-items: center;
 
     padding: 3px 7px;
 
     border-radius: 999px;
 
-    background: rgba(255, 255, 255, .22);
+    background: #edf9fa;
+    border: 1px solid #d4f0f3;
 
-    border: 1px solid rgba(255, 255, 255, .32);
+    color: var(--primary-dark);
+
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.rumo-sidebar-close {
+    display: none;
+
+    width: 36px;
+    height: 36px;
+
+    border: 0;
+    border-radius: 10px;
+
+    background: var(--surface-soft);
+    color: var(--text-light);
+}
+
+.rumo-sidebar-menu {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 21px;
+
+    padding: 5px 0 20px;
+}
+
+.rumo-nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.rumo-nav-label {
+    padding: 0 11px 7px;
+
+    color: #9aa7b7;
 
     font-size: 9px;
-
     font-weight: 800;
-
-    letter-spacing: .08em;
+    letter-spacing: .11em;
+    text-transform: uppercase;
 }
 
-.rumo-sidebar-item-premium.active
-.rumo-sidebar-premium-pill {
-    background: rgba(255, 255, 255, .30);
+.rumo-sidebar-item {
+    min-height: 42px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 7px 10px;
+
+    border-radius: 11px;
+
+    color: #526071;
+
+    font-size: 12px;
+    font-weight: 650;
+
+    transition:
+        background var(--transition),
+        color var(--transition),
+        transform var(--transition);
 }
 
-
-/* ==================================
-   RECURSO PREMIUM BLOQUEADO
-================================== */
-
-.rumo-sidebar-premium-locked {
-    opacity: .90;
+.rumo-sidebar-item:hover {
+    background: #f5f8fa;
+    color: var(--text-strong);
 }
 
-.rumo-sidebar-lock {
-    margin-left: auto;
+.rumo-sidebar-item.active {
+    background: #eaf7f9;
+    color: #087084;
+}
 
+.rumo-sidebar-item-icon {
     width: 28px;
     height: 28px;
+
+    flex: 0 0 28px;
 
     display: inline-flex;
     align-items: center;
@@ -487,73 +193,343 @@ SIDEBAR
 
     border-radius: 9px;
 
-    background: rgba(255, 255, 255, .16);
-
-    border: 1px solid rgba(255, 255, 255, .28);
-
-    color: #ffffff;
+    color: #6c7a8b;
 }
 
-.rumo-sidebar-premium-locked:hover
+.rumo-sidebar-item.active
+.rumo-sidebar-item-icon {
+    background: #ffffff;
+    color: #0b879b;
+
+    box-shadow:
+        0 3px 10px rgba(15, 23, 42, .05);
+}
+
+.rumo-sidebar-item-label {
+    min-width: 0;
+    flex: 1;
+}
+
+.rumo-sidebar-item-locked {
+    color: #7e8b99;
+}
+
 .rumo-sidebar-lock {
-    background: rgba(255, 255, 255, .26);
+    margin-left: auto;
+    color: #a2adba;
 }
 
-/* ==================================
-   MOBILE - SIDEBAR EM TELA CHEIA
-================================== */
+.rumo-sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
 
-@media (max-width: 767.98px) {
+    padding-top: 12px;
 
+    border-top: 1px solid #edf1f5;
+}
+
+.rumo-upgrade-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px;
+
+    border: 1px solid #dcecf0;
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f7fbfc,
+            #eef8fa
+        );
+}
+
+.rumo-upgrade-icon {
+    width: 32px;
+    height: 32px;
+
+    flex: 0 0 32px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+    color: var(--primary);
+
+    box-shadow:
+        0 4px 14px rgba(15, 23, 42, .05);
+}
+
+.rumo-upgrade-card > span:last-child {
+    min-width: 0;
+}
+
+.rumo-upgrade-card strong,
+.rumo-upgrade-card small {
+    display: block;
+}
+
+.rumo-upgrade-card strong {
+    color: var(--text-strong);
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.rumo-upgrade-card small {
+    margin-top: 2px;
+
+    color: var(--text-light);
+
+    font-size: 8px;
+    line-height: 1.35;
+}
+
+.rumo-current-plan {
+    min-height: 38px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 0 10px;
+
+    border-radius: 10px;
+
+    background: #f0faf6;
+    color: #16794a;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.rumo-sidebar-logout {
+    min-height: 38px;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 0 10px;
+
+    border: 0;
+    border-radius: 10px;
+
+    background: transparent;
+    color: #788596;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    text-align: left;
+}
+
+.rumo-sidebar-logout:hover {
+    background: #f8fafc;
+    color: #b42318;
+}
+
+.rumo-main-content {
+    min-height: 100vh;
+
+    margin-left: 248px;
+
+    background:
+        radial-gradient(
+            circle at 92% 2%,
+            rgba(15, 159, 179, .045),
+            transparent 26%
+        ),
+        var(--background);
+}
+
+.rumo-mobile-topbar,
+.rumo-bottom-nav,
+.rumo-sidebar-overlay {
+    display: none;
+}
+
+@media (max-width: 991.98px) {
     .rumo-sidebar {
-        position: fixed;
+        width: min(86vw, 330px);
 
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-
-        width: 100%;
-        max-width: 100%;
-
-        height: 100dvh;
-        min-height: 100dvh;
-
-        z-index: 1050;
-
-        overflow-y: auto;
-        overflow-x: hidden;
+        transform: translateX(-105%);
 
         padding:
-            calc(78px + env(safe-area-inset-top))
-            22px
-            calc(28px + env(safe-area-inset-bottom));
+            calc(14px + env(safe-area-inset-top))
+            16px
+            calc(18px + env(safe-area-inset-bottom));
 
-        overscroll-behavior: contain;
+        box-shadow:
+            24px 0 70px rgba(15, 23, 42, .16);
 
-        -webkit-overflow-scrolling: touch;
+        transition:
+            transform .24s ease;
     }
 
-
-    .rumo-sidebar-menu {
-        min-height: calc(100dvh - 220px);
-        padding-bottom: 30px;
+    .rumo-sidebar.is-open {
+        transform: translateX(0);
     }
 
-
-    .rumo-sidebar-logout {
-        flex-shrink: 0;
-        margin-top: 20px;
+    .rumo-sidebar-close {
+        display: inline-grid;
+        place-items: center;
     }
 
+    .rumo-sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1030;
 
-    .rumo-main-content-menu-open {
-        pointer-events: none;
+        display: block;
+
+        border: 0;
+
+        background: rgba(15, 23, 42, .28);
+        backdrop-filter: blur(2px);
     }
 
+    .rumo-main-content {
+        margin-left: 0;
 
-    body {
-        overscroll-behavior-y: none;
+        padding-top:
+            calc(58px + env(safe-area-inset-top));
+        padding-bottom:
+            calc(72px + env(safe-area-inset-bottom));
     }
 
+    .rumo-mobile-topbar {
+        position: fixed;
+        inset: 0 0 auto;
+        z-index: 1020;
+
+        min-height:
+            calc(58px + env(safe-area-inset-top));
+
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+
+        padding:
+            env(safe-area-inset-top)
+            14px
+            8px;
+
+        background:
+            rgba(255, 255, 255, .94);
+
+        border-bottom:
+            1px solid rgba(230, 235, 240, .9);
+
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+    }
+
+    .rumo-mobile-brand {
+        min-height: 42px;
+
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .rumo-mobile-brand-mark {
+        width: 31px;
+        height: 31px;
+
+        border-radius: 10px;
+
+        font-size: 16px;
+    }
+
+    .rumo-mobile-brand strong {
+        color: var(--text-strong);
+
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: -.03em;
+    }
+
+    .rumo-mobile-menu-button {
+        width: 40px;
+        height: 40px;
+
+        display: grid;
+        place-items: center;
+
+        border: 0;
+        border-radius: 12px;
+
+        background: #f5f7fa;
+        color: #445266;
+    }
+
+    .rumo-bottom-nav {
+        position: fixed;
+        inset: auto 0 0;
+        z-index: 1010;
+
+        height:
+            calc(64px + env(safe-area-inset-bottom));
+
+        display: grid;
+        grid-template-columns:
+            repeat(5, 1fr);
+
+        padding:
+            6px
+            8px
+            env(safe-area-inset-bottom);
+
+        background:
+            rgba(255, 255, 255, .96);
+
+        border-top:
+            1px solid rgba(226, 232, 240, .96);
+
+        box-shadow:
+            0 -10px 35px rgba(15, 23, 42, .06);
+
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+    }
+
+    .rumo-bottom-item {
+        min-width: 0;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        gap: 3px;
+
+        border: 0;
+        border-radius: 11px;
+
+        background: transparent;
+        color: #8290a0;
+
+        font-size: 8px;
+        font-weight: 700;
+    }
+
+    .rumo-bottom-item svg {
+        transition:
+            transform var(--transition),
+            color var(--transition);
+    }
+
+    .rumo-bottom-item.active {
+        color: #087084;
+    }
+
+    .rumo-bottom-item.active svg {
+        transform: translateY(-1px);
+    }
 }
