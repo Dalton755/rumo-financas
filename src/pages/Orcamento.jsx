@@ -21,6 +21,7 @@ import {
 import MainLayout from "../layouts/MainLayout";
 import PageContainer from "../components/ui/PageContainer";
 import PageHeader from "../components/ui/PageHeader";
+import MoneyCalculatorInput from "../components/ui/MoneyCalculatorInput";
 
 import { useToast } from "../context/ToastContext";
 
@@ -960,20 +961,11 @@ export default function Orcamento() {
                                         Limite de gastos
                                     </label>
 
-                                    <input
-                                        type="number"
-                                        min="0.01"
-                                        step="0.01"
-                                        placeholder="Ex.: 1200,00"
-                                        value={
-                                            valorLimite
-                                        }
-                                        onChange={(e) =>
-                                            setValorLimite(
-                                                e.target.value
-                                            )
-                                        }
-                                        autoFocus
+                                                                        <MoneyCalculatorInput
+                                        value={valorLimite}
+                                        onChange={setValorLimite}
+                                        placeholder="R$ 0,00"
+                                        ariaLabel="Limite do orçamento"
                                     />
 
 
