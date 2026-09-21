@@ -11,6 +11,10 @@ import {
     autenticarUsuario,
 } from "../_lib/autenticarUsuario.js";
 
+import {
+    resumirErroSeguro,
+} from "../_lib/logSeguro.js";
+
 
 function responder(res, status, body) {
     return res
@@ -535,7 +539,7 @@ export default async function handler(req, res) {
 
             console.error(
                 "[RUMO CHECKOUT] Mercado Pago recusou o checkout:",
-                erroMercadoPago
+                resumirErroSeguro(erroMercadoPago)
             );
 
 
@@ -801,7 +805,7 @@ export default async function handler(req, res) {
 
         console.error(
             "[RUMO CHECKOUT] Erro interno:",
-            error
+            resumirErroSeguro(error)
         );
 
 
