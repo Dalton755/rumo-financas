@@ -1,41 +1,59 @@
-import { useState, useRef, useEffect } from "react";
-import { MoreVertical } from "lucide-react";
-import LogoBanco, { obterCorBanco } from "./LogoBanco";
+import {
+    useEffect,
+    useRef,
+    useState
+} from "react";
+
+import {
+    MoreHorizontal,
+    Pencil,
+    Trash2
+} from "lucide-react";
+
+import LogoBanco, {
+    obterCorBanco
+} from "./LogoBanco";
+
 import "./CardConta.css";
 
 function formatarMoeda(valor) {
-
-    return Number(valor || 0).toLocaleString("pt-BR", {
-
-        style: "currency",
-        currency: "BRL"
-
-    });
-
+    return Number(valor || 0)
+        .toLocaleString(
+            "pt-BR",
+            {
+                style: "currency",
+                currency: "BRL"
+            }
+        );
 }
 
+export default function CardConta({
+    conta,
+    onEditar,
+    onExcluir
+}) {
+    const cor =
+        obterCorBanco(
+            conta.banco
+        );
 
-export default function CardConta({ conta, onEditar, onExcluir }) {
+    const [
+        menuAberto,
+        setMenuAberto
+    ] = useState(false);
 
-    const cor = obterCorBanco(conta.banco);
-
-    const [menuAberto, setMenuAberto] = useState(false);
-
-    const menuRef = useRef(null);
+    const menuRef =
+        useRef(null);
 
     useEffect(() => {
-
         function fecharMenu(e) {
-
             if (
                 menuRef.current &&
-                !menuRef.current.contains(e.target)
+                !menuRef.current
+                    .contains(e.target)
             ) {
-
                 setMenuAberto(false);
-
             }
-
         }
 
         document.addEventListener(
@@ -44,37 +62,34 @@ export default function CardConta({ conta, onEditar, onExcluir }) {
         );
 
         return () => {
-
             document.removeEventListener(
                 "mousedown",
                 fecharMenu
             );
-
         };
-
     }, []);
 
     return (
-
-        <div className="card-conta">
-
+        <article className="card-conta">
             <div
                 className="card-conta-faixa"
-                style={{ background: cor }}
+                style={{
+                    background:
+                        cor
+                }}
             />
 
             <div className="card-conta-topo">
-
                 <div className="card-conta-identidade">
-
                     <LogoBanco
-                        banco={conta.banco}
-                        size={52}
-                        radius={14}
+                        banco={
+                            conta.banco
+                        }
+                        size={42}
+                        radius={12}
                     />
 
                     <div className="card-conta-dados">
-
                         <h3>
                             {conta.nome}
                         </h3>
@@ -82,72 +97,79 @@ export default function CardConta({ conta, onEditar, onExcluir }) {
                         <span>
                             {conta.tipo}
                         </span>
-
                     </div>
-
                 </div>
 
-                <button
-                    className="card-conta-menu"
-                    onClick={() => setMenuAberto(!menuAberto)}
+                <div
+                    className="card-conta-menu-wrap"
+                    ref={menuRef}
                 >
-                    <MoreVertical size={18} />
-                </button>
+                    <button
+                        type="button"
+                        className="card-conta-menu"
+                        onClick={() =>
+                            setMenuAberto(
+                                !menuAberto
+                            )
+                        }
+                        aria-label="Ações da conta"
+                    >
+                        <MoreHorizontal
+                            size={18}
+                        />
+                    </button>
 
-                {
-                    menuAberto && (
-
-                        <div className="card-dropdown"
-                            ref={menuRef}
-
-                        >
-
-                            <button onClick={() => {
-
-                                setMenuAberto(false);
-
-                                onEditar(conta);
-
-                            }}>
-
-                                <span>✏️</span>
-
+                    {menuAberto && (
+                        <div className="card-dropdown">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setMenuAberto(
+                                        false
+                                    );
+                                    onEditar(
+                                        conta
+                                    );
+                                }}
+                            >
+                                <Pencil
+                                    size={15}
+                                />
                                 Editar
-
                             </button>
 
-                            <button onClick={() => {
-
-                                setMenuAberto(false);
-
-                                onExcluir(conta);
-
-                            }}>
-
-                                <span>🗑</span>
-
+                            <button
+                                type="button"
+                                className="perigo"
+                                onClick={() => {
+                                    setMenuAberto(
+                                        false
+                                    );
+                                    onExcluir(
+                                        conta
+                                    );
+                                }}
+                            >
+                                <Trash2
+                                    size={15}
+                                />
                                 Excluir
-
                             </button>
-
                         </div>
+                    )}
+                </div>
+            </div>
 
-                    )
-                }
-
+            <div className="card-conta-saldo-label">
+                Saldo disponível
             </div>
 
             <div className="card-conta-saldo">
-
                 {formatarMoeda(
                     conta.saldo_atual ??
                     conta.saldo_inicial
                 )}
-
             </div>
-
-        </div>
-
+        </article>
     );
-
 }

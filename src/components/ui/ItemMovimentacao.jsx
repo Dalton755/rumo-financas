@@ -1,8 +1,7 @@
 import { useState } from "react";
 
 import {
-
-    MoreVertical,
+    MoreHorizontal,
     Pencil,
     Trash2
 } from "lucide-react";
@@ -13,44 +12,51 @@ import IconeCategoria from "./IconeCategoria";
 import LogoBanco from "./LogoBanco";
 
 function formatarMoeda(valor) {
-
-    return Number(valor || 0).toLocaleString("pt-BR", {
-
-        style: "currency",
-        currency: "BRL"
-
-    });
-
+    return Number(valor || 0)
+        .toLocaleString(
+            "pt-BR",
+            {
+                style: "currency",
+                currency: "BRL"
+            }
+        );
 }
 
-function corComTransparencia(cor, alpha = 0.12) {
+function corComTransparencia(
+    cor,
+    alpha = 0.12
+) {
+    const valor =
+        String(cor || "")
+            .replace("#", "");
 
-    const valor = String(cor || "")
-        .replace("#", "");
-
-    if (!/^[0-9a-fA-F]{6}$/.test(valor)) {
-
+    if (
+        !/^[0-9a-fA-F]{6}$/.test(
+            valor
+        )
+    ) {
         return `rgba(100, 116, 139, ${alpha})`;
-
     }
 
-    const r = parseInt(
-        valor.substring(0, 2),
-        16
-    );
+    const r =
+        parseInt(
+            valor.substring(0, 2),
+            16
+        );
 
-    const g = parseInt(
-        valor.substring(2, 4),
-        16
-    );
+    const g =
+        parseInt(
+            valor.substring(2, 4),
+            16
+        );
 
-    const b = parseInt(
-        valor.substring(4, 6),
-        16
-    );
+    const b =
+        parseInt(
+            valor.substring(4, 6),
+            16
+        );
 
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-
 }
 
 export default function ItemMovimentacao({
@@ -58,46 +64,43 @@ export default function ItemMovimentacao({
     onEditar,
     onExcluir
 }) {
-
-    const [menuAberto, setMenuAberto] = useState(false);
+    const [menuAberto, setMenuAberto] =
+        useState(false);
 
     const receita =
-        movimentacao?.tipo === "receita";
+        movimentacao?.tipo ===
+        "receita";
 
     const prevista =
         Boolean(
             movimentacao?.prevista
         );
 
+    const possuiAcoes =
+        Boolean(
+            onEditar ||
+            onExcluir
+        );
+
     function editar() {
-
         setMenuAberto(false);
-
-        if (onEditar) {
-            onEditar();
-        }
-
+        onEditar?.();
     }
 
     function excluir() {
-
         setMenuAberto(false);
-
-        if (onExcluir) {
-            onExcluir();
-        }
-
+        onExcluir?.();
     }
 
     return (
-
         <div className="item-mov">
-
             <div
-                className={`item-icon ${receita
-                    ? "receita"
-                    : "despesa"
-                    }`}
+                className={
+                    `item-icon ${receita
+                        ? "receita"
+                        : "despesa"
+                    }`
+                }
                 style={{
                     backgroundColor:
                         corComTransparencia(
@@ -110,133 +113,136 @@ export default function ItemMovimentacao({
                         )
                 }}
             >
-
                 <IconeCategoria
-                    nome={movimentacao?.categoria}
-                    icone={movimentacao?.categoriaIcone}
-                    cor={movimentacao?.categoriaCor}
-                    tipo={movimentacao?.tipo}
-                    size={22}
+                    nome={
+                        movimentacao?.categoria
+                    }
+                    icone={
+                        movimentacao?.categoriaIcone
+                    }
+                    cor={
+                        movimentacao?.categoriaCor
+                    }
+                    tipo={
+                        movimentacao?.tipo
+                    }
+                    size={19}
                 />
-
             </div>
 
             <div className="item-info">
-
                 <h4>
                     {movimentacao?.descricao}
                 </h4>
 
                 <div className="item-info-meta">
-
                     <span>
-                        {movimentacao?.categoria}
+                        {movimentacao?.categoria ||
+                            "Sem categoria"}
                     </span>
 
-                    {
-                        prevista && (
-
-                            <span className="item-prevista">
-                                PREVISTA
-                            </span>
-
-                        )
-                    }
-
+                    {prevista && (
+                        <span className="item-prevista">
+                            Prevista
+                        </span>
+                    )}
                 </div>
-
             </div>
 
-            <div
-                className="item-conta item-conta-logo"
-                title={movimentacao?.conta}
-            >
-
-                <LogoBanco
-                    banco={movimentacao?.contaBanco}
-                    size={38}
-                    radius={10}
-                />
-
-            </div>
-
-            <div className="item-data">
-
-                {movimentacao?.data}
-
-            </div>
-
-            <div
-                className={`item-valor ${receita
-                    ? "receita"
-                    : "despesa"
-                    }`}
-            >
-
-                {formatarMoeda(
-                    movimentacao?.valor
-                )}
-
-            </div>
-
-            <div className="item-menu-container">
-
-                <button
-                    type="button"
-                    className="item-menu"
-                    onClick={() =>
-                        setMenuAberto(
-                            !menuAberto
-                        )
+            {movimentacao?.conta && (
+                <div
+                    className="item-conta item-conta-logo"
+                    title={
+                        movimentacao?.conta
                     }
                 >
+                    <LogoBanco
+                        banco={
+                            movimentacao?.contaBanco
+                        }
+                        size={32}
+                        radius={9}
+                    />
+                </div>
+            )}
 
-                    <MoreVertical size={18} />
-
-                </button>
-
-                {
-                    menuAberto && (
-
-                        <div className="item-menu-dropdown">
-
-                            <button
-                                type="button"
-                                className="item-menu-opcao"
-                                onClick={editar}
-                            >
-
-                                <Pencil size={16} />
-
-                                <span>
-                                    Editar
-                                </span>
-
-                            </button>
-
-                            <button
-                                type="button"
-                                className="item-menu-opcao excluir"
-                                onClick={excluir}
-                            >
-
-                                <Trash2 size={16} />
-
-                                <span>
-                                    Excluir
-                                </span>
-
-                            </button>
-
-                        </div>
-
-                    )
-                }
-
+            <div className="item-data">
+                {movimentacao?.data}
             </div>
 
+            <div
+                className={
+                    `item-valor ${receita
+                        ? "receita"
+                        : "despesa"
+                    }`
+                }
+            >
+                {receita ? "+" : "-"}
+                {formatarMoeda(
+                    Math.abs(
+                        Number(
+                            movimentacao?.valor ||
+                            0
+                        )
+                    )
+                )}
+            </div>
+
+            {possuiAcoes && (
+                <div className="item-menu-container">
+                    <button
+                        type="button"
+                        className="item-menu"
+                        onClick={() =>
+                            setMenuAberto(
+                                !menuAberto
+                            )
+                        }
+                        aria-label="Ações da movimentação"
+                    >
+                        <MoreHorizontal
+                            size={18}
+                        />
+                    </button>
+
+                    {menuAberto && (
+                        <div className="item-menu-dropdown">
+                            {onEditar && (
+                                <button
+                                    type="button"
+                                    className="item-menu-opcao"
+                                    onClick={editar}
+                                >
+                                    <Pencil
+                                        size={15}
+                                    />
+
+                                    <span>
+                                        Editar
+                                    </span>
+                                </button>
+                            )}
+
+                            {onExcluir && (
+                                <button
+                                    type="button"
+                                    className="item-menu-opcao excluir"
+                                    onClick={excluir}
+                                >
+                                    <Trash2
+                                        size={15}
+                                    />
+
+                                    <span>
+                                        Excluir
+                                    </span>
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
-
     );
-
 }

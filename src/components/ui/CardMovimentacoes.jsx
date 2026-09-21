@@ -1,53 +1,61 @@
+import { Children } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight, ReceiptText } from "lucide-react";
+
 import Card from "./Card";
 import "./CardMovimentacoes.css";
-import { ArrowRight } from "lucide-react";
 
 export default function CardMovimentacoes({
-
     children
+}) {
+    const temMovimentacoes =
+        Children.count(children) > 0;
 
-}){
-
-    return(
-
+    return (
         <Card className="rumo-mov-card">
-
             <div className="rumo-mov-header">
-
                 <div>
+                    <span className="rumo-section-eyebrow">
+                        Atividade recente
+                    </span>
 
                     <h3>
-
-                        Últimas Movimentações
-
+                        Últimas movimentações
                     </h3>
 
                     <p>
-
-                        Seus últimos lançamentos
-
+                        Entradas e saídas mais recentes.
                     </p>
-
                 </div>
 
-                <button>
-
+                <Link
+                    to="/movimentacoes"
+                    className="rumo-mov-link"
+                >
                     Ver todas
-
-                    <ArrowRight size={18}/>
-
-                </button>
-
+                    <ArrowRight size={16} />
+                </Link>
             </div>
 
             <div className="rumo-mov-lista">
+                {temMovimentacoes ? (
+                    children
+                ) : (
+                    <div className="rumo-mov-vazio">
+                        <ReceiptText size={23} />
 
-                {children}
+                        <div>
+                            <strong>
+                                Nenhuma movimentação no período
+                            </strong>
 
+                            <span>
+                                Seus lançamentos aparecerão aqui.
+                            </span>
+                        </div>
+                    </div>
+                )}
             </div>
-
         </Card>
-
-    )
-
+    );
 }

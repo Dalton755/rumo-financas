@@ -1,205 +1,188 @@
 .card-conta {
-
-    background: #fff;
-
-    border-radius: 24px;
-
-    padding: 24px;
-
-    box-shadow: 0 10px 35px rgba(0, 0, 0, .06);
-
-    transition: .25s;
-
     position: relative;
 
-    overflow: hidden;
+    min-width: 0;
+    min-height: 160px;
 
-    margin-bottom: 20px;
-
-    position: relative;
+    padding: 18px;
 
     overflow: visible;
 
+    border: 1px solid var(--border);
+    border-radius: 17px;
+
+    background: #ffffff;
+
+    box-shadow: var(--shadow-xs);
+
+    transition:
+        transform var(--transition),
+        box-shadow var(--transition),
+        border-color var(--transition);
 }
 
 .card-conta:hover {
+    transform: translateY(-2px);
 
-    transform: translateY(-4px);
-
+    border-color: #d9e2e8;
+    box-shadow: var(--shadow-sm);
 }
 
 .card-conta-faixa {
-
     position: absolute;
+    inset: 0 0 auto;
 
-    left: 0;
+    height: 3px;
 
-    top: 0;
+    border-radius:
+        17px
+        17px
+        0
+        0;
 
-    width: 6px;
-
-    height: 100%;
-
+    opacity: .78;
 }
 
 .card-conta-topo {
-
     display: flex;
-
+    align-items: flex-start;
     justify-content: space-between;
 
-    align-items: flex-start;
-
+    gap: 12px;
 }
 
 .card-conta-identidade {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 14px;
-
     min-width: 0;
 
+    display: flex;
+    align-items: center;
+    gap: 11px;
 }
 
 .card-conta-dados {
-
     min-width: 0;
-
 }
 
 .card-conta-dados h3 {
-
     margin: 0;
 
+    overflow: hidden;
+
+    color: #334155;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .card-conta-dados span {
-
     display: block;
 
     margin-top: 3px;
 
-}
+    color: #8b97a6;
 
-.card-conta-topo h3 {
-
-    margin: 0;
-
-    font-size: 24px;
-
-    font-weight: 700;
-
-}
-
-.card-conta-topo span {
-
-    color: #7B8191;
+    font-size: 8px;
+    font-weight: 600;
 
     text-transform: capitalize;
+}
 
+.card-conta-menu-wrap {
+    position: relative;
 }
 
 .card-conta-menu {
+    width: 32px;
+    height: 32px;
 
-    border: none;
+    display: grid;
+    place-items: center;
 
-    background: none;
+    border: 0;
+    border-radius: 9px;
 
-    cursor: pointer;
+    background: transparent;
+    color: #94a3b8;
+}
 
+.card-conta-menu:hover {
+    background: #f5f7f9;
+    color: #526071;
+}
+
+.card-conta-saldo-label {
+    margin-top: 24px;
+
+    color: #8b97a6;
+
+    font-size: 8px;
+    font-weight: 700;
 }
 
 .card-conta-saldo {
-
-    margin-top: 26px;
-
-    font-size: 32px;
-
-    font-weight: 800;
-
-    color: #1F2937;
-
-}
-
-.card-dropdown {
-
-    position: absolute;
-
-    top: 42px;
-
-    right: 0;
-
-    background: #fff;
-
-    border-radius: 14px;
-
-    box-shadow: 0 12px 30px rgba(0, 0, 0, .15);
+    margin-top: 4px;
 
     overflow: hidden;
 
-    min-width: 170px;
+    color: var(--text-strong);
 
-    z-index: 999;
+    font-size: 23px;
+    font-weight: 800;
+    letter-spacing: -.035em;
 
-    animation: abrirMenu .18s ease;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 
-    transform-origin: top right;
+.card-dropdown {
+    position: absolute;
+    top: 36px;
+    right: 0;
+    z-index: 1200;
 
+    min-width: 128px;
+
+    padding: 5px;
+
+    border: 1px solid var(--border);
+    border-radius: 11px;
+
+    background: #ffffff;
+    box-shadow: var(--shadow-md);
 }
 
 .card-dropdown button {
-
     width: 100%;
 
-    border: none;
-
-    background: #fff;
-
-    padding: 14px 18px;
-
     display: flex;
-
     align-items: center;
+    gap: 7px;
 
-    gap: 10px;
+    padding: 8px 9px;
 
-    cursor: pointer;
+    border: 0;
+    border-radius: 8px;
 
-    font-size: 15px;
+    background: #ffffff;
+    color: #526071;
 
-    transition: .2s;
+    font-size: 9px;
+    font-weight: 650;
 
+    text-align: left;
 }
 
 .card-dropdown button:hover {
-
-    background: #F5F7FB;
-
+    background: #f7f9fb;
 }
 
-.card-dropdown button:last-child {
-
-    color: #EF4444;
-
+.card-dropdown button.perigo {
+    color: #c24141;
 }
 
-@keyframes abrirMenu {
-
-    from {
-
-        opacity: 0;
-        transform: scale(.92);
-
-    }
-
-    to {
-
-        opacity: 1;
-        transform: scale(1);
-
-    }
-
+.card-dropdown button.perigo:hover {
+    background: #fef2f2;
 }

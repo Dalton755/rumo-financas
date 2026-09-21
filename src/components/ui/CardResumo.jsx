@@ -1,6 +1,5 @@
 import Card from "./Card";
 import "./CardResumo.css";
-import { MoreVertical } from "lucide-react";
 
 export default function CardResumo({
   titulo,
@@ -10,65 +9,43 @@ export default function CardResumo({
   badge,
   cor = "blue"
 }) {
-
   return (
-
-    <Card className="rumo-resumo-card">
-
+    <Card
+      className={
+        `rumo-resumo-card ${cor}`
+      }
+    >
       <div className="rumo-resumo-topo">
-
-        <div className={`rumo-resumo-icon ${cor}`}>
-
+        <div
+          className={
+            `rumo-resumo-icon ${cor}`
+          }
+        >
           {icone}
-
         </div>
 
-        <button className="rumo-card-menu">
-
-          <MoreVertical size={18} />
-
-        </button>
-
+        {badge && (
+          <span className="rumo-resumo-badge">
+            {badge}
+          </span>
+        )}
       </div>
 
       <div className="rumo-resumo-info">
-
-        <h3>
-
+        <span className="rumo-resumo-titulo">
           {titulo}
+        </span>
 
-        </h3>
+        <strong className="rumo-resumo-valor">
+          {valor}
+        </strong>
 
         {subtitulo && (
-
-          <p>
-
+          <span className="rumo-resumo-subtitulo">
             {subtitulo}
-
-          </p>
-
+          </span>
         )}
-
       </div>
-
-      <div className="rumo-resumo-valor">
-
-        {valor}
-
-      </div>
-
-      {badge && (
-
-        <div className="rumo-resumo-badge">
-
-          {badge}
-
-        </div>
-
-      )}
-
     </Card>
-
-  )
-
+  );
 }

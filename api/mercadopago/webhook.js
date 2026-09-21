@@ -6,6 +6,10 @@ import {
     supabaseAdmin,
 } from "../_lib/supabaseAdmin.js";
 
+import {
+    resumirErroSeguro,
+} from "../_lib/logSeguro.js";
+
 
 const ACCESS_TOKEN =
     process.env.MERCADOPAGO_ACCESS_TOKEN;
@@ -180,7 +184,7 @@ function validarAssinaturaWebhook(req) {
 
         console.warn(
             "[RUMO WEBHOOK] Assinatura inválida:",
-            error
+            resumirErroSeguro(error)
         );
 
         return false;
@@ -293,6 +297,298 @@ async function buscarPagamentoMercadoPago(
 
 
 // ============================================================
+// CANCELAR PREAPPROVAL NO MERCADO PAGO
+// ============================================================
+
+async function cancelarPreapprovalMercadoPago(
+    preapprovalId
+) {
+
+    const resposta =
+        await fetch(
+            `https://api.mercadopago.com/preapproval/${encodeURIComponent(preapprovalId)}`,
+            {
+                method:
+                    "PUT",
+
+                headers: {
+                    Authorization:
+                        `Bearer ${ACCESS_TOKEN}`,
+
+                    "Content-Type":
+                        "application/json",
+                },
+
+                body:
+                    JSON.stringify({
+                        status:
+                            "canceled",
+                    }),
+            }
+        );
+
+
+    let dados =
+        null;
+
+
+    try {
+
+        dados =
+            await resposta.json();
+
+    } catch {
+
+        dados =
+            null;
+    }
+
+
+    if (resposta.ok) {
+
+        return {
+            cancelado:
+                true,
+
+            jaCancelado:
+                false,
+
+            status:
+                dados?.status ??
+                "canceled",
+        };
+    }
+
+
+    /*
+     * Em retries do webhook a assinatura pode já estar
+     * cancelada. Confirmamos o estado atual antes de falhar.
+     */
+    const assinaturaAtual =
+        await buscarAssinaturaMercadoPago(
+            preapprovalId
+        );
+
+
+    if (
+        assinaturaFoiCancelada(
+            assinaturaAtual?.status
+        )
+    ) {
+
+        return {
+            cancelado:
+                true,
+
+            jaCancelado:
+                true,
+
+            status:
+                assinaturaAtual?.status ??
+                "canceled",
+        };
+    }
+
+
+    const erro =
+        new Error(
+            dados?.message ??
+            `Erro HTTP ${resposta.status} ao cancelar preapproval.`
+        );
+
+    erro.statusHttp =
+        resposta.status;
+
+    throw erro;
+}
+
+
+// ============================================================
+// TRATAR REEMBOLSO / CHARGEBACK PERDIDO
+// ============================================================
+
+async function tratarEstornoPagamento(
+    pagamento
+) {
+
+    const preapprovalId =
+        pagamento
+            ?.mercado_pago_preapproval_id
+            ? String(
+                pagamento
+                    .mercado_pago_preapproval_id
+            )
+            : null;
+
+
+    if (!preapprovalId) {
+
+        return {
+            cancelado:
+                false,
+
+            motivo:
+                "Pagamento sem preapproval_id.",
+        };
+    }
+
+
+    const cancelamentoProvedor =
+        await cancelarPreapprovalMercadoPago(
+            preapprovalId
+        );
+
+
+    const {
+        data: assinaturaAtual,
+        error: assinaturaError,
+    } =
+        await supabaseAdmin
+            .schema("rumo")
+            .from("assinaturas")
+            .select(`
+                id,
+                usuario_id,
+                plano_id,
+                status,
+                vence_em,
+                mercado_pago_preapproval_id
+            `)
+            .eq(
+                "usuario_id",
+                pagamento.usuario_id
+            )
+            .maybeSingle();
+
+
+    if (assinaturaError) {
+        throw assinaturaError;
+    }
+
+
+    if (
+        !assinaturaAtual ||
+        String(
+            assinaturaAtual
+                .mercado_pago_preapproval_id ??
+            ""
+        ) !==
+        preapprovalId
+    ) {
+
+        return {
+            cancelado:
+                true,
+
+            assinaturaAtualizada:
+                false,
+
+            cancelamentoProvedor,
+        };
+    }
+
+
+    const agora =
+        new Date();
+
+    const vencimentoAtual =
+        assinaturaAtual?.vence_em
+            ? new Date(
+                assinaturaAtual.vence_em
+            )
+            : null;
+
+    const vencimentoPagamento =
+        pagamento?.vencimento_em
+            ? new Date(
+                pagamento.vencimento_em
+            )
+            : null;
+
+
+    const existePeriodoPosteriorPago =
+        vencimentoAtual &&
+        vencimentoPagamento &&
+        !Number.isNaN(
+            vencimentoAtual.getTime()
+        ) &&
+        !Number.isNaN(
+            vencimentoPagamento.getTime()
+        ) &&
+        vencimentoAtual.getTime() >
+        (
+            vencimentoPagamento.getTime() +
+            60_000
+        );
+
+
+    const atualizacao = {
+
+        renovacao_automatica:
+            false,
+
+        cancelamento_provedor_pendente:
+            false,
+
+        cancelamento_provedor_em:
+            agora.toISOString(),
+
+        cancelamento_provedor_erro:
+            null,
+
+        updated_at:
+            agora.toISOString(),
+    };
+
+
+    if (!existePeriodoPosteriorPago) {
+
+        atualizacao.status =
+            "ENCERRADA";
+
+        atualizacao.vence_em =
+            agora.toISOString();
+    }
+
+
+    const {
+        error: atualizarError,
+    } =
+        await supabaseAdmin
+            .schema("rumo")
+            .from("assinaturas")
+            .update(
+                atualizacao
+            )
+            .eq(
+                "id",
+                assinaturaAtual.id
+            );
+
+
+    if (atualizarError) {
+        throw atualizarError;
+    }
+
+
+    return {
+        cancelado:
+            true,
+
+        assinaturaAtualizada:
+            true,
+
+        periodoPosteriorPreservado:
+            Boolean(
+                existePeriodoPosteriorPago
+            ),
+
+        cancelamentoProvedor,
+    };
+}
+
+
+// ============================================================
 // MAPEAR STATUS
 // ============================================================
 
@@ -345,7 +641,19 @@ function mapearStatusPagamento(
                 return "ESTORNADO";
             }
 
-            return "APROVADO";
+            if (
+                statusDetail ===
+                "reimbursed"
+            ) {
+                return "APROVADO";
+            }
+
+            /*
+             * in_process = contestação ainda em análise.
+             * Não tratamos como aprovado até existir
+             * uma decisão favorável ao vendedor.
+             */
+            return "PENDENTE";
 
 
         default:
@@ -376,6 +684,144 @@ function assinaturaFoiCancelada(statusMP) {
 
 
 // ============================================================
+// VALIDAR PAGAMENTO APROVADO CONTRA A INTENÇÃO DO RUMO
+// ============================================================
+
+function validarPagamentoAprovado(
+    pagamento,
+    pagamentoMP
+) {
+
+    const valorEsperado =
+        Number(
+            pagamento?.valor
+        );
+
+    const valorRecebido =
+        Number(
+            pagamentoMP
+                ?.transaction_amount
+        );
+
+
+    if (
+        !Number.isFinite(
+            valorEsperado
+        ) ||
+        valorEsperado <= 0 ||
+        !Number.isFinite(
+            valorRecebido
+        ) ||
+        valorRecebido <= 0 ||
+        Math.abs(
+            valorEsperado -
+            valorRecebido
+        ) > 0.01
+    ) {
+
+        throw new Error(
+            "Pagamento aprovado com valor divergente da intenção registrada no Rumo."
+        );
+    }
+
+
+    const moedaEsperada =
+        String(
+            pagamento?.moeda ??
+            "BRL"
+        )
+            .trim()
+            .toUpperCase();
+
+    const moedaRecebida =
+        String(
+            pagamentoMP
+                ?.currency_id ??
+            ""
+        )
+            .trim()
+            .toUpperCase();
+
+
+    if (
+        !moedaRecebida ||
+        moedaRecebida !==
+        moedaEsperada
+    ) {
+
+        throw new Error(
+            "Pagamento aprovado com moeda divergente da intenção registrada no Rumo."
+        );
+    }
+
+
+    const paymentIdEsperado =
+        pagamento
+            ?.mercado_pago_payment_id
+            ? String(
+                pagamento
+                    .mercado_pago_payment_id
+            )
+            : null;
+
+    const paymentIdRecebido =
+        pagamentoMP?.id !==
+            undefined &&
+        pagamentoMP?.id !==
+            null
+            ? String(
+                pagamentoMP.id
+            )
+            : null;
+
+
+    if (
+        paymentIdEsperado &&
+        paymentIdRecebido &&
+        paymentIdEsperado !==
+        paymentIdRecebido
+    ) {
+
+        throw new Error(
+            "Pagamento aprovado com identificador divergente."
+        );
+    }
+
+
+    const referenciaEsperada =
+        pagamento
+            ?.mercado_pago_external_reference
+            ? String(
+                pagamento
+                    .mercado_pago_external_reference
+            )
+            : null;
+
+    const referenciaRecebida =
+        pagamentoMP
+            ?.external_reference
+            ? String(
+                pagamentoMP
+                    .external_reference
+            )
+            : null;
+
+
+    if (
+        referenciaEsperada &&
+        referenciaRecebida &&
+        referenciaEsperada !==
+        referenciaRecebida
+    ) {
+
+        throw new Error(
+            "Pagamento aprovado com referência externa divergente."
+        );
+    }
+}
+
+
+// ============================================================
 // ATIVAR / RENOVAR PREMIUM
 //
 // IMPORTANTE:
@@ -386,6 +832,12 @@ async function ativarOuRenovarPremium({
     pagamento,
     pagamentoMP,
 }) {
+
+    validarPagamentoAprovado(
+        pagamento,
+        pagamentoMP
+    );
+
 
     const preapprovalId =
         pagamento
@@ -664,6 +1116,21 @@ async function atualizarPagamentoExistente(
     let assinaturaResultado =
         null;
 
+    let estornoResultado =
+        null;
+
+
+    if (
+        statusRumo ===
+        "ESTORNADO"
+    ) {
+
+        estornoResultado =
+            await tratarEstornoPagamento(
+                pagamentoExistente
+            );
+    }
+
 
     if (
         statusRumo ===
@@ -719,6 +1186,9 @@ async function atualizarPagamentoExistente(
 
         assinatura:
             assinaturaResultado,
+
+        estorno:
+            estornoResultado,
     };
 }
 
@@ -936,6 +1406,24 @@ async function processarPagamento(
         let assinaturaResultado =
             null;
 
+        let estornoResultado =
+            null;
+
+
+        if (
+            statusRumo ===
+            "ESTORNADO"
+        ) {
+
+            estornoResultado =
+                await tratarEstornoPagamento({
+                    ...pagamentoBase,
+
+                    mercado_pago_payment_id:
+                        paymentId,
+                });
+        }
+
 
         if (
             statusRumo ===
@@ -1006,6 +1494,9 @@ async function processarPagamento(
 
             assinatura:
                 assinaturaResultado,
+
+            estorno:
+                estornoResultado,
         };
     }
 
@@ -1015,6 +1506,9 @@ async function processarPagamento(
     // ========================================================
 
     let assinaturaResultado =
+        null;
+
+    let estornoResultado =
         null;
 
 
@@ -1214,6 +1708,22 @@ async function processarPagamento(
     }
 
 
+    if (
+        statusRumo ===
+        "ESTORNADO"
+    ) {
+
+        estornoResultado =
+            await tratarEstornoPagamento({
+                ...novoPagamento,
+
+                id:
+                    pagamentoRenovacao?.id ??
+                    null,
+            });
+    }
+
+
     return {
         processado:
             true,
@@ -1233,6 +1743,9 @@ async function processarPagamento(
 
         assinatura:
             assinaturaResultado,
+
+        estorno:
+            estornoResultado,
     };
 }
 
@@ -1710,8 +2223,6 @@ export default async function handler(
                         authorizedPaymentStatus:
                             respostaAuthorizedPayment.status,
 
-                        resposta:
-                            authorizedPayment,
                     }
                 );
 
@@ -1900,7 +2411,7 @@ export default async function handler(
 
         console.error(
             "[RUMO WEBHOOK] Erro:",
-            error
+            resumirErroSeguro(error)
         );
 
 

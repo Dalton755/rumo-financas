@@ -1,11 +1,19 @@
-.rumo-page{
+.rumo-page {
+    width: 100%;
+    max-width: 1360px;
 
-    width:100%;
+    margin: 0 auto;
+    padding: 30px 34px 52px;
+}
 
-    max-width:1200px;
+@media (max-width: 991.98px) {
+    .rumo-page {
+        padding: 22px 18px 30px;
+    }
+}
 
-    margin:auto;
-
-    padding:40px;
-
+@media (max-width: 575.98px) {
+    .rumo-page {
+        padding: 18px 14px 26px;
+    }
 }

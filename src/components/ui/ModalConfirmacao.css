@@ -1,394 +1,122 @@
-.item-mov {
-
-    display: grid;
-
-    grid-template-columns:
-        60px 1.8fr 1fr 120px 150px 50px;
-
-    align-items: center;
-
-    gap: 20px;
-
-    background: white;
-
-    border-radius: 22px;
-
-    padding: 22px;
-
-    margin-bottom: 16px;
-
-    box-shadow: 0 15px 40px rgba(30, 40, 60, .08);
-
-}
-
-.item-icon {
-
-    width: 52px;
-
-    height: 52px;
-
-    border-radius: 16px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    background: #F8FAFC;
-
-    border: 1px solid #EEF2F7;
-
-}
-
-.item-info h4 {
-
-    margin: 0;
-
-    font-size: 20px;
-
-    font-weight: 700;
-
-    color: #1E293B;
-
-}
-
-.item-info span {
-
-    color: #64748B;
-
-    font-size: 15px;
-
-}
-
-.item-conta {
-
-    color: #475569;
-
-    font-weight: 600;
-
-}
-
-.item-conta-logo {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: flex-start;
-
-}
-
-.item-data {
-
-    color: #64748B;
-
-}
-
-.item-valor {
-
-    font-size: 22px;
-
-    font-weight: 800;
-
-    text-align: right;
-
-}
-
-.item-valor.receita {
-
-    color: #22C55E;
-
-}
-
-.item-valor.despesa {
-
-    color: #EF4444;
-
-}
-
-.item-menu {
-
-    border: none;
-
-    background: transparent;
-
-    cursor: pointer;
-
-}
-
-/* =====================================================
-   MODAL DE CONFIRMAÇÃO
-===================================================== */
-
 .modal-confirmacao-overlay {
-
     position: fixed;
-
     inset: 0;
-
-    background: rgba(15, 23, 42, 0.55);
+    z-index: 20000;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     padding: 20px;
 
-    z-index: 9999;
+    background:
+        rgba(15, 23, 42, .38);
 
+    backdrop-filter: blur(4px);
 }
 
 .modal-confirmacao-box {
-
     width: 100%;
+    max-width: 420px;
 
-    max-width: 520px;
+    padding: 22px;
+
+    border: 1px solid rgba(226, 232, 240, .94);
+    border-radius: 18px;
 
     background: #ffffff;
 
-    border-radius: 24px;
-
-    padding: 30px;
-
     box-shadow:
-        0 25px 70px rgba(15, 23, 42, 0.25);
-
+        0 30px 80px
+        rgba(15, 23, 42, .18);
 }
 
 .modal-confirmacao-box h2 {
+    margin: 0 0 7px;
 
-    margin: 0 0 12px;
+    color: #27364a;
 
-    color: #1e293b;
-
-    font-size: 28px;
-
+    font-size: 17px;
     font-weight: 800;
-
+    letter-spacing: -.02em;
 }
 
 .modal-confirmacao-box p {
-
     margin: 0;
 
-    color: #64748b;
+    color: #6f7d8e;
 
-    font-size: 16px;
-
+    font-size: 10px;
     line-height: 1.6;
-
 }
 
 .modal-confirmacao-footer {
-
-    margin-top: 28px;
-
     display: flex;
-
     justify-content: flex-end;
+    gap: 8px;
 
-    gap: 12px;
+    margin-top: 20px;
+}
 
+.btn-confirmacao-cancelar,
+.btn-confirmacao-excluir {
+    min-height: 40px;
+
+    padding: 0 13px;
+
+    border-radius: 10px;
+
+    font-size: 10px;
+    font-weight: 750;
 }
 
 .btn-confirmacao-cancelar {
+    border: 1px solid var(--border-strong);
 
-    border: none;
-
-    background: #f1f5f9;
-
-    color: #334155;
-
-    padding: 13px 22px;
-
-    border-radius: 14px;
-
-    font-size: 16px;
-
-    font-weight: 700;
-
-    cursor: pointer;
-
+    background: #ffffff;
+    color: #526071;
 }
 
 .btn-confirmacao-cancelar:hover {
-
-    background: #e2e8f0;
-
+    background: #f8fafc;
 }
 
 .btn-confirmacao-excluir {
+    border: 1px solid #dc4c4c;
 
-    border: none;
-
-    background: #ef4444;
-
-    color: white;
-
-    padding: 13px 22px;
-
-    border-radius: 14px;
-
-    font-size: 16px;
-
-    font-weight: 700;
-
-    cursor: pointer;
-
+    background: #dc4c4c;
+    color: #ffffff;
 }
 
 .btn-confirmacao-excluir:hover {
-
-    background: #dc2626;
-
+    background: #c63d3d;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 575.98px) {
+    .modal-confirmacao-overlay {
+        align-items: flex-end;
+
+        padding: 10px;
+    }
 
     .modal-confirmacao-box {
+        max-width: none;
 
-        padding: 24px;
+        padding: 20px 18px;
 
-        border-radius: 20px;
-
+        border-radius:
+            18px
+            18px
+            14px
+            14px;
     }
 
     .modal-confirmacao-footer {
-
         flex-direction: column-reverse;
-
     }
 
     .btn-confirmacao-cancelar,
     .btn-confirmacao-excluir {
-
         width: 100%;
-
     }
-
-}
-
-/* =====================================================
-   MOVIMENTAÇÕES - RESPONSIVO MOBILE
-===================================================== */
-
-@media (max-width: 768px) {
-
-    .item-mov {
-
-        grid-template-columns:
-            52px minmax(0, 1fr) auto;
-
-        grid-template-areas:
-            "icone info menu"
-            "icone conta valor"
-            "icone data valor";
-
-        gap: 6px 12px;
-
-        padding: 18px;
-
-        border-radius: 20px;
-
-        align-items: center;
-
-    }
-
-    .item-icon {
-
-        grid-area: icone;
-
-        width: 46px;
-
-        height: 46px;
-
-        border-radius: 14px;
-
-        align-self: start;
-
-    }
-
-    .item-info {
-
-        grid-area: info;
-
-        min-width: 0;
-
-    }
-
-    .item-info h4 {
-
-        font-size: 16px;
-
-        line-height: 1.2;
-
-        margin: 0;
-
-        overflow-wrap: anywhere;
-
-    }
-
-    .item-info span {
-
-        display: block;
-
-        margin-top: 3px;
-
-        font-size: 13px;
-
-    }
-
-    .item-conta {
-
-        grid-area: conta;
-
-        font-size: 13px;
-
-        color: #475569;
-
-    }
-
-    .item-data {
-
-        grid-area: data;
-
-        font-size: 12px;
-
-        color: #64748b;
-
-    }
-
-    .item-valor {
-
-        grid-area: valor;
-
-        font-size: 16px;
-
-        white-space: nowrap;
-
-        align-self: center;
-
-        text-align: right;
-
-    }
-
-    .item-menu-container {
-
-        grid-area: menu;
-
-        align-self: start;
-
-    }
-
-    .item-menu {
-
-        width: 32px;
-
-        height: 32px;
-
-    }
-
 }

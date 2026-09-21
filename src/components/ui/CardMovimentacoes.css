@@ -1,55 +1,123 @@
-.rumo-mov-card{
-
-    padding:32px;
-
+.rumo-mov-card {
+    padding: 22px;
 }
 
-.rumo-mov-header{
+.rumo-mov-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
 
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-bottom:26px;
-
+    margin-bottom: 16px;
 }
 
-.rumo-mov-header h3{
+.rumo-section-eyebrow {
+    display: block;
 
-    margin:0;
+    margin-bottom: 4px;
 
-    font-size:22px;
+    color: var(--primary-dark);
 
-    font-weight:700;
-
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: .09em;
+    text-transform: uppercase;
 }
 
-.rumo-mov-header p{
+.rumo-mov-header h3 {
+    margin: 0;
 
-    margin-top:6px;
+    color: var(--text-strong);
 
-    color:var(--text-light);
-
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -.02em;
 }
 
-.rumo-mov-header button{
+.rumo-mov-header p {
+    margin: 4px 0 0;
 
-    background:none;
+    color: var(--text-light);
 
-    border:none;
+    font-size: 10px;
+}
 
-    display:flex;
+.rumo-mov-link {
+    min-height: 34px;
 
-    align-items:center;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 
-    gap:8px;
+    padding: 0 9px;
 
-    color:var(--primary);
+    border: 1px solid var(--border);
+    border-radius: 9px;
 
-    font-weight:600;
+    background: #ffffff;
+    color: #536174;
 
-    cursor:pointer;
+    font-size: 9px;
+    font-weight: 750;
 
+    transition:
+        border-color var(--transition),
+        color var(--transition),
+        background var(--transition);
+}
+
+.rumo-mov-link:hover {
+    border-color: #cbd9e0;
+    background: #f8fafc;
+    color: #087084;
+}
+
+.rumo-mov-lista {
+    border-top: 1px solid #edf1f5;
+}
+
+.rumo-mov-vazio {
+    min-height: 138px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    color: #94a3b8;
+}
+
+.rumo-mov-vazio > svg {
+    color: #9eb2bd;
+}
+
+.rumo-mov-vazio strong,
+.rumo-mov-vazio span {
+    display: block;
+}
+
+.rumo-mov-vazio strong {
+    color: #566477;
+
+    font-size: 11px;
+}
+
+.rumo-mov-vazio span {
+    margin-top: 3px;
+
+    font-size: 9px;
+}
+
+@media (max-width: 575.98px) {
+    .rumo-mov-card {
+        padding: 18px;
+    }
+
+    .rumo-mov-header {
+        align-items: center;
+    }
+
+    .rumo-mov-header p {
+        display: none;
+    }
 }

@@ -1,0 +1,180 @@
+.relatorios-loading {
+  min-height: 360px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  color: #94a3b8;
+
+  text-align: center;
+}
+
+.relatorios-loading > svg {
+  margin-bottom: 6px;
+
+  color: #0b879b;
+}
+
+.relatorios-loading strong {
+  color: #526071;
+
+  font-size: 12px;
+}
+
+.relatorios-loading span {
+  font-size: 9px;
+}
+
+.relatorios-basico-card {
+  padding: 20px;
+
+  border: 1px solid var(--border);
+  border-radius: 17px;
+
+  background: #ffffff;
+
+  box-shadow: var(--shadow-xs);
+}
+
+.relatorios-basico-header {
+  margin-bottom: 14px;
+}
+
+.relatorios-basico-header span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: var(--primary-dark);
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.relatorios-basico-header h2 {
+  margin: 0;
+
+  color: #334155;
+
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+
+.relatorios-vazio {
+  min-height: 240px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  color: #94a3b8;
+
+  text-align: center;
+}
+
+.relatorios-vazio > svg {
+  margin-bottom: 5px;
+
+  color: #a3b4bd;
+}
+
+.relatorios-vazio strong {
+  color: #566477;
+
+  font-size: 11px;
+}
+
+.relatorios-vazio span {
+  max-width: 360px;
+
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.relatorios-premium-callout {
+  display: grid;
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+  gap: 11px;
+
+  margin-top: 13px;
+  padding: 12px 14px;
+
+  border: 1px solid #e1e8ed;
+  border-radius: 14px;
+
+  background: #f9fbfc;
+}
+
+.relatorios-premium-icon {
+  width: 34px;
+  height: 34px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 10px;
+
+  background: #eaf7f9;
+  color: #0b879b;
+}
+
+.relatorios-premium-callout strong,
+.relatorios-premium-callout span {
+  display: block;
+}
+
+.relatorios-premium-callout strong {
+  color: #475569;
+
+  font-size: 10px;
+}
+
+.relatorios-premium-callout span {
+  margin-top: 2px;
+
+  color: #8b97a6;
+
+  font-size: 8px;
+}
+
+.relatorios-premium-callout > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  color: #0b7f91;
+
+  font-size: 9px;
+  font-weight: 750;
+}
+
+@media (max-width: 575.98px) {
+  .relatorios-basico-card {
+    padding: 16px;
+  }
+
+  .relatorios-premium-callout {
+    grid-template-columns:
+      auto
+      minmax(0, 1fr);
+  }
+
+  .relatorios-premium-callout > a {
+    grid-column: 2;
+  }
+}

@@ -1,96 +1,31 @@
 .rumo-card {
-
     position: relative;
 
-    overflow: hidden;
+    background: #ffffff;
 
-    background: var(--rumo-gradient-soft);
-
-    border: 1px solid rgba(255, 255, 255, .65);
-
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
 
-    padding: 32px;
+    padding: 22px;
 
-    box-shadow:
-        var(--shadow-sm);
+    box-shadow: var(--shadow-xs);
 
     transition:
-        transform var(--transition),
+        border-color var(--transition),
         box-shadow var(--transition),
-        border-color var(--transition);
-
-    backdrop-filter: blur(18px);
-
-}
-
-/* Reflexo superior */
-
-.rumo-card::before {
-
-    content: "";
-
-    position: absolute;
-
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 2px;
-
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255,255,255,.95),
-        transparent
-    );
-
-}
-
-/* Reflexo lateral */
-
-.rumo-card::after {
-
-    content: "";
-
-    position: absolute;
-
-    top: -80%;
-
-    left: -150%;
-
-    width: 70%;
-
-    height: 260%;
-
-    transform: rotate(28deg);
-
-    background: linear-gradient(
-
-        transparent,
-
-        rgba(255,255,255,.22),
-
-        transparent
-
-    );
-
-    transition: .9s;
-
+        transform var(--transition);
 }
 
 .rumo-card:hover {
+    border-color: #d8e2e8;
 
-    transform:
-        translateY(-8px);
-
-    box-shadow:
-        var(--shadow-lg);
-
+    box-shadow: var(--shadow-sm);
 }
 
-.rumo-card:hover::after {
+@media (max-width: 575.98px) {
+    .rumo-card {
+        padding: 18px;
 
-    left: 170%;
-
+        border-radius: 17px;
+    }
 }

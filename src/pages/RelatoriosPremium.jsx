@@ -37,6 +37,7 @@ import {
 } from "../services/exportarRelatorioPremium";
 
 import MainLayout from "../layouts/MainLayout";
+import PageContainer from "../components/ui/PageContainer";
 import LogoBanco from "../components/ui/LogoBanco";
 import IconeCategoria from "../components/ui/IconeCategoria";
 import { supabase } from "../services/supabase";
@@ -1806,6 +1807,7 @@ function RelatoriosPremium() {
     return (
 
         <MainLayout>
+            <PageContainer>
 
             <div className="rel-premium">
 
@@ -2790,6 +2792,7 @@ function RelatoriosPremium() {
 
             </div>
 
+            </PageContainer>
         </MainLayout>
 
     );

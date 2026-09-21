@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import MainLayout from "../layouts/MainLayout";
 import PageHeader from "../components/ui/PageHeader";
+import PageContainer from "../components/ui/PageContainer";
 
 import {
   Wallet,
   ArrowUpRight,
   ArrowDownRight,
-  List
+  List,
+  Plus,
+  Search,
+  SlidersHorizontal
 } from "lucide-react";
 
 import CardResumo from "../components/ui/CardResumo";
@@ -50,6 +54,7 @@ function Movimentacoes() {
   ] = useState([]);
 
   const [pesquisa, setPesquisa] = useState("");
+  const [filtrosAbertos, setFiltrosAbertos] = useState(false);
 
   const [
     mesSelecionado,
@@ -538,7 +543,7 @@ function Movimentacoes() {
   return (
 
     <MainLayout>
-
+      <PageContainer>
 
       <PageHeader
 
@@ -549,23 +554,20 @@ function Movimentacoes() {
       >
 
         <button
-
+          type="button"
           className="btn-nova-movimentacao"
-
           onClick={() =>
             setModalAberto(true)
           }
-
         >
-
-          + Nova Movimentação
-
+          <Plus size={16} />
+          Nova movimentação
         </button>
 
       </PageHeader>
 
 
-      <div className="dashboard-cards">
+      <section className="movimentacoes-resumo">
 
 
         <CardResumo
@@ -658,33 +660,52 @@ function Movimentacoes() {
         />
 
 
-      </div>
+      </section>
 
 
-      <div className="movimentacoes-filtros">
+      <section className="movimentacoes-filtros">
 
+        <div className="movimentacoes-filtros-topo">
+        <div className="filtro-pesquisa-wrap">
+          <Search size={16} />
 
-        <input
+          <input
+            type="text"
+            placeholder="Pesquisar descrição"
+            className="filtro-pesquisa"
+            value={
+              pesquisa
+            }
+            onChange={
+              (e) =>
+                setPesquisa(
+                  e.target.value
+                )
+            }
+          />
+        </div>
 
-          type="text"
-
-          placeholder="🔍 Pesquisar descrição..."
-
-          className="filtro-pesquisa"
-
-          value={
-            pesquisa
+        <button
+          type="button"
+          className="btn-filtros-mobile"
+          onClick={() =>
+            setFiltrosAbertos(
+              !filtrosAbertos
+            )
           }
+        >
+          <SlidersHorizontal size={15} />
+          Filtros
+        </button>
+        </div>
 
-          onChange={
-            (e) =>
-              setPesquisa(
-                e.target.value
-              )
+        <div
+          className={
+            filtrosAbertos
+              ? "movimentacoes-filtros-opcoes aberto"
+              : "movimentacoes-filtros-opcoes"
           }
-
-        />
-
+        >
 
         <select
 
@@ -895,12 +916,14 @@ function Movimentacoes() {
 
         </button>
 
+        </div>
+      </section>
 
-      </div>
 
-
+      <section className="movimentacoes-lista">
       {
-        movimentacoesFiltradas.map(
+        movimentacoesFiltradas.length > 0
+          ? movimentacoesFiltradas.map(
           (mov) => (
 
             <ItemMovimentacao
@@ -964,7 +987,19 @@ function Movimentacoes() {
 
           )
         )
+          : (
+            <div className="movimentacoes-vazio">
+              <Search size={22} />
+              <strong>
+                Nenhuma movimentação encontrada
+              </strong>
+              <span>
+                Ajuste os filtros ou registre uma nova movimentação.
+              </span>
+            </div>
+          )
       }
+      </section>
 
 
       {
@@ -1037,7 +1072,7 @@ function Movimentacoes() {
 
       />
 
-
+      </PageContainer>
     </MainLayout>
 
   );
