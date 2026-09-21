@@ -593,3 +593,130 @@
     }
 
 }
+
+/* =========================================================
+   PREMIUM MOBILE VALUE PASS
+========================================================= */
+
+@media (max-width: 640px) {
+    .alertas-header-acoes {
+        display: flex;
+        align-items: center;
+
+        gap: 7px;
+    }
+
+    .alertas-premium-badge {
+        padding: 5px 8px;
+
+        font-size: 8px;
+    }
+
+    .alertas-marcar-todos {
+        width: auto;
+        min-height: 38px;
+
+        padding: 0 10px;
+
+        border-radius: 10px;
+
+        font-size: 8px;
+    }
+
+    .alertas-resumo {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 8px;
+
+        margin-top: 10px;
+    }
+
+    .alertas-resumo > div {
+        min-height: 82px;
+
+        padding: 11px;
+
+        border-radius: 13px;
+    }
+
+    .alertas-resumo-icone {
+        width: 31px;
+        height: 31px;
+
+        border-radius: 9px;
+    }
+
+    .alertas-painel {
+        margin-top: 10px;
+        padding: 12px;
+
+        border-radius: 15px;
+    }
+
+    .alertas-painel-cabecalho h2 {
+        margin-top: 3px;
+
+        font-size: 14px;
+    }
+
+    .alertas-painel-cabecalho p {
+        font-size: 8px;
+        line-height: 1.45;
+    }
+
+    .alertas-lista {
+        gap: 7px;
+        margin-top: 10px;
+    }
+
+    .alerta-item {
+        gap: 9px;
+
+        padding: 10px;
+
+        border-radius: 11px;
+    }
+
+    .alerta-item-icone {
+        width: 31px;
+        height: 31px;
+
+        border-radius: 9px;
+    }
+
+    .alerta-item-icone svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .alerta-item-titulo-linha h3 {
+        font-size: 10px;
+    }
+
+    .alerta-item-topo p {
+        margin-top: 3px;
+
+        font-size: 8px;
+        line-height: 1.45;
+    }
+
+    .alerta-item-detalhes {
+        margin-top: 7px;
+
+        font-size: 8px;
+    }
+
+    .alerta-item-rodape {
+        margin-top: 8px;
+    }
+
+    .alerta-btn-secundario,
+    .alerta-btn-principal {
+        min-height: 32px;
+
+        padding: 0 8px;
+
+        font-size: 7px;
+    }
+}
