@@ -21,6 +21,7 @@ import {
   LogOut,
   Menu,
   PieChart,
+  ShieldCheck,
   Sparkles,
   Target,
   TrendingUp,
@@ -123,6 +124,7 @@ function MainLayout({ children }) {
 
   const {
     premium,
+    dono,
     temRecurso,
   } = usePlano();
 
@@ -216,9 +218,9 @@ function MainLayout({ children }) {
 
           <strong>Rumo</strong>
 
-          {premium && (
+          {(premium || dono) && (
             <span className="rumo-mobile-plan">
-              Premium
+              {dono ? "Dono" : "Premium"}
             </span>
           )}
         </div>
@@ -260,9 +262,9 @@ function MainLayout({ children }) {
             <div className="rumo-brand-line">
               <strong>Rumo</strong>
 
-              {premium && (
+              {(premium || dono) && (
                 <span className="rumo-plan-badge">
-                  Premium
+                  {dono ? "Dono" : "Premium"}
                 </span>
               )}
             </div>
@@ -315,7 +317,26 @@ function MainLayout({ children }) {
         </nav>
 
         <div className="rumo-sidebar-footer">
-          {!premium ? (
+          {dono && (
+            <NavLink
+              to="/gerencial"
+              onClick={fecharMenuMobile}
+              className="rumo-owner-panel-link"
+            >
+              <span className="rumo-owner-panel-icon">
+                <ShieldCheck size={17} />
+              </span>
+
+              <span>
+                <strong>Painel gerencial</strong>
+                <small>
+                  Administração do Rumo
+                </small>
+              </span>
+            </NavLink>
+          )}
+
+          {!premium && !dono ? (
             <NavLink
               to="/premium"
               onClick={fecharMenuMobile}
@@ -333,10 +354,20 @@ function MainLayout({ children }) {
               </span>
             </NavLink>
           ) : (
-            <div className="rumo-current-plan">
-              <Sparkles size={16} />
+            <div className={
+              dono
+                ? "rumo-current-plan owner"
+                : "rumo-current-plan"
+            }>
+              {dono
+                ? <ShieldCheck size={16} />
+                : <Sparkles size={16} />
+              }
               <span>
-                Plano Premium ativo
+                {dono
+                  ? "Acesso de proprietário"
+                  : "Plano Premium ativo"
+                }
               </span>
             </div>
           )}
