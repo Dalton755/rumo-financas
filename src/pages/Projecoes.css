@@ -499,3 +499,106 @@
     }
 
 }
+
+/* =========================================================
+   PREMIUM MOBILE VALUE PASS
+========================================================= */
+
+@media (max-width: 640px) {
+  .projecoes-premium-badge {
+    padding: 5px 8px;
+
+    font-size: 8px;
+  }
+
+  .projecoes-cards {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+
+    margin-bottom: 10px;
+  }
+
+  .projecoes-card {
+    min-height: 104px;
+
+    padding: 11px;
+
+    border-radius: 13px;
+  }
+
+  .projecoes-card-topo {
+    gap: 7px;
+
+    font-size: 8px;
+  }
+
+  .projecoes-card-icone {
+    width: 30px;
+    height: 30px;
+
+    border-radius: 9px;
+  }
+
+  .projecoes-card strong {
+    font-size: 16px;
+  }
+
+  .projecoes-card-detalhes {
+    font-size: 7px;
+  }
+
+  .projecoes-painel {
+    padding: 13px;
+
+    border-radius: 15px;
+  }
+
+  .projecoes-painel-cabecalho {
+    margin-bottom: 10px;
+  }
+
+  .projecoes-painel-cabecalho h2 {
+    font-size: 14px;
+  }
+
+  .projecoes-grafico {
+    height: 230px;
+  }
+
+  .projecoes-agenda {
+    margin-top: 10px;
+    padding: 12px;
+
+    border-radius: 15px;
+  }
+
+  .projecoes-agenda-lista {
+    gap: 6px;
+  }
+
+  .projecoes-agenda-item {
+    gap: 8px;
+    padding: 9px;
+
+    border-radius: 10px;
+  }
+
+  .projecoes-agenda-icone {
+    width: 31px;
+    height: 31px;
+
+    border-radius: 9px;
+  }
+
+  .projecoes-agenda-info strong,
+  .projecoes-agenda-valor {
+    font-size: 9px;
+  }
+
+  .projecoes-agenda-info span,
+  .projecoes-agenda-data {
+    font-size: 7px;
+  }
+}
