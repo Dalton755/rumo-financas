@@ -21,6 +21,7 @@ const PLANO_GRATUITO = {
 export function PlanoProvider({ children }) {
     const [plano, setPlano] = useState(PLANO_GRATUITO);
     const [recursos, setRecursos] = useState([]);
+    const [dono, setDono] = useState(false);
     const [carregandoPlano, setCarregandoPlano] = useState(true);
 
     const carregarPlano = useCallback(async () => {
@@ -34,8 +35,22 @@ export function PlanoProvider({ children }) {
             if (!session?.user) {
                 setPlano(PLANO_GRATUITO);
                 setRecursos([]);
+                setDono(false);
                 return;
             }
+
+            const {
+                data: donoAtual,
+                error: erroDono,
+            } = await supabase
+                .schema("rumo")
+                .rpc("usuario_e_dono");
+
+            if (erroDono) {
+                throw erroDono;
+            }
+
+            setDono(donoAtual === true);
 
             const {
                 data: dadosPlano,
@@ -104,6 +119,7 @@ export function PlanoProvider({ children }) {
 
             setPlano(PLANO_GRATUITO);
             setRecursos([]);
+            setDono(false);
         } finally {
             setCarregandoPlano(false);
         }
@@ -124,16 +140,22 @@ export function PlanoProvider({ children }) {
     }, [carregarPlano]);
 
     function temRecurso(codigo) {
-        return recursos.includes(codigo);
+        return (
+            dono ||
+            recursos.includes(codigo)
+        );
     }
 
-    const premium = plano?.premium === true;
+    const premium =
+        dono ||
+        plano?.premium === true;
 
     return (
         <PlanoContext.Provider
             value={{
                 plano,
                 premium,
+                dono,
                 recursos,
                 temRecurso,
                 carregandoPlano,
