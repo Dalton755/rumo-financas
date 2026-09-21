@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "../pages/Login";
 import RedefinirSenha from "../pages/RedefinirSenha";
@@ -15,7 +15,6 @@ import Premium from "../pages/Premium";
 import Orcamento from "../pages/Orcamento";
 import Projecoes from "../pages/Projecoes";
 import Alertas from "../pages/Alertas";
-import OpenFinance from "../pages/OpenFinance";
 import Gerencial from "../pages/Gerencial";
 
 import ProtectedRoute from "../components/ProtectedRoute";
@@ -208,9 +207,10 @@ function AppRoutes() {
                 <Route
                     path="/open-finance"
                     element={
-                        <ProtectedRoute>
-                            <OpenFinance />
-                        </ProtectedRoute>
+                        <Navigate
+                            to="/dashboard"
+                            replace
+                        />
                     }
                 />
             </Routes>
