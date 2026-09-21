@@ -533,3 +533,74 @@
         transform: translateY(-1px);
     }
 }
+
+
+.rumo-owner-panel-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px;
+
+    border: 1px solid #dbe8ed;
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f6fbfc,
+            #f1f8fa
+        );
+
+    color: #415064;
+}
+
+.rumo-owner-panel-icon {
+    width: 32px;
+    height: 32px;
+
+    flex: 0 0 32px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+    color: #0b879b;
+
+    box-shadow:
+        0 4px 14px
+        rgba(15, 23, 42, .05);
+}
+
+.rumo-owner-panel-link strong,
+.rumo-owner-panel-link small {
+    display: block;
+}
+
+.rumo-owner-panel-link strong {
+    color: #26364a;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.rumo-owner-panel-link small {
+    margin-top: 2px;
+
+    color: #7f8b99;
+
+    font-size: 8px;
+    line-height: 1.35;
+}
+
+.rumo-owner-panel-link:hover {
+    border-color: #c9dce2;
+    background: #f1f8fa;
+}
+
+.rumo-current-plan.owner {
+    background: #eef8fa;
+    color: #0b7f91;
+}
