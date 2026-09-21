@@ -10,6 +10,10 @@ import {
     autenticarUsuario,
 } from "../_lib/autenticarUsuario.js";
 
+import {
+    resumirErroSeguro,
+} from "../_lib/logSeguro.js";
+
 
 function responder(
     res,
@@ -376,7 +380,7 @@ export default async function handler(
 
         console.error(
             "[RUMO OPEN FINANCE] Erro:",
-            error
+            resumirErroSeguro(error)
         );
 
 
