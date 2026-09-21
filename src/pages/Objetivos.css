@@ -1679,3 +1679,121 @@
       18px;
   }
 }
+
+/* =========================================================
+   PREMIUM MOBILE VALUE PASS
+========================================================= */
+
+@media (max-width: 640px) {
+  .objetivos-header-actions {
+    gap: 7px;
+  }
+
+  .objetivos-premium-badge {
+    padding: 5px 8px;
+
+    font-size: 8px;
+  }
+
+  .objetivos-btn-novo {
+    min-height: 38px;
+
+    padding: 0 11px;
+
+    border-radius: 10px;
+
+    font-size: 9px;
+  }
+
+  .objetivos-resumo-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+
+    margin-top: 12px;
+  }
+
+  .objetivos-resumo-card {
+    min-height: 82px;
+
+    padding: 11px;
+
+    border-radius: 13px;
+  }
+
+  .objetivos-section {
+    margin-top: 10px;
+    padding: 12px;
+
+    border-radius: 15px;
+  }
+
+  .objetivos-section-heading {
+    flex-direction: row;
+    align-items: center;
+
+    margin-bottom: 10px;
+  }
+
+  .objetivos-section-heading h2 {
+    font-size: 14px;
+  }
+
+  .objetivos-contagem {
+    padding: 5px 8px;
+
+    font-size: 7px;
+  }
+
+  .objetivos-grid {
+    gap: 8px;
+  }
+
+  .objetivo-card {
+    padding: 13px;
+
+    border-radius: 14px;
+  }
+
+  .objetivo-card-identidade h3 {
+    font-size: 11px;
+  }
+
+  .objetivo-card-icone {
+    width: 34px;
+    height: 34px;
+
+    border-radius: 10px;
+  }
+
+  .objetivo-descricao {
+    margin: 7px 0;
+
+    font-size: 8px;
+    line-height: 1.4;
+  }
+
+  .objetivo-valores {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 7px;
+  }
+
+  .objetivo-info {
+    gap: 7px;
+  }
+
+  .objetivo-card-acoes {
+    gap: 6px;
+
+    overflow-x: auto;
+  }
+
+  .objetivo-card-acoes button {
+    min-width: max-content;
+
+    flex: 0 0 auto;
+  }
+}
