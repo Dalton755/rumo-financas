@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import MainLayout from "../layouts/MainLayout";
 import PageHeader from "../components/ui/PageHeader";
+import PageContainer from "../components/ui/PageContainer";
 
 import {
   Wallet,
   ArrowUpRight,
   ArrowDownRight,
-  List
+  List,
+  Plus,
+  Search
 } from "lucide-react";
 
 import CardResumo from "../components/ui/CardResumo";
@@ -538,7 +541,7 @@ function Movimentacoes() {
   return (
 
     <MainLayout>
-
+      <PageContainer>
 
       <PageHeader
 
@@ -549,23 +552,20 @@ function Movimentacoes() {
       >
 
         <button
-
+          type="button"
           className="btn-nova-movimentacao"
-
           onClick={() =>
             setModalAberto(true)
           }
-
         >
-
-          + Nova Movimentação
-
+          <Plus size={16} />
+          Nova movimentação
         </button>
 
       </PageHeader>
 
 
-      <div className="dashboard-cards">
+      <section className="movimentacoes-resumo">
 
 
         <CardResumo
@@ -658,32 +658,30 @@ function Movimentacoes() {
         />
 
 
-      </div>
+      </section>
 
 
-      <div className="movimentacoes-filtros">
+      <section className="movimentacoes-filtros">
 
 
-        <input
+        <div className="filtro-pesquisa-wrap">
+          <Search size={16} />
 
-          type="text"
-
-          placeholder="🔍 Pesquisar descrição..."
-
-          className="filtro-pesquisa"
-
-          value={
-            pesquisa
-          }
-
-          onChange={
-            (e) =>
-              setPesquisa(
-                e.target.value
-              )
-          }
-
-        />
+          <input
+            type="text"
+            placeholder="Pesquisar descrição"
+            className="filtro-pesquisa"
+            value={
+              pesquisa
+            }
+            onChange={
+              (e) =>
+                setPesquisa(
+                  e.target.value
+                )
+            }
+          />
+        </div>
 
 
         <select
@@ -896,11 +894,13 @@ function Movimentacoes() {
         </button>
 
 
-      </div>
+      </section>
 
 
+      <section className="movimentacoes-lista">
       {
-        movimentacoesFiltradas.map(
+        movimentacoesFiltradas.length > 0
+          ? movimentacoesFiltradas.map(
           (mov) => (
 
             <ItemMovimentacao
@@ -964,7 +964,19 @@ function Movimentacoes() {
 
           )
         )
+          : (
+            <div className="movimentacoes-vazio">
+              <Search size={22} />
+              <strong>
+                Nenhuma movimentação encontrada
+              </strong>
+              <span>
+                Ajuste os filtros ou registre uma nova movimentação.
+              </span>
+            </div>
+          )
       }
+      </section>
 
 
       {
@@ -1037,7 +1049,7 @@ function Movimentacoes() {
 
       />
 
-
+      </PageContainer>
     </MainLayout>
 
   );
