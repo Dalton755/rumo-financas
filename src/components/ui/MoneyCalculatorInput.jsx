@@ -36,8 +36,17 @@ function formatarMoeda(valor) {
 }
 
 function resolverExpressao(expressao) {
-  const limpa =
+  const texto =
     String(expressao || "")
+      .trim();
+
+  const comSinal =
+    texto.startsWith("-")
+      ? `0${texto}`
+      : texto;
+
+  const limpa =
+    comSinal
       .replace(/,/g, ".")
       .replace(/×/g, "*")
       .replace(/÷/g, "/")
@@ -154,6 +163,7 @@ export default function MoneyCalculatorInput({
     setExpressao(
       atual
         ? String(atual)
+            .replace(".", ",")
         : ""
     );
   }, [aberta]);
@@ -202,11 +212,8 @@ export default function MoneyCalculatorInput({
 
   function aplicar() {
     const valorFinal =
-      Math.max(
-        0,
-        Number(
-          resultado.toFixed(2)
-        )
+      Number(
+        resultado.toFixed(2)
       );
 
     onChange?.(
