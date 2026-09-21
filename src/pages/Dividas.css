@@ -1894,3 +1894,126 @@
     justify-content: flex-start;
   }
 }
+
+/* =========================================================
+   PREMIUM MOBILE VALUE PASS
+========================================================= */
+
+@media (max-width: 640px) {
+  .dividas-header-actions {
+    gap: 7px;
+  }
+
+  .dividas-premium-badge {
+    padding: 5px 8px;
+
+    font-size: 8px;
+  }
+
+  .dividas-btn-nova {
+    min-height: 38px;
+
+    padding: 0 11px;
+
+    border-radius: 10px;
+
+    font-size: 9px;
+  }
+
+  .dividas-resumo-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+
+    margin-top: 12px;
+  }
+
+  .dividas-resumo-card {
+    min-height: 82px;
+
+    padding: 11px;
+
+    border-radius: 13px;
+  }
+
+  .dividas-section {
+    margin-top: 10px;
+    padding: 12px;
+
+    border-radius: 15px;
+  }
+
+  .dividas-section-heading {
+    flex-direction: row;
+    align-items: center;
+
+    margin-bottom: 10px;
+  }
+
+  .dividas-section-heading h2 {
+    font-size: 14px;
+  }
+
+  .dividas-contagem {
+    padding: 5px 8px;
+
+    font-size: 7px;
+  }
+
+  .dividas-grid {
+    gap: 8px;
+  }
+
+  .divida-card {
+    padding: 13px;
+
+    border-radius: 14px;
+  }
+
+  .divida-identidade h3 {
+    font-size: 11px;
+  }
+
+  .divida-icone {
+    width: 34px;
+    height: 34px;
+
+    border-radius: 10px;
+  }
+
+  .divida-valores {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 7px;
+  }
+
+  .divida-info {
+    gap: 7px;
+  }
+
+  .divida-card-acoes {
+    gap: 6px;
+
+    overflow-x: auto;
+  }
+
+  .divida-card-acoes button {
+    min-width: max-content;
+
+    flex: 0 0 auto;
+  }
+
+  .divida-simulacoes-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 7px;
+  }
+
+  .divida-plano-resumo {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
