@@ -1,4 +1,5 @@
 import SeletorBanco from "./SeletorBanco";
+import MoneyCalculatorInput from "./MoneyCalculatorInput";
 import "./ModalConta.css";
 
 export default function ModalConta({
@@ -70,11 +71,11 @@ export default function ModalConta({
 
                     </select>
 
-                    <input
-                        type="number"
-                        placeholder="Saldo inicial"
+                    <MoneyCalculatorInput
                         value={saldoInicial}
-                        onChange={(e) => setSaldoInicial(e.target.value)}
+                        onChange={setSaldoInicial}
+                        placeholder="Saldo inicial"
+                        ariaLabel="Saldo inicial"
                     />
 
                 </div>
