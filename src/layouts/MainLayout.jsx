@@ -15,7 +15,6 @@ import {
   BellRing,
   BrainCircuit,
   CreditCard,
-  Landmark,
   LayoutDashboard,
   LockKeyhole,
   LogOut,
@@ -108,13 +107,6 @@ const recursosPremium = [
     nome: "Alertas",
     rota: "/alertas",
     Icone: BellRing,
-    grupo: "analises",
-  },
-  {
-    codigo: "OPEN_FINANCE",
-    nome: "Open Finance",
-    rota: "/open-finance",
-    Icone: Landmark,
     grupo: "analises",
   },
 ];
