@@ -14,6 +14,7 @@ import {
   BarChart3,
   BellRing,
   BrainCircuit,
+  Calculator,
   CreditCard,
   LayoutDashboard,
   LockKeyhole,
@@ -49,6 +50,11 @@ const navegacaoPrincipal = [
     nome: "Relatórios",
     rota: "/relatorios",
     Icone: BarChart3,
+  },
+  {
+    nome: "Cálculos",
+    rota: "/calculos",
+    Icone: Calculator,
   },
 ];
 
