@@ -1116,6 +1116,21 @@ async function atualizarPagamentoExistente(
     let assinaturaResultado =
         null;
 
+    let estornoResultado =
+        null;
+
+
+    if (
+        statusRumo ===
+        "ESTORNADO"
+    ) {
+
+        estornoResultado =
+            await tratarEstornoPagamento(
+                pagamentoExistente
+            );
+    }
+
 
     if (
         statusRumo ===
@@ -1171,6 +1186,9 @@ async function atualizarPagamentoExistente(
 
         assinatura:
             assinaturaResultado,
+
+        estorno:
+            estornoResultado,
     };
 }
 
@@ -1388,6 +1406,24 @@ async function processarPagamento(
         let assinaturaResultado =
             null;
 
+        let estornoResultado =
+            null;
+
+
+        if (
+            statusRumo ===
+            "ESTORNADO"
+        ) {
+
+            estornoResultado =
+                await tratarEstornoPagamento({
+                    ...pagamentoBase,
+
+                    mercado_pago_payment_id:
+                        paymentId,
+                });
+        }
+
 
         if (
             statusRumo ===
@@ -1458,6 +1494,9 @@ async function processarPagamento(
 
             assinatura:
                 assinaturaResultado,
+
+            estorno:
+                estornoResultado,
         };
     }
 
@@ -1467,6 +1506,9 @@ async function processarPagamento(
     // ========================================================
 
     let assinaturaResultado =
+        null;
+
+    let estornoResultado =
         null;
 
 
@@ -1666,6 +1708,22 @@ async function processarPagamento(
     }
 
 
+    if (
+        statusRumo ===
+        "ESTORNADO"
+    ) {
+
+        estornoResultado =
+            await tratarEstornoPagamento({
+                ...novoPagamento,
+
+                id:
+                    pagamentoRenovacao?.id ??
+                    null,
+            });
+    }
+
+
     return {
         processado:
             true,
@@ -1685,6 +1743,9 @@ async function processarPagamento(
 
         assinatura:
             assinaturaResultado,
+
+        estorno:
+            estornoResultado,
     };
 }
 
