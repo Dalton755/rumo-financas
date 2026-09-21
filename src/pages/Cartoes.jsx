@@ -23,6 +23,8 @@ import PageContainer
 
 import PageHeader
     from "../components/ui/PageHeader";
+import MoneyCalculatorInput
+    from "../components/ui/MoneyCalculatorInput";
 
 import LogoBanco
     from "../components/ui/LogoBanco";
@@ -1792,20 +1794,11 @@ function Cartoes() {
 
                                         Limite total
 
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            value={
-                                                limiteTotal
-                                            }
-                                            placeholder="5000,00"
-                                            onChange={
-                                                (e) =>
-                                                    setLimiteTotal(
-                                                        e.target.value
-                                                    )
-                                            }
+                                                                                <MoneyCalculatorInput
+                                            value={limiteTotal}
+                                            onChange={setLimiteTotal}
+                                            placeholder="R$ 0,00"
+                                            ariaLabel="Limite do cartão"
                                         />
 
                                     </label>
@@ -2071,20 +2064,11 @@ function Cartoes() {
 
                                             Valor da compra
 
-                                            <input
-                                                type="number"
-                                                min="0.01"
-                                                step="0.01"
-                                                value={
-                                                    compraValor
-                                                }
-                                                placeholder="0,00"
-                                                onChange={
-                                                    (e) =>
-                                                        setCompraValor(
-                                                            e.target.value
-                                                        )
-                                                }
+                                                                                        <MoneyCalculatorInput
+                                                value={compraValor}
+                                                onChange={setCompraValor}
+                                                placeholder="R$ 0,00"
+                                                ariaLabel="Valor da compra"
                                             />
 
                                         </label>
