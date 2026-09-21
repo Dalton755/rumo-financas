@@ -16,9 +16,11 @@ import Orcamento from "../pages/Orcamento";
 import Projecoes from "../pages/Projecoes";
 import Alertas from "../pages/Alertas";
 import OpenFinance from "../pages/OpenFinance";
+import Gerencial from "../pages/Gerencial";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 import RecursoRoute from "../components/RecursoRoute";
+import DonoRoute from "../components/DonoRoute";
 
 
 function AppRoutes() {
@@ -188,6 +190,17 @@ function AppRoutes() {
                             >
                                 <Alertas />
                             </RecursoRoute>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/gerencial"
+                    element={
+                        <ProtectedRoute>
+                            <DonoRoute>
+                                <Gerencial />
+                            </DonoRoute>
                         </ProtectedRoute>
                     }
                 />
