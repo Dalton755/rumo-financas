@@ -9,7 +9,8 @@ import {
   ArrowDownRight,
   List,
   Plus,
-  Search
+  Search,
+  SlidersHorizontal
 } from "lucide-react";
 
 import CardResumo from "../components/ui/CardResumo";
@@ -53,6 +54,7 @@ function Movimentacoes() {
   ] = useState([]);
 
   const [pesquisa, setPesquisa] = useState("");
+  const [filtrosAbertos, setFiltrosAbertos] = useState(false);
 
   const [
     mesSelecionado,
@@ -663,7 +665,7 @@ function Movimentacoes() {
 
       <section className="movimentacoes-filtros">
 
-
+        <div className="movimentacoes-filtros-topo">
         <div className="filtro-pesquisa-wrap">
           <Search size={16} />
 
@@ -683,6 +685,27 @@ function Movimentacoes() {
           />
         </div>
 
+        <button
+          type="button"
+          className="btn-filtros-mobile"
+          onClick={() =>
+            setFiltrosAbertos(
+              !filtrosAbertos
+            )
+          }
+        >
+          <SlidersHorizontal size={15} />
+          Filtros
+        </button>
+        </div>
+
+        <div
+          className={
+            filtrosAbertos
+              ? "movimentacoes-filtros-opcoes aberto"
+              : "movimentacoes-filtros-opcoes"
+          }
+        >
 
         <select
 
@@ -893,7 +916,7 @@ function Movimentacoes() {
 
         </button>
 
-
+        </div>
       </section>
 
 
