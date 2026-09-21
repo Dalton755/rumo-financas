@@ -196,12 +196,7 @@ function AppRoutes() {
                     path="/open-finance"
                     element={
                         <ProtectedRoute>
-                            <RecursoRoute
-                                codigo="OPEN_FINANCE"
-                                titulo="Open Finance"
-                            >
-                                <OpenFinance />
-                            </RecursoRoute>
+                            <OpenFinance />
                         </ProtectedRoute>
                     }
                 />

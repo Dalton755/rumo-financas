@@ -10,6 +10,10 @@ import {
     autenticarUsuario,
 } from "../_lib/autenticarUsuario.js";
 
+import {
+    resumirErroSeguro,
+} from "../_lib/logSeguro.js";
+
 
 function responder(
     res,
@@ -282,7 +286,7 @@ export default async function handler(
 
                 console.error(
                     "[RUMO OPEN FINANCE] Falha ao revogar Item na Pluggy:",
-                    pluggyError
+                    resumirErroSeguro(pluggyError)
                 );
 
 
@@ -463,7 +467,7 @@ export default async function handler(
 
         console.error(
             "[RUMO OPEN FINANCE] Erro ao desconectar instituição:",
-            error
+            resumirErroSeguro(error)
         );
 
 
