@@ -6,6 +6,10 @@ import {
     supabaseAdmin,
 } from "../_lib/supabaseAdmin.js";
 
+import {
+    resumirErroSeguro,
+} from "../_lib/logSeguro.js";
+
 
 const ACCESS_TOKEN =
     process.env.MERCADOPAGO_ACCESS_TOKEN;
@@ -180,7 +184,7 @@ function validarAssinaturaWebhook(req) {
 
         console.warn(
             "[RUMO WEBHOOK] Assinatura inválida:",
-            error
+            resumirErroSeguro(error)
         );
 
         return false;
@@ -1710,8 +1714,6 @@ export default async function handler(
                         authorizedPaymentStatus:
                             respostaAuthorizedPayment.status,
 
-                        resposta:
-                            authorizedPayment,
                     }
                 );
 
@@ -1900,7 +1902,7 @@ export default async function handler(
 
         console.error(
             "[RUMO WEBHOOK] Erro:",
-            error
+            resumirErroSeguro(error)
         );
 
 
