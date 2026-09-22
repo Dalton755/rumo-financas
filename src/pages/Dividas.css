@@ -2212,3 +2212,116 @@
     font-size: 12px;
   }
 }
+
+
+/* SMART PRO LAYER */
+.dividas-pro-strip,
+.cartoes-pro-strip,
+.alertas-pro-strip {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+
+.dividas-pro-strip {
+  margin:8px 0 10px;
+}
+
+.dividas-pro-strip > div {
+  min-width:0;
+  padding:10px 11px;
+  border:1px solid #e7edf2;
+  border-radius:11px;
+  background:#fff;
+}
+
+.dividas-pro-strip span,
+.dividas-pro-strip strong {
+  display:block;
+}
+
+.dividas-pro-strip span {
+  color:#8b97a6;
+  font-size:7px;
+  font-weight:750;
+}
+
+.dividas-pro-strip strong {
+  margin-top:4px;
+  color:#334155;
+  font-size:12px;
+  font-weight:850;
+}
+
+.dividas-rumo-insight {
+  margin-bottom:12px;
+  padding:13px 14px;
+  border:1px solid #dce9ed;
+  border-radius:14px;
+  background:
+    linear-gradient(135deg,#f4fbfc,#ffffff 68%);
+}
+
+.dividas-rumo-label {
+  display:block;
+  color:#0b7f91;
+  font-size:7px;
+  font-weight:850;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.dividas-rumo-insight > div {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:5px;
+}
+
+.dividas-rumo-insight strong {
+  color:#26364a;
+  font-size:11px;
+}
+
+.dividas-rumo-insight small {
+  flex:0 0 auto;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#fff;
+  color:#0b7f91;
+  font-size:7px;
+  font-weight:800;
+}
+
+.dividas-rumo-insight p {
+  margin:5px 0 0;
+  color:#748193;
+  font-size:8px;
+  line-height:1.5;
+}
+
+@media(max-width:640px){
+  .dividas-pro-strip{
+    gap:6px;
+    margin:7px 0 9px;
+  }
+
+  .dividas-pro-strip > div{
+    padding:8px;
+    border-radius:10px;
+  }
+
+  .dividas-rumo-insight{
+    padding:11px;
+    border-radius:12px;
+  }
+
+  .dividas-rumo-insight > div{
+    align-items:flex-start;
+  }
+
+  .dividas-rumo-insight strong{
+    font-size:10px;
+  }
+}
