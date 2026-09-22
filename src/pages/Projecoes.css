@@ -602,3 +602,162 @@
     font-size: 7px;
   }
 }
+
+
+/* =========================================================
+   PRO EXPERIENCE
+========================================================= */
+
+.projecoes-pro-hero {
+  display: grid;
+  grid-template-columns:
+    minmax(0,1.2fr)
+    minmax(0,.8fr);
+
+  gap: 12px;
+
+  margin-bottom: 12px;
+  padding: 17px;
+
+  border: 1px solid var(--border);
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  box-shadow: var(--shadow-xs);
+}
+
+.projecoes-pro-hero.positivo {
+  border-color: #d8ebe0;
+
+  background:
+    radial-gradient(
+      circle at 90% 8%,
+      rgba(22,163,74,.055),
+      transparent 32%
+    ),
+    #ffffff;
+}
+
+.projecoes-pro-hero.atencao {
+  border-color: #f0dfca;
+
+  background:
+    radial-gradient(
+      circle at 90% 8%,
+      rgba(217,119,6,.055),
+      transparent 32%
+    ),
+    #ffffff;
+}
+
+.projecoes-pro-principal > span,
+.projecoes-pro-comparacao span {
+  display: block;
+}
+
+.projecoes-pro-principal > span {
+  color: #8a96a4;
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.projecoes-pro-principal > strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #182235;
+
+  font-size: clamp(28px,3vw,38px);
+  font-weight: 850;
+  letter-spacing: -.045em;
+}
+
+.projecoes-pro-principal > p {
+  margin: 6px 0 0;
+
+  color: #7a8797;
+
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.projecoes-pro-comparacao {
+  display: grid;
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+
+  gap: 8px;
+
+  align-self: center;
+}
+
+.projecoes-pro-comparacao > div {
+  min-width: 0;
+
+  padding: 11px;
+
+  border: 1px solid #edf1f5;
+  border-radius: 12px;
+
+  background: rgba(255,255,255,.82);
+}
+
+.projecoes-pro-comparacao span {
+  color: #8b97a6;
+
+  font-size: 7px;
+  font-weight: 750;
+}
+
+.projecoes-pro-comparacao strong {
+  display: block;
+
+  margin-top: 5px;
+
+  overflow: hidden;
+
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 850;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .projecoes-pro-hero {
+    grid-template-columns: 1fr;
+
+    gap: 9px;
+
+    padding: 13px;
+
+    border-radius: 15px;
+  }
+
+  .projecoes-pro-principal > strong {
+    font-size: 27px;
+  }
+
+  .projecoes-pro-comparacao {
+    gap: 6px;
+  }
+
+  .projecoes-cards
+  .projecoes-card:first-child,
+  .projecoes-cards
+  .projecoes-card:nth-child(2) {
+    display: none;
+  }
+
+  .projecoes-cards {
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+  }
+}
