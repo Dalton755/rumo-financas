@@ -1307,6 +1307,101 @@ function Cartoes() {
                 </PageHeader>
 
 
+                <section className="cartoes-pro-hero">
+                    <div className="cartoes-pro-principal">
+                        <span>Limite disponível</span>
+
+                        <strong>
+                            {
+                                formatarMoeda(
+                                    resumo.disponivel
+                                )
+                            }
+                        </strong>
+
+                        <p>
+                            {
+                                resumo.total > 0
+                                    ? `${Math.min(
+                                        100,
+                                        Math.max(
+                                            0,
+                                            (
+                                                resumo.usado /
+                                                resumo.total
+                                            ) * 100
+                                        )
+                                    ).toLocaleString(
+                                        "pt-BR",
+                                        {
+                                            maximumFractionDigits: 1
+                                        }
+                                    )}% do limite total já utilizado.`
+                                    : "Cadastre um cartão para começar a acompanhar seu crédito."
+                            }
+                        </p>
+                    </div>
+
+                    <div className="cartoes-pro-uso">
+                        <div className="cartoes-pro-uso-linha">
+                            <span>Uso do limite</span>
+
+                            <strong>
+                                {
+                                    resumo.total > 0
+                                        ? Math.min(
+                                            100,
+                                            Math.max(
+                                                0,
+                                                (
+                                                    resumo.usado /
+                                                    resumo.total
+                                                ) * 100
+                                            )
+                                        ).toLocaleString(
+                                            "pt-BR",
+                                            {
+                                                maximumFractionDigits: 1
+                                            }
+                                        ) + "%"
+                                        : "0%"
+                                }
+                            </strong>
+                        </div>
+
+                        <div className="cartoes-pro-barra">
+                            <span
+                                style={{
+                                    width:
+                                        resumo.total > 0
+                                            ? `${Math.min(
+                                                100,
+                                                Math.max(
+                                                    0,
+                                                    (
+                                                        resumo.usado /
+                                                        resumo.total
+                                                    ) * 100
+                                                )
+                                            )}%`
+                                            : "0%"
+                                }}
+                            />
+                        </div>
+
+                        <div className="cartoes-pro-legenda">
+                            <span>
+                                Usado {formatarMoeda(resumo.usado)}
+                            </span>
+
+                            <span>
+                                Total {formatarMoeda(resumo.total)}
+                            </span>
+                        </div>
+                    </div>
+                </section>
+
+
                 <section className="cartoes-resumo">
 
                     <div className="cartoes-resumo-card">
