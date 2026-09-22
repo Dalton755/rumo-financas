@@ -1089,6 +1089,84 @@ function Dividas() {
     }, [dividas]);
 
 
+  const inteligenciaDividas =
+    useMemo(() => {
+      const abertas =
+        dividas.filter(
+          (item) =>
+            item.status !==
+            "quitada"
+        );
+
+      const maiorJuro =
+        [...abertas]
+          .sort(
+            (a, b) =>
+              Number(
+                b.juros_mensal || 0
+              ) -
+              Number(
+                a.juros_mensal || 0
+              )
+          )[0] || null;
+
+      const menorSaldo =
+        [...abertas]
+          .sort(
+            (a, b) =>
+              Number(
+                a.saldo_atual || 0
+              ) -
+              Number(
+                b.saldo_atual || 0
+              )
+          )[0] || null;
+
+      if (!abertas.length) {
+        return {
+          titulo:
+            "Nenhuma dívida exige ação agora",
+          descricao:
+            "Mantenha sua reserva e evite assumir parcelas que comprimam seu fluxo.",
+          destaque:
+            "Tudo quitado",
+        };
+      }
+
+      if (
+        Number(
+          maiorJuro?.juros_mensal || 0
+        ) >= 5
+      ) {
+        return {
+          titulo:
+            `Maior custo: ${maiorJuro.nome}`,
+          descricao:
+            `Essa dívida cobra ${formatarPercentual(
+              maiorJuro.juros_mensal
+            )} ao mês e merece atenção porque cresce mais rápido.`,
+          destaque:
+            "Juros altos",
+        };
+      }
+
+      return {
+        titulo:
+          menorSaldo
+            ? `Mais próxima de sair: ${menorSaldo.nome}`
+            : "Organize seu plano de saída",
+        descricao:
+          menorSaldo
+            ? `Faltam ${formatarMoeda(
+              menorSaldo.saldo_atual
+            )} para quitar essa dívida.`
+            : "Acompanhe saldo, juros e parcela mínima para definir sua próxima ação.",
+        destaque:
+          "Próximo passo",
+      };
+    }, [dividas]);
+
+
   const dividasOrdenadas =
     useMemo(() => {
       const pesoStatus = {
@@ -1333,6 +1411,8 @@ function Dividas() {
         </PageHeader>
 
 
+        {dividas.length > 0 && (
+        <>
         <section className="dividas-pro-hero">
           <div className="dividas-pro-principal">
             <span>Saldo para quitar</span>
@@ -1376,72 +1456,48 @@ function Dividas() {
         </section>
 
 
-        <section className="dividas-resumo-grid">
-          <article className="dividas-resumo-card">
-            <CircleDollarSign size={22} />
+                <section className="dividas-pro-strip">
+          <div>
+            <span>Abertas</span>
+            <strong>{resumo.abertas}</strong>
+          </div>
 
-            <div>
-              <span>
-                Saldo devedor
-              </span>
+          <div>
+            <span>Quitadas</span>
+            <strong>{resumo.quitadas}</strong>
+          </div>
 
-              <strong>
-                {formatarMoeda(
-                  resumo.saldoTotal
-                )}
-              </strong>
-            </div>
-          </article>
-
-
-          <article className="dividas-resumo-card">
-            <WalletCards size={22} />
-
-            <div>
-              <span>
-                Parcelas mínimas
-              </span>
-
-              <strong>
-                {formatarMoeda(
-                  resumo.parcelas
-                )}
-              </strong>
-            </div>
-          </article>
-
-
-          <article className="dividas-resumo-card">
-            <CreditCard size={22} />
-
-            <div>
-              <span>
-                Dívidas abertas
-              </span>
-
-              <strong>
-                {resumo.abertas}
-              </strong>
-            </div>
-          </article>
-
-
-          <article className="dividas-resumo-card">
-            <Percent size={22} />
-
-            <div>
-              <span>
-                Juros médios
-              </span>
-
-              <strong>
-                {formatarPercentual(
-                  resumo.jurosMedios
-                )}
-              </strong>
-            </div>
-          </article>
+          <div>
+            <span>Juros médios</span>
+            <strong>
+              {formatarPercentual(
+                resumo.jurosMedios
+              )}
+            </strong>
+          </div>
         </section>
+
+        <section className="dividas-rumo-insight">
+          <span className="dividas-rumo-label">
+            Rumo • leitura inteligente
+          </span>
+
+          <div>
+            <strong>
+              {inteligenciaDividas.titulo}
+            </strong>
+
+            <small>
+              {inteligenciaDividas.destaque}
+            </small>
+          </div>
+
+          <p>
+            {inteligenciaDividas.descricao}
+          </p>
+        </section>
+        </>
+        )}
 
 
         <section className="dividas-section">
