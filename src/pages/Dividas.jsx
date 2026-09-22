@@ -10,7 +10,6 @@ import {
   Calculator,
   CalendarDays,
   CheckCircle2,
-  CircleDollarSign,
   Clock3,
   CreditCard,
   History,
@@ -22,7 +21,6 @@ import {
   Sparkles,
   Trash2,
   TrendingDown,
-  WalletCards,
   X,
 } from "lucide-react";
 
