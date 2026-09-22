@@ -529,6 +529,58 @@ function Alertas() {
 
             <>
 
+              <section
+                className={
+                  resumo.criticos > 0
+                    ? "alertas-pro-hero critico"
+                    : resumo.atencao > 0
+                      ? "alertas-pro-hero atencao"
+                      : "alertas-pro-hero tranquilo"
+                }
+              >
+                <div className="alertas-pro-icon">
+                  {
+                    resumo.criticos > 0
+                      ? <CircleAlert size={22} />
+                      : resumo.atencao > 0
+                        ? <AlertTriangle size={22} />
+                        : <CircleCheckBig size={22} />
+                  }
+                </div>
+
+                <div className="alertas-pro-copy">
+                  <span>Prioridade agora</span>
+
+                  <strong>
+                    {
+                      resumo.criticos > 0
+                        ? `${resumo.criticos} ${resumo.criticos === 1 ? "alerta crítico" : "alertas críticos"}`
+                        : resumo.atencao > 0
+                          ? `${resumo.atencao} ${resumo.atencao === 1 ? "ponto de atenção" : "pontos de atenção"}`
+                          : "Tudo sob controle"
+                    }
+                  </strong>
+
+                  <p>
+                    {
+                      resumo.criticos > 0
+                        ? "Comece pelos alertas críticos para reduzir risco financeiro."
+                        : resumo.atencao > 0
+                          ? "Há situações que merecem sua atenção antes de virarem problema."
+                          : "Nenhuma situação urgente exige ação neste momento."
+                    }
+                  </p>
+                </div>
+
+                <div className="alertas-pro-contador">
+                  <span>Não lidos</span>
+                  <strong>
+                    {resumo.naoLidos}
+                  </strong>
+                </div>
+              </section>
+
+
               <section className="alertas-resumo">
 
                 <article>
