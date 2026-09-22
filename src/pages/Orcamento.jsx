@@ -522,6 +522,85 @@ export default function Orcamento() {
                 </section>
 
 
+                <section
+                    className={
+                        Number(
+                            resumo?.totalDisponivel ||
+                            0
+                        ) >= 0
+                            ? "orcamento-pro-hero positivo"
+                            : "orcamento-pro-hero atencao"
+                    }
+                >
+                    <div className="orcamento-pro-principal">
+                        <span>Ainda disponível no mês</span>
+
+                        <strong>
+                            {
+                                formatarMoeda(
+                                    resumo?.totalDisponivel
+                                )
+                            }
+                        </strong>
+
+                        <p>
+                            {
+                                Number(
+                                    resumo?.totalLimite ||
+                                    0
+                                ) > 0
+                                    ? `${Math.min(
+                                        999,
+                                        Math.max(
+                                            0,
+                                            (
+                                                Number(
+                                                    resumo?.totalGasto ||
+                                                    0
+                                                ) /
+                                                Number(
+                                                    resumo?.totalLimite ||
+                                                    1
+                                                )
+                                            ) * 100
+                                        )
+                                    ).toLocaleString(
+                                        "pt-BR",
+                                        {
+                                            maximumFractionDigits: 1
+                                        }
+                                    )}% do orçamento já foi usado.`
+                                    : "Defina limites por categoria para o Rumo acompanhar seus gastos."
+                            }
+                        </p>
+                    </div>
+
+                    <div className="orcamento-pro-uso">
+                        <div>
+                            <span>Gasto</span>
+                            <strong>
+                                {
+                                    formatarMoeda(
+                                        resumo?.totalGasto
+                                    )
+                                }
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Limite</span>
+                            <strong>
+                                {
+                                    formatarMoeda(
+                                        resumo?.totalLimite
+                                    )
+                                }
+                            </strong>
+                        </div>
+                    </div>
+                </section>
+
+
                 <section className="orcamento-resumo-grid">
 
                     <article className="orcamento-resumo-card">
