@@ -501,3 +501,167 @@
     font-size: 8px;
   }
 }
+
+
+/* =========================================================
+   PRO EXPERIENCE
+========================================================= */
+
+.orcamento-pro-hero {
+  display: grid;
+  grid-template-columns:
+    minmax(0,1.2fr)
+    minmax(0,.8fr);
+
+  gap: 12px;
+
+  margin-top: 10px;
+  padding: 17px;
+
+  border: 1px solid var(--border);
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  box-shadow: var(--shadow-xs);
+}
+
+.orcamento-pro-hero.positivo {
+  border-color: #d8ebe0;
+
+  background:
+    radial-gradient(
+      circle at 92% 10%,
+      rgba(22,163,74,.055),
+      transparent 34%
+    ),
+    #ffffff;
+}
+
+.orcamento-pro-hero.atencao {
+  border-color: #f2d8d8;
+
+  background:
+    radial-gradient(
+      circle at 92% 10%,
+      rgba(220,38,38,.05),
+      transparent 34%
+    ),
+    #ffffff;
+}
+
+.orcamento-pro-principal > span,
+.orcamento-pro-uso span {
+  display: block;
+}
+
+.orcamento-pro-principal > span {
+  color: #8a96a4;
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.orcamento-pro-principal > strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #182235;
+
+  font-size: clamp(28px,3vw,38px);
+  font-weight: 850;
+  letter-spacing: -.045em;
+}
+
+.orcamento-pro-principal > p {
+  margin: 6px 0 0;
+
+  color: #7a8797;
+
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.orcamento-pro-uso {
+  display: grid;
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+
+  gap: 8px;
+
+  align-self: center;
+}
+
+.orcamento-pro-uso > div {
+  min-width: 0;
+
+  padding: 11px;
+
+  border: 1px solid #edf1f5;
+  border-radius: 12px;
+
+  background: rgba(255,255,255,.82);
+}
+
+.orcamento-pro-uso span {
+  color: #8b97a6;
+
+  font-size: 7px;
+  font-weight: 750;
+}
+
+.orcamento-pro-uso strong {
+  display: block;
+
+  margin-top: 5px;
+
+  overflow: hidden;
+
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 850;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.orcamento-card {
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff,
+      #fcfdfe
+    );
+}
+
+@media (max-width: 640px) {
+  .orcamento-pro-hero {
+    grid-template-columns: 1fr;
+
+    gap: 9px;
+
+    padding: 13px;
+
+    border-radius: 15px;
+  }
+
+  .orcamento-pro-principal > strong {
+    font-size: 27px;
+  }
+
+  .orcamento-pro-uso {
+    gap: 6px;
+  }
+
+  .orcamento-resumo-grid {
+    display: none;
+  }
+
+  .orcamento-card {
+    border-radius: 15px;
+  }
+}
