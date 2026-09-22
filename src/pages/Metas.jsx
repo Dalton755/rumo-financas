@@ -25,6 +25,7 @@ import {
 import MainLayout from "../layouts/MainLayout";
 import PageContainer from "../components/ui/PageContainer";
 import PageHeader from "../components/ui/PageHeader";
+import MoneyCalculatorInput from "../components/ui/MoneyCalculatorInput";
 
 import { useToast } from "../context/ToastContext";
 
@@ -1220,22 +1221,11 @@ function Metas() {
                                             Valor da meta
                                         </span>
 
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            value={
-                                                valorMeta
-                                            }
-                                            onChange={(
-                                                event
-                                            ) =>
-                                                setValorMeta(
-                                                    event.target
-                                                        .value
-                                                )
-                                            }
-                                            placeholder="0,00"
+                                                                                <MoneyCalculatorInput
+                                            value={valorMeta}
+                                            onChange={setValorMeta}
+                                            placeholder="R$ 0,00"
+                                            ariaLabel="Valor da meta"
                                         />
                                     </label>
 
@@ -1245,22 +1235,11 @@ function Metas() {
                                             Valor já acumulado
                                         </span>
 
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            value={
-                                                valorAtual
-                                            }
-                                            onChange={(
-                                                event
-                                            ) =>
-                                                setValorAtual(
-                                                    event.target
-                                                        .value
-                                                )
-                                            }
-                                            placeholder="0,00"
+                                                                                <MoneyCalculatorInput
+                                            value={valorAtual}
+                                            onChange={setValorAtual}
+                                            placeholder="R$ 0,00"
+                                            ariaLabel="Valor atual"
                                         />
                                     </label>
                                 </div>
@@ -1427,23 +1406,11 @@ function Metas() {
                                     Quanto deseja adicionar?
                                 </span>
 
-                                <input
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                    autoFocus
-                                    value={
-                                        valorAporte
-                                    }
-                                    onChange={(
-                                        event
-                                    ) =>
-                                        setValorAporte(
-                                            event.target
-                                                .value
-                                        )
-                                    }
+                                                                <MoneyCalculatorInput
+                                    value={valorAporte}
+                                    onChange={setValorAporte}
                                     placeholder="R$ 0,00"
+                                    ariaLabel="Valor do aporte"
                                 />
                             </label>
 

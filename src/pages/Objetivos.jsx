@@ -30,6 +30,7 @@ import {
 import MainLayout from "../layouts/MainLayout";
 import PageContainer from "../components/ui/PageContainer";
 import PageHeader from "../components/ui/PageHeader";
+import MoneyCalculatorInput from "../components/ui/MoneyCalculatorInput";
 
 import { useToast } from "../context/ToastContext";
 
@@ -1547,21 +1548,11 @@ function Objetivos() {
                       Valor necessário
                     </span>
 
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={
-                        valorMeta
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        setValorMeta(
-                          event.target.value
-                        )
-                      }
-                      placeholder="0,00"
+                                        <MoneyCalculatorInput
+                        value={valorMeta}
+                        onChange={setValorMeta}
+                        placeholder="R$ 0,00"
+                        ariaLabel="Valor necessário"
                     />
                   </label>
 
@@ -1767,21 +1758,11 @@ function Objetivos() {
                         Valor
                       </span>
 
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={
-                          valorAporte
-                        }
-                        onChange={(
-                          event
-                        ) =>
-                          setValorAporte(
-                            event.target.value
-                          )
-                        }
-                        placeholder="0,00"
+                                            <MoneyCalculatorInput
+                          value={valorAporte}
+                          onChange={setValorAporte}
+                          placeholder="R$ 0,00"
+                          ariaLabel="Valor do aporte"
                       />
                     </label>
 

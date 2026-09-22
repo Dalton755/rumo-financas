@@ -1346,3 +1346,309 @@
     }
 
 }
+
+/* =========================================================
+   PREMIUM MOBILE VALUE PASS
+========================================================= */
+
+@media (max-width: 640px) {
+  .cartoes-novo {
+    min-height: 38px;
+
+    padding: 0 11px;
+
+    border-radius: 10px;
+
+    font-size: 9px;
+  }
+
+  .cartoes-resumo {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+
+    margin-bottom: 10px;
+  }
+
+  .cartoes-resumo-card {
+    min-height: 82px;
+
+    padding: 11px;
+
+    border-radius: 13px;
+  }
+
+  .cartoes-grid {
+    gap: 8px;
+  }
+
+  .cartao-item {
+    padding: 13px;
+
+    border-radius: 14px;
+  }
+
+  .cartao-item-topo {
+    gap: 8px;
+  }
+
+  .cartao-item-identidade h3 {
+    font-size: 11px;
+  }
+
+  .cartao-item-limite {
+    margin-top: 10px;
+  }
+
+  .cartao-item-botoes {
+    gap: 6px;
+
+    overflow-x: auto;
+  }
+
+  .cartao-item-botoes button {
+    min-width: max-content;
+
+    flex: 0 0 auto;
+  }
+
+  .cartao-item-rodape {
+    gap: 7px;
+
+    font-size: 8px;
+  }
+
+  .cartoes-modal {
+    width: 100%;
+    max-height: calc(100vh - 20px);
+
+    border-radius: 20px 20px 14px 14px;
+  }
+
+  .cartoes-fatura-resumo {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .cartoes-proximas-faturas {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =========================================================
+   PRO EXPERIENCE
+========================================================= */
+
+.cartoes-pro-hero {
+  display: grid;
+  grid-template-columns:
+    minmax(0,1.15fr)
+    minmax(0,.85fr);
+
+  gap: 14px;
+
+  margin-bottom: 12px;
+  padding: 17px;
+
+  border: 1px solid #dde8ed;
+  border-radius: 18px;
+
+  background:
+    radial-gradient(
+      circle at 92% 10%,
+      rgba(15,159,179,.075),
+      transparent 34%
+    ),
+    #ffffff;
+
+  box-shadow: var(--shadow-xs);
+}
+
+.cartoes-pro-principal > span {
+  display: block;
+
+  color: #8a96a4;
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.cartoes-pro-principal > strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #182235;
+
+  font-size: clamp(28px,3vw,38px);
+  font-weight: 850;
+  letter-spacing: -.045em;
+}
+
+.cartoes-pro-principal > p {
+  margin: 6px 0 0;
+
+  color: #7a8797;
+
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.cartoes-pro-uso {
+  align-self: center;
+
+  padding: 12px;
+
+  border: 1px solid #edf1f5;
+  border-radius: 13px;
+
+  background: rgba(255,255,255,.86);
+}
+
+.cartoes-pro-uso-linha,
+.cartoes-pro-legenda {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+.cartoes-pro-uso-linha span,
+.cartoes-pro-legenda span {
+  color: #8a96a4;
+
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.cartoes-pro-uso-linha strong {
+  color: #0b7f91;
+
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.cartoes-pro-barra {
+  height: 7px;
+
+  margin: 9px 0 7px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #edf2f5;
+}
+
+.cartoes-pro-barra > span {
+  display: block;
+
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #0f9fb3,
+      #5b6fd8
+    );
+}
+
+.cartao-item {
+  position: relative;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      #fbfcfd
+    );
+}
+
+.cartao-item::before {
+  content: "";
+
+  position: absolute;
+  inset: 0 auto 0 0;
+
+  width: 3px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #0f9fb3,
+      #5b6fd8
+    );
+
+  opacity: .75;
+}
+
+@media (max-width: 640px) {
+  .cartoes-pro-hero {
+    grid-template-columns: 1fr;
+
+    gap: 9px;
+
+    padding: 13px;
+
+    border-radius: 15px;
+  }
+
+  .cartoes-pro-principal > strong {
+    font-size: 27px;
+  }
+
+  .cartoes-pro-uso {
+    padding: 10px;
+
+    border-radius: 11px;
+  }
+
+  .cartoes-resumo {
+    display: none;
+  }
+
+  .cartao-item {
+    border-radius: 15px;
+  }
+
+  .cartao-item-identidade {
+    margin-top: 10px;
+  }
+
+  .cartao-item-limite {
+    padding-top: 10px;
+
+    border-top: 1px solid #edf1f5;
+  }
+}
+
+
+
+
+/* SMART PRO LAYER */
+.cartoes-pro-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 10px}
+.cartoes-pro-strip>div{min-width:0;padding:10px 11px;border:1px solid #e7edf2;border-radius:11px;background:#fff}
+.cartoes-pro-strip span,.cartoes-pro-strip strong{display:block}
+.cartoes-pro-strip span{color:#8b97a6;font-size:7px;font-weight:750}
+.cartoes-pro-strip strong{margin-top:4px;overflow:hidden;color:#334155;font-size:12px;font-weight:850;white-space:nowrap;text-overflow:ellipsis}
+.cartoes-rumo-insight{margin-bottom:12px;padding:13px 14px;border:1px solid #dce9ed;border-radius:14px;background:linear-gradient(135deg,#f4fbfc,#fff 68%)}
+.cartoes-rumo-label{display:block;color:#0b7f91;font-size:7px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}
+.cartoes-rumo-insight>div{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:5px}
+.cartoes-rumo-insight strong{color:#26364a;font-size:11px}
+.cartoes-rumo-insight small{flex:0 0 auto;padding:4px 7px;border-radius:999px;background:#fff;color:#0b7f91;font-size:7px;font-weight:800}
+.cartoes-rumo-insight p{margin:5px 0 0;color:#748193;font-size:8px;line-height:1.5}
+@media(max-width:640px){
+.cartoes-pro-strip{gap:6px;margin:7px 0 9px}
+.cartoes-pro-strip>div{padding:8px;border-radius:10px}
+.cartoes-rumo-insight{padding:11px;border-radius:12px}
+.cartoes-rumo-insight strong{font-size:10px}
+}

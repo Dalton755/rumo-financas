@@ -5,14 +5,12 @@ import {
 } from "react";
 
 import {
-    CalendarDays,
     ChevronRight,
     CreditCard,
     Pencil,
     Plus,
     ReceiptText,
     Trash2,
-    WalletCards,
     X
 } from "lucide-react";
 
@@ -23,6 +21,8 @@ import PageContainer
 
 import PageHeader
     from "../components/ui/PageHeader";
+import MoneyCalculatorInput
+    from "../components/ui/MoneyCalculatorInput";
 
 import LogoBanco
     from "../components/ui/LogoBanco";
@@ -535,6 +535,67 @@ function Cartoes() {
             };
 
         }, [cartoes]);
+
+    const leituraCredito =
+        useMemo(() => {
+            const percentual =
+                resumo.total > 0
+                    ? (
+                        resumo.usado /
+                        resumo.total
+                    ) * 100
+                    : 0;
+
+            if (!cartoes.length) {
+                return {
+                    percentual: 0,
+                    titulo:
+                        "Cadastre seu primeiro cartão",
+                    descricao:
+                        "O Rumo passa a acompanhar limite, uso e faturas em um só lugar.",
+                    status:
+                        "Começar",
+                };
+            }
+
+            if (percentual >= 80) {
+                return {
+                    percentual,
+                    titulo:
+                        "Uso de crédito muito alto",
+                    descricao:
+                        "Seu limite está bastante comprometido. Evite novas compras até recuperar espaço.",
+                    status:
+                        "Atenção alta",
+                };
+            }
+
+            if (percentual >= 55) {
+                return {
+                    percentual,
+                    titulo:
+                        "Uso de crédito em atenção",
+                    descricao:
+                        "Mais da metade do limite já está comprometida. Vale acompanhar as próximas compras.",
+                    status:
+                        "Atenção",
+                };
+            }
+
+            return {
+                percentual,
+                titulo:
+                    "Uso de crédito controlado",
+                descricao:
+                    "Você ainda mantém boa margem disponível no limite total cadastrado.",
+                status:
+                    "Saudável",
+            };
+        }, [
+            cartoes,
+            resumo
+        ]);
+
 
     const faturas =
         useMemo(() => {
@@ -1305,55 +1366,12 @@ function Cartoes() {
                 </PageHeader>
 
 
-                <section className="cartoes-resumo">
-
-                    <div className="cartoes-resumo-card">
-
-                        <span>
-                            Limite total
-                        </span>
-
-                        <strong>
-                            {
-                                formatarMoeda(
-                                    resumo.total
-                                )
-                            }
-                        </strong>
-
-                        <WalletCards
-                            size={22}
-                        />
-
-                    </div>
-
-
-                    <div className="cartoes-resumo-card">
-
-                        <span>
-                            Limite utilizado
-                        </span>
-
-                        <strong>
-                            {
-                                formatarMoeda(
-                                    resumo.usado
-                                )
-                            }
-                        </strong>
-
-                        <CreditCard
-                            size={22}
-                        />
-
-                    </div>
-
-
-                    <div className="cartoes-resumo-card">
-
-                        <span>
-                            Limite disponível
-                        </span>
+                {!carregando &&
+                cartoes.length > 0 && (
+                <>
+                <section className="cartoes-pro-hero">
+                    <div className="cartoes-pro-principal">
+                        <span>Limite disponível</span>
 
                         <strong>
                             {
@@ -1363,13 +1381,145 @@ function Cartoes() {
                             }
                         </strong>
 
-                        <CalendarDays
-                            size={22}
-                        />
-
+                        <p>
+                            {
+                                resumo.total > 0
+                                    ? `${Math.min(
+                                        100,
+                                        Math.max(
+                                            0,
+                                            (
+                                                resumo.usado /
+                                                resumo.total
+                                            ) * 100
+                                        )
+                                    ).toLocaleString(
+                                        "pt-BR",
+                                        {
+                                            maximumFractionDigits: 1
+                                        }
+                                    )}% do limite total já utilizado.`
+                                    : "Cadastre um cartão para começar a acompanhar seu crédito."
+                            }
+                        </p>
                     </div>
 
+                    <div className="cartoes-pro-uso">
+                        <div className="cartoes-pro-uso-linha">
+                            <span>Uso do limite</span>
+
+                            <strong>
+                                {
+                                    resumo.total > 0
+                                        ? Math.min(
+                                            100,
+                                            Math.max(
+                                                0,
+                                                (
+                                                    resumo.usado /
+                                                    resumo.total
+                                                ) * 100
+                                            )
+                                        ).toLocaleString(
+                                            "pt-BR",
+                                            {
+                                                maximumFractionDigits: 1
+                                            }
+                                        ) + "%"
+                                        : "0%"
+                                }
+                            </strong>
+                        </div>
+
+                        <div className="cartoes-pro-barra">
+                            <span
+                                style={{
+                                    width:
+                                        resumo.total > 0
+                                            ? `${Math.min(
+                                                100,
+                                                Math.max(
+                                                    0,
+                                                    (
+                                                        resumo.usado /
+                                                        resumo.total
+                                                    ) * 100
+                                                )
+                                            )}%`
+                                            : "0%"
+                                }}
+                            />
+                        </div>
+
+                        <div className="cartoes-pro-legenda">
+                            <span>
+                                Usado {formatarMoeda(resumo.usado)}
+                            </span>
+
+                            <span>
+                                Total {formatarMoeda(resumo.total)}
+                            </span>
+                        </div>
+                    </div>
                 </section>
+
+
+                                <section className="cartoes-pro-strip">
+                    <div>
+                        <span>Cartões</span>
+                        <strong>
+                            {cartoes.length}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Uso do limite</span>
+                        <strong>
+                            {
+                                leituraCredito.percentual
+                                    .toLocaleString(
+                                        "pt-BR",
+                                        {
+                                            maximumFractionDigits: 1
+                                        }
+                                    )
+                            }%
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Utilizado</span>
+                        <strong>
+                            {
+                                formatarMoeda(
+                                    resumo.usado
+                                )
+                            }
+                        </strong>
+                    </div>
+                </section>
+
+                <section className="cartoes-rumo-insight">
+                    <span className="cartoes-rumo-label">
+                        Rumo • inteligência de crédito
+                    </span>
+
+                    <div>
+                        <strong>
+                            {leituraCredito.titulo}
+                        </strong>
+
+                        <small>
+                            {leituraCredito.status}
+                        </small>
+                    </div>
+
+                    <p>
+                        {leituraCredito.descricao}
+                    </p>
+                </section>
+                </>
+                )}
 
 
                 {
@@ -1792,20 +1942,11 @@ function Cartoes() {
 
                                         Limite total
 
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            value={
-                                                limiteTotal
-                                            }
-                                            placeholder="5000,00"
-                                            onChange={
-                                                (e) =>
-                                                    setLimiteTotal(
-                                                        e.target.value
-                                                    )
-                                            }
+                                                                                <MoneyCalculatorInput
+                                            value={limiteTotal}
+                                            onChange={setLimiteTotal}
+                                            placeholder="R$ 0,00"
+                                            ariaLabel="Limite do cartão"
                                         />
 
                                     </label>
@@ -2071,20 +2212,11 @@ function Cartoes() {
 
                                             Valor da compra
 
-                                            <input
-                                                type="number"
-                                                min="0.01"
-                                                step="0.01"
-                                                value={
-                                                    compraValor
-                                                }
-                                                placeholder="0,00"
-                                                onChange={
-                                                    (e) =>
-                                                        setCompraValor(
-                                                            e.target.value
-                                                        )
-                                                }
+                                                                                        <MoneyCalculatorInput
+                                                value={compraValor}
+                                                onChange={setCompraValor}
+                                                placeholder="R$ 0,00"
+                                                ariaLabel="Valor da compra"
                                             />
 
                                         </label>

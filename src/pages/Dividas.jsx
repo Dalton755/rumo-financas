@@ -10,7 +10,6 @@ import {
   Calculator,
   CalendarDays,
   CheckCircle2,
-  CircleDollarSign,
   Clock3,
   CreditCard,
   History,
@@ -22,13 +21,13 @@ import {
   Sparkles,
   Trash2,
   TrendingDown,
-  WalletCards,
   X,
 } from "lucide-react";
 
 import MainLayout from "../layouts/MainLayout";
 import PageContainer from "../components/ui/PageContainer";
 import PageHeader from "../components/ui/PageHeader";
+import MoneyCalculatorInput from "../components/ui/MoneyCalculatorInput";
 
 import { useToast } from "../context/ToastContext";
 
@@ -1088,6 +1087,84 @@ function Dividas() {
     }, [dividas]);
 
 
+  const inteligenciaDividas =
+    useMemo(() => {
+      const abertas =
+        dividas.filter(
+          (item) =>
+            item.status !==
+            "quitada"
+        );
+
+      const maiorJuro =
+        [...abertas]
+          .sort(
+            (a, b) =>
+              Number(
+                b.juros_mensal || 0
+              ) -
+              Number(
+                a.juros_mensal || 0
+              )
+          )[0] || null;
+
+      const menorSaldo =
+        [...abertas]
+          .sort(
+            (a, b) =>
+              Number(
+                a.saldo_atual || 0
+              ) -
+              Number(
+                b.saldo_atual || 0
+              )
+          )[0] || null;
+
+      if (!abertas.length) {
+        return {
+          titulo:
+            "Nenhuma dívida exige ação agora",
+          descricao:
+            "Mantenha sua reserva e evite assumir parcelas que comprimam seu fluxo.",
+          destaque:
+            "Tudo quitado",
+        };
+      }
+
+      if (
+        Number(
+          maiorJuro?.juros_mensal || 0
+        ) >= 5
+      ) {
+        return {
+          titulo:
+            `Maior custo: ${maiorJuro.nome}`,
+          descricao:
+            `Essa dívida cobra ${formatarPercentual(
+              maiorJuro.juros_mensal
+            )} ao mês e merece atenção porque cresce mais rápido.`,
+          destaque:
+            "Juros altos",
+        };
+      }
+
+      return {
+        titulo:
+          menorSaldo
+            ? `Mais próxima de sair: ${menorSaldo.nome}`
+            : "Organize seu plano de saída",
+        descricao:
+          menorSaldo
+            ? `Faltam ${formatarMoeda(
+              menorSaldo.saldo_atual
+            )} para quitar essa dívida.`
+            : "Acompanhe saldo, juros e parcela mínima para definir sua próxima ação.",
+        destaque:
+          "Próximo passo",
+      };
+    }, [dividas]);
+
+
   const dividasOrdenadas =
     useMemo(() => {
       const pesoStatus = {
@@ -1332,72 +1409,93 @@ function Dividas() {
         </PageHeader>
 
 
-        <section className="dividas-resumo-grid">
-          <article className="dividas-resumo-card">
-            <CircleDollarSign size={22} />
+        {dividas.length > 0 && (
+        <>
+        <section className="dividas-pro-hero">
+          <div className="dividas-pro-principal">
+            <span>Saldo para quitar</span>
 
+            <strong>
+              {formatarMoeda(
+                resumo.saldoTotal
+              )}
+            </strong>
+
+            <p>
+              {
+                resumo.abertas === 0
+                  ? "Nenhuma dívida aberta no momento."
+                  : `${resumo.abertas} ${resumo.abertas === 1 ? "dívida ativa" : "dívidas ativas"} no seu plano de saída.`
+              }
+            </p>
+          </div>
+
+          <div className="dividas-pro-sinais">
             <div>
-              <span>
-                Saldo devedor
-              </span>
-
-              <strong>
-                {formatarMoeda(
-                  resumo.saldoTotal
-                )}
-              </strong>
-            </div>
-          </article>
-
-
-          <article className="dividas-resumo-card">
-            <WalletCards size={22} />
-
-            <div>
-              <span>
-                Parcelas mínimas
-              </span>
-
+              <span>Compromisso mínimo</span>
               <strong>
                 {formatarMoeda(
                   resumo.parcelas
                 )}
               </strong>
+              <small>parcelas mínimas somadas</small>
             </div>
-          </article>
-
-
-          <article className="dividas-resumo-card">
-            <CreditCard size={22} />
 
             <div>
-              <span>
-                Dívidas abertas
-              </span>
-
-              <strong>
-                {resumo.abertas}
-              </strong>
-            </div>
-          </article>
-
-
-          <article className="dividas-resumo-card">
-            <Percent size={22} />
-
-            <div>
-              <span>
-                Juros médios
-              </span>
-
+              <span>Custo médio</span>
               <strong>
                 {formatarPercentual(
                   resumo.jurosMedios
                 )}
               </strong>
+              <small>juros médios ao mês</small>
             </div>
-          </article>
+          </div>
         </section>
+
+
+                <section className="dividas-pro-strip">
+          <div>
+            <span>Abertas</span>
+            <strong>{resumo.abertas}</strong>
+          </div>
+
+          <div>
+            <span>Quitadas</span>
+            <strong>{resumo.quitadas}</strong>
+          </div>
+
+          <div>
+            <span>Juros médios</span>
+            <strong>
+              {formatarPercentual(
+                resumo.jurosMedios
+              )}
+            </strong>
+          </div>
+        </section>
+
+        <section className="dividas-rumo-insight">
+          <span className="dividas-rumo-label">
+            Rumo • leitura inteligente
+          </span>
+
+          <div>
+            <strong>
+              {inteligenciaDividas.titulo}
+            </strong>
+
+            <small>
+              {inteligenciaDividas.destaque}
+            </small>
+          </div>
+
+          <p>
+            {inteligenciaDividas.descricao}
+          </p>
+        </section>
+        </>
+        )}
 
 
         <section className="dividas-section">
@@ -1759,21 +1857,11 @@ function Dividas() {
                       Valor original
                     </span>
 
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={
-                        valorOriginal
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        setValorOriginal(
-                          event.target.value
-                        )
-                      }
-                      placeholder="0,00"
+                                        <MoneyCalculatorInput
+                        value={valorOriginal}
+                        onChange={setValorOriginal}
+                        placeholder="R$ 0,00"
+                        ariaLabel="Valor original da dívida"
                     />
                   </label>
 
@@ -1783,21 +1871,11 @@ function Dividas() {
                       Saldo devedor atual
                     </span>
 
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={
-                        saldoAtual
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        setSaldoAtual(
-                          event.target.value
-                        )
-                      }
-                      placeholder="Se vazio, usa o valor original"
+                                        <MoneyCalculatorInput
+                        value={saldoAtual}
+                        onChange={setSaldoAtual}
+                        placeholder="R$ 0,00"
+                        ariaLabel="Saldo devedor atual"
                     />
                   </label>
                 </div>
@@ -1833,21 +1911,11 @@ function Dividas() {
                       Parcela mínima
                     </span>
 
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={
-                        parcelaMinima
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        setParcelaMinima(
-                          event.target.value
-                        )
-                      }
-                      placeholder="0,00"
+                                        <MoneyCalculatorInput
+                        value={parcelaMinima}
+                        onChange={setParcelaMinima}
+                        placeholder="R$ 0,00"
+                        ariaLabel="Parcela mínima"
                     />
                   </label>
                 </div>
@@ -2270,21 +2338,11 @@ function Dividas() {
                             Previsto
                           </span>
 
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={
-                              valorPrevisto
-                            }
-                            onChange={(
-                              event
-                            ) =>
-                              setValorPrevisto(
-                                event.target.value
-                              )
-                            }
-                            placeholder="0,00"
+                                                    <MoneyCalculatorInput
+                              value={valorPrevisto}
+                              onChange={setValorPrevisto}
+                              placeholder="R$ 0,00"
+                              ariaLabel="Valor previsto"
                           />
                         </label>
 
@@ -2293,21 +2351,11 @@ function Dividas() {
                             Já pago
                           </span>
 
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={
-                              valorPagoPlano
-                            }
-                            onChange={(
-                              event
-                            ) =>
-                              setValorPagoPlano(
-                                event.target.value
-                              )
-                            }
-                            placeholder="0,00"
+                                                    <MoneyCalculatorInput
+                              value={valorPagoPlano}
+                              onChange={setValorPagoPlano}
+                              placeholder="R$ 0,00"
+                              ariaLabel="Valor pago"
                           />
                         </label>
 

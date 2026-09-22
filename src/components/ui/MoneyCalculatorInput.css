@@ -1,0 +1,186 @@
+.money-calculator-field {
+  width: 100%;
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding: 0 12px;
+
+  border: 1px solid var(--border-strong);
+  border-radius: 11px;
+
+  background: #ffffff;
+  color: #9aa5b2;
+
+  text-align: left;
+}
+
+.money-calculator-field:hover {
+  border-color: #9fc9d0;
+}
+
+.money-calculator-field .has-value {
+  color: #334155;
+  font-weight: 700;
+}
+
+.money-calculator-field svg {
+  flex: 0 0 auto;
+  color: var(--primary);
+}
+
+.money-calculator-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30000;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  padding: 16px;
+
+  background: rgba(15, 23, 42, .42);
+  backdrop-filter: blur(5px);
+}
+
+.money-calculator-sheet {
+  width: min(430px, 100%);
+
+  padding: 18px;
+
+  border: 1px solid rgba(226,232,240,.94);
+  border-radius: 24px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 30px 80px rgba(15,23,42,.22);
+}
+
+.money-calculator-display {
+  padding: 5px 4px 17px;
+
+  text-align: right;
+}
+
+.money-calculator-display > span {
+  display: block;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.money-calculator-expression {
+  min-height: 27px;
+
+  margin-top: 8px;
+
+  overflow: hidden;
+
+  color: #64748b;
+
+  font-size: 17px;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.money-calculator-display strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #172033;
+
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+}
+
+.money-calculator-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 8px;
+}
+
+.money-calculator-grid button {
+  min-height: 52px;
+
+  border: 1px solid #e8edf2;
+  border-radius: 14px;
+
+  background: #f8fafc;
+  color: #334155;
+
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.money-calculator-grid button.soft {
+  color: #64748b;
+  font-size: 11px;
+}
+
+.money-calculator-grid button.operator {
+  background: #eaf7f9;
+  color: #0b7f91;
+
+  font-size: 21px;
+}
+
+.money-calculator-grid button.zero {
+  grid-column: span 2;
+}
+
+.money-calculator-grid button.apply {
+  grid-column: span 2;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  border-color: #0d93a7;
+
+  background: var(--rumo-gradient);
+  color: #ffffff;
+
+  font-size: 11px;
+}
+
+.money-calculator-cancel {
+  width: 100%;
+  min-height: 42px;
+
+  margin-top: 9px;
+
+  border: 0;
+  border-radius: 11px;
+
+  background: transparent;
+  color: #7a8797;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .money-calculator-overlay {
+    align-items: center;
+  }
+
+  .money-calculator-sheet {
+    border-radius: 20px;
+  }
+}

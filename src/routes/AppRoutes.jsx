@@ -16,6 +16,7 @@ import Orcamento from "../pages/Orcamento";
 import Projecoes from "../pages/Projecoes";
 import Alertas from "../pages/Alertas";
 import Gerencial from "../pages/Gerencial";
+import Calculadoras from "../pages/Calculadoras";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 import RecursoRoute from "../components/RecursoRoute";
@@ -68,6 +69,15 @@ function AppRoutes() {
                     element={
                         <ProtectedRoute>
                             <Relatorios />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/calculos"
+                    element={
+                        <ProtectedRoute>
+                            <Calculadoras />
                         </ProtectedRoute>
                     }
                 />
