@@ -2017,3 +2017,198 @@
       repeat(2, minmax(0, 1fr));
   }
 }
+
+
+/* =========================================================
+   PRO EXPERIENCE
+========================================================= */
+
+.dividas-pro-hero {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.35fr)
+    minmax(0, .95fr);
+
+  gap: 12px;
+
+  margin-top: 12px;
+  padding: 17px;
+
+  border: 1px solid #e1e9ee;
+  border-radius: 18px;
+
+  background:
+    radial-gradient(
+      circle at 92% 10%,
+      rgba(239,68,68,.055),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #fbfcfd
+    );
+
+  box-shadow: var(--shadow-xs);
+}
+
+.dividas-pro-principal > span,
+.dividas-pro-sinais span,
+.dividas-pro-sinais small {
+  display: block;
+}
+
+.dividas-pro-principal > span {
+  color: #8a96a4;
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.dividas-pro-principal > strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #182235;
+
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 850;
+  letter-spacing: -.045em;
+}
+
+.dividas-pro-principal > p {
+  margin: 6px 0 0;
+
+  color: #7a8797;
+
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.dividas-pro-sinais {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0,1fr));
+
+  gap: 8px;
+}
+
+.dividas-pro-sinais > div {
+  min-width: 0;
+
+  padding: 11px;
+
+  border: 1px solid #edf1f5;
+  border-radius: 12px;
+
+  background: rgba(255,255,255,.82);
+}
+
+.dividas-pro-sinais span {
+  color: #8b97a6;
+
+  font-size: 7px;
+  font-weight: 750;
+}
+
+.dividas-pro-sinais strong {
+  display: block;
+
+  margin-top: 5px;
+
+  overflow: hidden;
+
+  color: #334155;
+
+  font-size: 13px;
+  font-weight: 850;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.dividas-pro-sinais small {
+  margin-top: 3px;
+
+  color: #a0aab7;
+
+  font-size: 7px;
+}
+
+.divida-card {
+  position: relative;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff,
+      #fcfdfe
+    );
+}
+
+.divida-card.status-quitada {
+  background:
+    linear-gradient(
+      180deg,
+      #f7fcf9,
+      #ffffff
+    );
+}
+
+@media (max-width: 640px) {
+  .dividas-pro-hero {
+    grid-template-columns: 1fr;
+
+    gap: 9px;
+
+    margin-top: 8px;
+    padding: 13px;
+
+    border-radius: 15px;
+  }
+
+  .dividas-pro-principal > strong {
+    font-size: 27px;
+  }
+
+  .dividas-pro-sinais {
+    gap: 6px;
+  }
+
+  .dividas-pro-sinais > div {
+    padding: 9px;
+
+    border-radius: 10px;
+  }
+
+  .dividas-resumo-card:first-child {
+    display: none;
+  }
+
+  .dividas-resumo-grid {
+    grid-template-columns:
+      repeat(3, minmax(0,1fr));
+
+    gap: 6px;
+  }
+
+  .dividas-resumo-card {
+    min-height: 78px;
+  }
+
+  .dividas-resumo-card > svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .dividas-resumo-card span {
+    font-size: 7px;
+  }
+
+  .dividas-resumo-card strong {
+    font-size: 12px;
+  }
+}
