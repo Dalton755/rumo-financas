@@ -6,10 +6,7 @@ import {
 import {
     ArrowDownRight,
     ArrowUpRight,
-    CalendarDays,
-    Sparkles,
-    TrendingUp,
-    WalletCards
+    Sparkles
 } from "lucide-react";
 
 import {
