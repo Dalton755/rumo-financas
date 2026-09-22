@@ -154,6 +154,69 @@ function Projecoes() {
     const proximasMovimentacoes =
         dados?.proximas_movimentacoes || [];
 
+    const primeiroSaldoNegativo =
+        (
+            dados?.evolucao || []
+        ).find(
+            (item) =>
+                Number(
+                    item.saldo || 0
+                ) < 0
+        ) || null;
+
+    const variacao30 =
+        saldo30 -
+        saldoReal;
+
+    const fluxo30 =
+        Number(
+            dados?.dias_30
+                ?.receitas_previstas || 0
+        ) -
+        Number(
+            dados?.dias_30
+                ?.despesas_previstas || 0
+        );
+
+    const leituraProjecao =
+        primeiroSaldoNegativo
+            ? {
+                titulo:
+                    "Zona de atenção à frente",
+                descricao:
+                    `A projeção cruza saldo negativo em ${formatarData(
+                        primeiroSaldoNegativo.data
+                    )}. Revise os compromissos anteriores a essa data.`,
+                status:
+                    "Risco projetado",
+            }
+            : variacao30 < 0
+                ? {
+                    titulo:
+                        "Seu saldo perde força",
+                    descricao:
+                        `A projeção de 30 dias cai ${formatarMoeda(
+                            Math.abs(
+                                variacao30
+                            )
+                        )}. As saídas previstas estão pressionando o caixa.`,
+                    status:
+                        "Atenção",
+                }
+                : {
+                    titulo:
+                        "Trajetória financeira positiva",
+                    descricao:
+                        `Nos próximos 30 dias o fluxo previsto acrescenta ${formatarMoeda(
+                            Math.max(
+                                0,
+                                fluxo30
+                            )
+                        )} ao cenário atual.`,
+                    status:
+                        "Direção saudável",
+                };
+
 
     function formatarData(data) {
 
@@ -300,227 +363,106 @@ function Projecoes() {
                             </section>
 
 
-                            <section className="projecoes-cards">
+                                                        <section className="projecoes-timeline">
+                                <div className="projecoes-timeline-item atual">
+                                    <span>Hoje</span>
+                                    <strong>
+                                        {formatarMoeda(
+                                            saldoReal
+                                        )}
+                                    </strong>
+                                    <small>saldo real</small>
+                                </div>
 
-                                <article className="projecoes-card atual">
+                                <div className="projecoes-timeline-arrow">
+                                    →
+                                </div>
 
-                                    <div className="projecoes-card-topo">
-
-                                        <div className="projecoes-card-icone">
-
-                                            <WalletCards size={22} />
-
-                                        </div>
-
-                                        <span>
-                                            Saldo real hoje
-                                        </span>
-
-                                    </div>
-
-                                    <strong
-                                        className={
-                                            saldoReal < 0
-                                                ? "negativo"
-                                                : ""
-                                        }
-                                    >
+                                <div className="projecoes-timeline-item">
+                                    <span>30 dias</span>
+                                    <strong>
+                                        {formatarMoeda(
+                                            saldo30
+                                        )}
+                                    </strong>
+                                    <small>
                                         {
-                                            formatarMoeda(
-                                                saldoReal
-                                            )
+                                            saldo30 >= saldoReal
+                                                ? "melhora"
+                                                : "redução"
                                         }
+                                    </small>
+                                </div>
+
+                                <div className="projecoes-timeline-arrow">
+                                    →
+                                </div>
+
+                                <div className="projecoes-timeline-item">
+                                    <span>60 dias</span>
+                                    <strong>
+                                        {formatarMoeda(
+                                            saldo60
+                                        )}
+                                    </strong>
+                                    <small>projetado</small>
+                                </div>
+
+                                <div className="projecoes-timeline-arrow">
+                                    →
+                                </div>
+
+                                <div className="projecoes-timeline-item">
+                                    <span>90 dias</span>
+                                    <strong>
+                                        {formatarMoeda(
+                                            saldo90
+                                        )}
+                                    </strong>
+                                    <small>projetado</small>
+                                </div>
+                            </section>
+
+                            <section className="projecoes-rumo-insight">
+                                <span className="projecoes-rumo-label">
+                                    Rumo • leitura preditiva
+                                </span>
+
+                                <div>
+                                    <strong>
+                                        {leituraProjecao.titulo}
                                     </strong>
 
                                     <small>
-                                        Somente movimentações já realizadas.
+                                        {leituraProjecao.status}
                                     </small>
+                                </div>
 
-                                </article>
+                                <p>
+                                    {leituraProjecao.descricao}
+                                </p>
 
+                                <div className="projecoes-rumo-micro">
+                                    <span>
+                                        Entradas 30d
+                                        <b>
+                                            {formatarMoeda(
+                                                dados.dias_30
+                                                    ?.receitas_previstas
+                                            )}
+                                        </b>
+                                    </span>
 
-                                <article className="projecoes-card">
-
-                                    <div className="projecoes-card-topo">
-
-                                        <div className="projecoes-card-icone futuro">
-
-                                            <CalendarDays size={22} />
-
-                                        </div>
-
-                                        <span>
-                                            Saldo em 30 dias
-                                        </span>
-
-                                    </div>
-
-                                    <strong
-                                        className={
-                                            saldo30 < 0
-                                                ? "negativo"
-                                                : ""
-                                        }
-                                    >
-                                        {
-                                            formatarMoeda(
-                                                saldo30
-                                            )
-                                        }
-                                    </strong>
-
-                                    <div className="projecoes-card-detalhes">
-
-                                        <span>
-                                            Entradas{" "}
-                                            <b>
-                                                {
-                                                    formatarMoeda(
-                                                        dados.dias_30
-                                                            ?.receitas_previstas
-                                                    )
-                                                }
-                                            </b>
-                                        </span>
-
-                                        <span>
-                                            Saídas{" "}
-                                            <b>
-                                                {
-                                                    formatarMoeda(
-                                                        dados.dias_30
-                                                            ?.despesas_previstas
-                                                    )
-                                                }
-                                            </b>
-                                        </span>
-
-                                    </div>
-
-                                </article>
-
-
-                                <article className="projecoes-card">
-
-                                    <div className="projecoes-card-topo">
-
-                                        <div className="projecoes-card-icone futuro">
-
-                                            <TrendingUp size={22} />
-
-                                        </div>
-
-                                        <span>
-                                            Saldo em 60 dias
-                                        </span>
-
-                                    </div>
-
-                                    <strong
-                                        className={
-                                            saldo60 < 0
-                                                ? "negativo"
-                                                : ""
-                                        }
-                                    >
-                                        {
-                                            formatarMoeda(
-                                                saldo60
-                                            )
-                                        }
-                                    </strong>
-
-                                    <div className="projecoes-card-detalhes">
-
-                                        <span>
-                                            Entradas{" "}
-                                            <b>
-                                                {
-                                                    formatarMoeda(
-                                                        dados.dias_60
-                                                            ?.receitas_previstas
-                                                    )
-                                                }
-                                            </b>
-                                        </span>
-
-                                        <span>
-                                            Saídas{" "}
-                                            <b>
-                                                {
-                                                    formatarMoeda(
-                                                        dados.dias_60
-                                                            ?.despesas_previstas
-                                                    )
-                                                }
-                                            </b>
-                                        </span>
-
-                                    </div>
-
-                                </article>
-
-
-                                <article className="projecoes-card">
-
-                                    <div className="projecoes-card-topo">
-
-                                        <div className="projecoes-card-icone futuro">
-
-                                            <TrendingUp size={22} />
-
-                                        </div>
-
-                                        <span>
-                                            Saldo em 90 dias
-                                        </span>
-
-                                    </div>
-
-                                    <strong
-                                        className={
-                                            saldo90 < 0
-                                                ? "negativo"
-                                                : ""
-                                        }
-                                    >
-                                        {
-                                            formatarMoeda(
-                                                saldo90
-                                            )
-                                        }
-                                    </strong>
-
-                                    <div className="projecoes-card-detalhes">
-
-                                        <span>
-                                            Entradas{" "}
-                                            <b>
-                                                {
-                                                    formatarMoeda(
-                                                        dados.dias_90
-                                                            ?.receitas_previstas
-                                                    )
-                                                }
-                                            </b>
-                                        </span>
-
-                                        <span>
-                                            Saídas{" "}
-                                            <b>
-                                                {
-                                                    formatarMoeda(
-                                                        dados.dias_90
-                                                            ?.despesas_previstas
-                                                    )
-                                                }
-                                            </b>
-                                        </span>
-
-                                    </div>
-
-                                </article>
-
+                                    <span>
+                                        Saídas 30d
+                                        <b>
+                                            {formatarMoeda(
+                                                dados.dias_30
+                                                    ?.despesas_previstas
+                                            )}
+                                        </b>
+                                    </span>
+                                </div>
                             </section>
 
                             <section className="projecoes-painel">
