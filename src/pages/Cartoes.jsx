@@ -538,6 +538,67 @@ function Cartoes() {
 
         }, [cartoes]);
 
+    const leituraCredito =
+        useMemo(() => {
+            const percentual =
+                resumo.total > 0
+                    ? (
+                        resumo.usado /
+                        resumo.total
+                    ) * 100
+                    : 0;
+
+            if (!cartoes.length) {
+                return {
+                    percentual: 0,
+                    titulo:
+                        "Cadastre seu primeiro cartão",
+                    descricao:
+                        "O Rumo passa a acompanhar limite, uso e faturas em um só lugar.",
+                    status:
+                        "Começar",
+                };
+            }
+
+            if (percentual >= 80) {
+                return {
+                    percentual,
+                    titulo:
+                        "Uso de crédito muito alto",
+                    descricao:
+                        "Seu limite está bastante comprometido. Evite novas compras até recuperar espaço.",
+                    status:
+                        "Atenção alta",
+                };
+            }
+
+            if (percentual >= 55) {
+                return {
+                    percentual,
+                    titulo:
+                        "Uso de crédito em atenção",
+                    descricao:
+                        "Mais da metade do limite já está comprometida. Vale acompanhar as próximas compras.",
+                    status:
+                        "Atenção",
+                };
+            }
+
+            return {
+                percentual,
+                titulo:
+                    "Uso de crédito controlado",
+                descricao:
+                    "Você ainda mantém boa margem disponível no limite total cadastrado.",
+                status:
+                    "Saudável",
+            };
+        }, [
+            cartoes,
+            resumo
+        ]);
+
+
     const faturas =
         useMemo(() => {
 
@@ -1307,6 +1368,9 @@ function Cartoes() {
                 </PageHeader>
 
 
+                {!carregando &&
+                cartoes.length > 0 && (
+                <>
                 <section className="cartoes-pro-hero">
                     <div className="cartoes-pro-principal">
                         <span>Limite disponível</span>
@@ -1402,35 +1466,31 @@ function Cartoes() {
                 </section>
 
 
-                <section className="cartoes-resumo">
-
-                    <div className="cartoes-resumo-card">
-
-                        <span>
-                            Limite total
-                        </span>
-
+                                <section className="cartoes-pro-strip">
+                    <div>
+                        <span>Cartões</span>
                         <strong>
-                            {
-                                formatarMoeda(
-                                    resumo.total
-                                )
-                            }
+                            {cartoes.length}
                         </strong>
-
-                        <WalletCards
-                            size={22}
-                        />
-
                     </div>
 
+                    <div>
+                        <span>Uso do limite</span>
+                        <strong>
+                            {
+                                leituraCredito.percentual
+                                    .toLocaleString(
+                                        "pt-BR",
+                                        {
+                                            maximumFractionDigits: 1
+                                        }
+                                    )
+                            }%
+                        </strong>
+                    </div>
 
-                    <div className="cartoes-resumo-card">
-
-                        <span>
-                            Limite utilizado
-                        </span>
-
+                    <div>
+                        <span>Utilizado</span>
                         <strong>
                             {
                                 formatarMoeda(
@@ -1438,35 +1498,30 @@ function Cartoes() {
                                 )
                             }
                         </strong>
-
-                        <CreditCard
-                            size={22}
-                        />
-
                     </div>
+                </section>
 
+                <section className="cartoes-rumo-insight">
+                    <span className="cartoes-rumo-label">
+                        Rumo • inteligência de crédito
+                    </span>
 
-                    <div className="cartoes-resumo-card">
-
-                        <span>
-                            Limite disponível
-                        </span>
-
+                    <div>
                         <strong>
-                            {
-                                formatarMoeda(
-                                    resumo.disponivel
-                                )
-                            }
+                            {leituraCredito.titulo}
                         </strong>
 
-                        <CalendarDays
-                            size={22}
-                        />
-
+                        <small>
+                            {leituraCredito.status}
+                        </small>
                     </div>
 
+                    <p>
+                        {leituraCredito.descricao}
+                    </p>
                 </section>
+                </>
+                )}
 
 
                 {
