@@ -493,7 +493,7 @@ function Projecoes() {
 
                                                 <ResponsiveContainer
                                                     width="100%"
-                                                    height={320}
+                                                    height="100%"
                                                 >
 
                                                     <LineChart
