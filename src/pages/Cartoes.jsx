@@ -5,14 +5,12 @@ import {
 } from "react";
 
 import {
-    CalendarDays,
     ChevronRight,
     CreditCard,
     Pencil,
     Plus,
     ReceiptText,
     Trash2,
-    WalletCards,
     X
 } from "lucide-react";
 
