@@ -241,6 +241,65 @@ function Projecoes() {
 
                         <>
 
+                            <section
+                                className={
+                                    saldo30 >= saldoReal
+                                        ? "projecoes-pro-hero positivo"
+                                        : "projecoes-pro-hero atencao"
+                                }
+                            >
+                                <div className="projecoes-pro-principal">
+                                    <span>Direção dos próximos 30 dias</span>
+
+                                    <strong>
+                                        {
+                                            formatarMoeda(
+                                                saldo30
+                                            )
+                                        }
+                                    </strong>
+
+                                    <p>
+                                        {
+                                            saldo30 >= saldoReal
+                                                ? `Seu saldo projetado melhora ${formatarMoeda(
+                                                    saldo30 - saldoReal
+                                                )} em relação a hoje.`
+                                                : `Seu saldo projetado cai ${formatarMoeda(
+                                                    Math.abs(
+                                                        saldo30 - saldoReal
+                                                    )
+                                                )} em relação a hoje.`
+                                        }
+                                    </p>
+                                </div>
+
+                                <div className="projecoes-pro-comparacao">
+                                    <div>
+                                        <span>Hoje</span>
+                                        <strong>
+                                            {
+                                                formatarMoeda(
+                                                    saldoReal
+                                                )
+                                            }
+                                        </strong>
+                                    </div>
+
+                                    <div>
+                                        <span>Em 30 dias</span>
+                                        <strong>
+                                            {
+                                                formatarMoeda(
+                                                    saldo30
+                                                )
+                                            }
+                                        </strong>
+                                    </div>
+                                </div>
+                            </section>
+
+
                             <section className="projecoes-cards">
 
                                 <article className="projecoes-card atual">
