@@ -387,6 +387,40 @@ function Alertas() {
   }
 
 
+  const alertaPrioritario =
+    useMemo(() => {
+      const ordenados =
+        [...alertas].sort(
+          (a, b) => {
+            const peso = {
+              critico: 0,
+              atencao: 1,
+              info: 2,
+            };
+
+            const leitura =
+              (
+                peso[a.nivel] ??
+                9
+              ) -
+              (
+                peso[b.nivel] ??
+                9
+              );
+
+            if (leitura !== 0) {
+              return leitura;
+            }
+
+            return Number(a.lido) -
+              Number(b.lido);
+          }
+        );
+
+      return ordenados[0] || null;
+    }, [alertas]);
+
+
   const resumo =
     useMemo(
       () => {
@@ -581,99 +615,82 @@ function Alertas() {
               </section>
 
 
-              <section className="alertas-resumo">
+                            {
+                resumo.total > 0 && (
+                  <section className="alertas-pro-strip">
+                    <div className="critico">
+                      <span>Críticos</span>
+                      <strong>
+                        {resumo.criticos}
+                      </strong>
+                    </div>
 
-                <article>
+                    <div className="atencao">
+                      <span>Atenção</span>
+                      <strong>
+                        {resumo.atencao}
+                      </strong>
+                    </div>
 
-                  <div className="alertas-resumo-icone total">
+                    <div>
+                      <span>Não lidos</span>
+                      <strong>
+                        {resumo.naoLidos}
+                      </strong>
+                    </div>
+                  </section>
+                )
+              }
 
-                    <BellRing size={22} />
+              <section className="alertas-rumo-insight">
+                <span className="alertas-rumo-label">
+                  Rumo • prioridade financeira
+                </span>
 
-                  </div>
+                <div>
+                  <strong>
+                    {
+                      alertaPrioritario
+                        ? alertaPrioritario.titulo
+                        : "Nenhuma ação necessária agora"
+                    }
+                  </strong>
 
-                  <div>
+                  <small>
+                    {
+                      alertaPrioritario
+                        ? alertaPrioritario.nivel === "critico"
+                          ? "Prioridade alta"
+                          : alertaPrioritario.nivel === "atencao"
+                            ? "Merece atenção"
+                            : "Informativo"
+                        : "Tudo sob controle"
+                    }
+                  </small>
+                </div>
 
-                    <span>
-                      Alertas ativos
-                    </span>
+                <p>
+                  {
+                    alertaPrioritario
+                      ? alertaPrioritario.descricao
+                      : "O Rumo continua acompanhando vencimentos, orçamento, saldo e comportamento financeiro automaticamente."
+                  }
+                </p>
 
-                    <strong>
-                      {resumo.total}
-                    </strong>
-
-                  </div>
-
-                </article>
-
-
-                <article>
-
-                  <div className="alertas-resumo-icone novos">
-
-                    <Info size={22} />
-
-                  </div>
-
-                  <div>
-
-                    <span>
-                      Não lidos
-                    </span>
-
-                    <strong>
-                      {resumo.naoLidos}
-                    </strong>
-
-                  </div>
-
-                </article>
-
-
-                <article>
-
-                  <div className="alertas-resumo-icone atencao">
-
-                    <AlertTriangle size={22} />
-
-                  </div>
-
-                  <div>
-
-                    <span>
-                      Atenção
-                    </span>
-
-                    <strong>
-                      {resumo.atencao}
-                    </strong>
-
-                  </div>
-
-                </article>
-
-
-                <article>
-
-                  <div className="alertas-resumo-icone critico">
-
-                    <CircleAlert size={22} />
-
-                  </div>
-
-                  <div>
-
-                    <span>
-                      Críticos
-                    </span>
-
-                    <strong>
-                      {resumo.criticos}
-                    </strong>
-
-                  </div>
-
-                </article>
-
+                {
+                  alertaPrioritario?.rota && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        abrirAlerta(
+                          alertaPrioritario
+                        )
+                      }
+                    >
+                      Ver situação
+                    </button>
+                  )
+                }
               </section>
 
 
