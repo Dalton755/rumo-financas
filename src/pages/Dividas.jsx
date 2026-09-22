@@ -1333,6 +1333,49 @@ function Dividas() {
         </PageHeader>
 
 
+        <section className="dividas-pro-hero">
+          <div className="dividas-pro-principal">
+            <span>Saldo para quitar</span>
+
+            <strong>
+              {formatarMoeda(
+                resumo.saldoTotal
+              )}
+            </strong>
+
+            <p>
+              {
+                resumo.abertas === 0
+                  ? "Nenhuma dívida aberta no momento."
+                  : `${resumo.abertas} ${resumo.abertas === 1 ? "dívida ativa" : "dívidas ativas"} no seu plano de saída.`
+              }
+            </p>
+          </div>
+
+          <div className="dividas-pro-sinais">
+            <div>
+              <span>Compromisso mínimo</span>
+              <strong>
+                {formatarMoeda(
+                  resumo.parcelas
+                )}
+              </strong>
+              <small>parcelas mínimas somadas</small>
+            </div>
+
+            <div>
+              <span>Custo médio</span>
+              <strong>
+                {formatarPercentual(
+                  resumo.jurosMedios
+                )}
+              </strong>
+              <small>juros médios ao mês</small>
+            </div>
+          </div>
+        </section>
+
+
         <section className="dividas-resumo-grid">
           <article className="dividas-resumo-card">
             <CircleDollarSign size={22} />
