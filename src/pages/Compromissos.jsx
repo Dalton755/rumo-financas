@@ -1464,7 +1464,11 @@ function Compromissos() {
 
                                     <div className="compromissos-form-grid">
 
-                                        <div className="compromissos-campo">
+                                        <div
+                                            className={
+                                                `compromissos-campo ${novaCategoriaAberta ? "categoria-expandida" : ""}`
+                                            }
+                                        >
 
                                             <div className="compromissos-campo-label-row">
                                                 <span>
@@ -1516,6 +1520,191 @@ function Compromissos() {
                                                     )
                                                 }
                                             </select>
+
+
+                                            {
+                                                novaCategoriaAberta && (
+
+                                                    <div className="compromissos-nova-categoria">
+
+                                                        <div className="compromissos-nova-categoria-topo">
+                                                            <div>
+                                                                <strong>
+                                                                    Nova categoria
+                                                                </strong>
+
+                                                                <small>
+                                                                    Ela será criada como despesa e já ficará selecionada.
+                                                                </small>
+                                                            </div>
+
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    setNovaCategoriaAberta(
+                                                                        false
+                                                                    )
+                                                                }
+                                                                aria-label="Fechar nova categoria"
+                                                            >
+                                                                <X size={16} />
+                                                            </button>
+                                                        </div>
+
+
+                                                        <input
+                                                            value={
+                                                                novaCategoriaNome
+                                                            }
+                                                            onChange={(e) =>
+                                                                setNovaCategoriaNome(
+                                                                    e.target.value
+                                                                )
+                                                            }
+                                                            placeholder="Ex.: Moradia, Assinaturas, Igreja..."
+                                                        />
+
+
+                                                        <div className="compromissos-categoria-opcoes">
+
+                                                            <span>
+                                                                Ícone
+                                                            </span>
+
+                                                            <div className="compromissos-categoria-icones">
+
+                                                                {
+                                                                    OPCOES_ICONES_CATEGORIA.map(
+                                                                        (opcao) => (
+
+                                                                            <button
+                                                                                key={
+                                                                                    opcao.valor
+                                                                                }
+                                                                                type="button"
+                                                                                className={
+                                                                                    novaCategoriaIcone ===
+                                                                                        opcao.valor
+                                                                                        ? "ativo"
+                                                                                        : ""
+                                                                                }
+                                                                                onClick={() =>
+                                                                                    setNovaCategoriaIcone(
+                                                                                        opcao.valor
+                                                                                    )
+                                                                                }
+                                                                                title={
+                                                                                    opcao.rotulo
+                                                                                }
+                                                                                aria-label={
+                                                                                    opcao.rotulo
+                                                                                }
+                                                                            >
+                                                                                <IconeCategoria
+                                                                                    icone={
+                                                                                        opcao.valor
+                                                                                    }
+                                                                                    cor={
+                                                                                        novaCategoriaCor
+                                                                                    }
+                                                                                    tipo="despesa"
+                                                                                    size={18}
+                                                                                />
+                                                                            </button>
+
+                                                                        )
+                                                                    )
+                                                                }
+
+                                                            </div>
+
+                                                        </div>
+
+
+                                                        <div className="compromissos-categoria-opcoes">
+
+                                                            <span>
+                                                                Cor
+                                                            </span>
+
+                                                            <div className="compromissos-categoria-cores">
+
+                                                                {
+                                                                    CORES_CATEGORIA.map(
+                                                                        (cor) => (
+
+                                                                            <button
+                                                                                key={cor}
+                                                                                type="button"
+                                                                                className={
+                                                                                    novaCategoriaCor ===
+                                                                                        cor
+                                                                                        ? "ativo"
+                                                                                        : ""
+                                                                                }
+                                                                                style={{
+                                                                                    backgroundColor:
+                                                                                        cor
+                                                                                }}
+                                                                                onClick={() =>
+                                                                                    setNovaCategoriaCor(
+                                                                                        cor
+                                                                                    )
+                                                                                }
+                                                                                aria-label={
+                                                                                    `Usar cor ${cor}`
+                                                                                }
+                                                                            />
+
+                                                                        )
+                                                                    )
+                                                                }
+
+                                                            </div>
+
+                                                        </div>
+
+
+                                                        <div className="compromissos-nova-categoria-acoes">
+
+                                                            <button
+                                                                type="button"
+                                                                className="secundario"
+                                                                onClick={() =>
+                                                                    setNovaCategoriaAberta(
+                                                                        false
+                                                                    )
+                                                                }
+                                                            >
+                                                                Cancelar
+                                                            </button>
+
+                                                            <button
+                                                                type="button"
+                                                                className="primario"
+                                                                disabled={
+                                                                    salvandoCategoria
+                                                                }
+                                                                onClick={
+                                                                    salvarNovaCategoria
+                                                                }
+                                                            >
+                                                                {
+                                                                    salvandoCategoria
+                                                                        ? "Criando..."
+                                                                        : "Criar categoria"
+                                                                }
+                                                            </button>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                )
+                                            }
+
+
+
 
                                         </div>
 
@@ -1608,188 +1797,6 @@ function Compromissos() {
                                         </label>
 
                                     </div>
-
-
-                                    {
-                                        novaCategoriaAberta && (
-
-                                            <div className="compromissos-nova-categoria">
-
-                                                <div className="compromissos-nova-categoria-topo">
-                                                    <div>
-                                                        <strong>
-                                                            Nova categoria
-                                                        </strong>
-
-                                                        <small>
-                                                            Ela será criada como despesa e já ficará selecionada.
-                                                        </small>
-                                                    </div>
-
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            setNovaCategoriaAberta(
-                                                                false
-                                                            )
-                                                        }
-                                                        aria-label="Fechar nova categoria"
-                                                    >
-                                                        <X size={16} />
-                                                    </button>
-                                                </div>
-
-
-                                                <input
-                                                    value={
-                                                        novaCategoriaNome
-                                                    }
-                                                    onChange={(e) =>
-                                                        setNovaCategoriaNome(
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    placeholder="Ex.: Moradia, Assinaturas, Igreja..."
-                                                />
-
-
-                                                <div className="compromissos-categoria-opcoes">
-
-                                                    <span>
-                                                        Ícone
-                                                    </span>
-
-                                                    <div className="compromissos-categoria-icones">
-
-                                                        {
-                                                            OPCOES_ICONES_CATEGORIA.map(
-                                                                (opcao) => (
-
-                                                                    <button
-                                                                        key={
-                                                                            opcao.valor
-                                                                        }
-                                                                        type="button"
-                                                                        className={
-                                                                            novaCategoriaIcone ===
-                                                                                opcao.valor
-                                                                                ? "ativo"
-                                                                                : ""
-                                                                        }
-                                                                        onClick={() =>
-                                                                            setNovaCategoriaIcone(
-                                                                                opcao.valor
-                                                                            )
-                                                                        }
-                                                                        title={
-                                                                            opcao.rotulo
-                                                                        }
-                                                                        aria-label={
-                                                                            opcao.rotulo
-                                                                        }
-                                                                    >
-                                                                        <IconeCategoria
-                                                                            icone={
-                                                                                opcao.valor
-                                                                            }
-                                                                            cor={
-                                                                                novaCategoriaCor
-                                                                            }
-                                                                            tipo="despesa"
-                                                                            size={18}
-                                                                        />
-                                                                    </button>
-
-                                                                )
-                                                            )
-                                                        }
-
-                                                    </div>
-
-                                                </div>
-
-
-                                                <div className="compromissos-categoria-opcoes">
-
-                                                    <span>
-                                                        Cor
-                                                    </span>
-
-                                                    <div className="compromissos-categoria-cores">
-
-                                                        {
-                                                            CORES_CATEGORIA.map(
-                                                                (cor) => (
-
-                                                                    <button
-                                                                        key={cor}
-                                                                        type="button"
-                                                                        className={
-                                                                            novaCategoriaCor ===
-                                                                                cor
-                                                                                ? "ativo"
-                                                                                : ""
-                                                                        }
-                                                                        style={{
-                                                                            backgroundColor:
-                                                                                cor
-                                                                        }}
-                                                                        onClick={() =>
-                                                                            setNovaCategoriaCor(
-                                                                                cor
-                                                                            )
-                                                                        }
-                                                                        aria-label={
-                                                                            `Usar cor ${cor}`
-                                                                        }
-                                                                    />
-
-                                                                )
-                                                            )
-                                                        }
-
-                                                    </div>
-
-                                                </div>
-
-
-                                                <div className="compromissos-nova-categoria-acoes">
-
-                                                    <button
-                                                        type="button"
-                                                        className="secundario"
-                                                        onClick={() =>
-                                                            setNovaCategoriaAberta(
-                                                                false
-                                                            )
-                                                        }
-                                                    >
-                                                        Cancelar
-                                                    </button>
-
-                                                    <button
-                                                        type="button"
-                                                        className="primario"
-                                                        disabled={
-                                                            salvandoCategoria
-                                                        }
-                                                        onClick={
-                                                            salvarNovaCategoria
-                                                        }
-                                                    >
-                                                        {
-                                                            salvandoCategoria
-                                                                ? "Criando..."
-                                                                : "Criar categoria"
-                                                        }
-                                                    </button>
-
-                                                </div>
-
-                                            </div>
-
-                                        )
-                                    }
 
 
                                     <div className="compromissos-valor-bloco">
