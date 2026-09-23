@@ -26,6 +26,17 @@ async function obterUsuario() {
 }
 
 
+function dataIso(data) {
+
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, "0");
+    const dia = String(data.getDate()).padStart(2, "0");
+
+    return `${ano}-${mes}-${dia}`;
+
+}
+
+
 export async function listarCompromissos() {
 
     const user =
@@ -91,6 +102,144 @@ export async function listarCompromissos() {
 
 
     return data || [];
+
+}
+
+
+export async function listarProximosCompromissos({
+    dias = 7,
+    limite = 5
+} = {}) {
+
+    const user =
+        await obterUsuario();
+
+    const hoje =
+        new Date();
+
+    const ate =
+        new Date();
+
+    ate.setDate(
+        ate.getDate() +
+        Math.max(
+            1,
+            Number(dias) || 7
+        )
+    );
+
+    /*
+     * Garante que um compromisso recém-cadastrado
+     * já tenha sua ocorrência disponível antes
+     * de o Dashboard fazer a leitura.
+     */
+    await gerarOcorrenciasCompromissos(
+        dataIso(ate)
+    );
+
+    const {
+        data: ocorrencias,
+        error: ocorrenciasError
+    } = await supabase
+        .schema("rumo")
+        .from("compromissos_ocorrencias")
+        .select(`
+            id,
+            compromisso_id,
+            vencimento,
+            valor_previsto,
+            valor_real,
+            status
+        `)
+        .eq(
+            "usuario_id",
+            user.id
+        )
+        .eq(
+            "status",
+            "pendente"
+        )
+        .gte(
+            "vencimento",
+            dataIso(hoje)
+        )
+        .lte(
+            "vencimento",
+            dataIso(ate)
+        )
+        .order(
+            "vencimento",
+            {
+                ascending: true
+            }
+        )
+        .limit(
+            Math.max(
+                1,
+                Number(limite) || 5
+            )
+        );
+
+    if (ocorrenciasError) {
+        throw ocorrenciasError;
+    }
+
+    if (!ocorrencias?.length) {
+        return [];
+    }
+
+    const compromissoIds =
+        [
+            ...new Set(
+                ocorrencias.map(
+                    (item) =>
+                        item.compromisso_id
+                )
+            )
+        ];
+
+    const {
+        data: compromissos,
+        error: compromissosError
+    } = await supabase
+        .schema("rumo")
+        .from("compromissos")
+        .select("id, nome")
+        .eq(
+            "usuario_id",
+            user.id
+        )
+        .in(
+            "id",
+            compromissoIds
+        );
+
+    if (compromissosError) {
+        throw compromissosError;
+    }
+
+    const nomes =
+        new Map(
+            (compromissos || []).map(
+                (item) => [
+                    item.id,
+                    item.nome
+                ]
+            )
+        );
+
+    return ocorrencias.map(
+        (item) => ({
+            ...item,
+            compromisso: {
+                nome:
+                    nomes.get(
+                        item.compromisso_id
+                    ) ||
+                    "Compromisso"
+            }
+        })
+    );
 
 }
 
