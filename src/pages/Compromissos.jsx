@@ -16,6 +16,11 @@ import {
 
 import MainLayout from "../layouts/MainLayout";
 import PageHeader from "../components/ui/PageHeader";
+import PageContainer from "../components/ui/PageContainer";
+import IconeCategoria, {
+    CORES_CATEGORIA,
+    OPCOES_ICONES_CATEGORIA
+} from "../components/ui/IconeCategoria";
 
 import { supabase } from "../services/supabase";
 
@@ -206,6 +211,32 @@ function Compromissos() {
 
 
     const [
+        novaCategoriaAberta,
+        setNovaCategoriaAberta
+    ] = useState(false);
+
+    const [
+        novaCategoriaNome,
+        setNovaCategoriaNome
+    ] = useState("");
+
+    const [
+        novaCategoriaIcone,
+        setNovaCategoriaIcone
+    ] = useState("receipt");
+
+    const [
+        novaCategoriaCor,
+        setNovaCategoriaCor
+    ] = useState("#F97316");
+
+    const [
+        salvandoCategoria,
+        setSalvandoCategoria
+    ] = useState(false);
+
+
+    const [
         frequencia,
         setFrequencia
     ] = useState("mensal");
@@ -367,7 +398,7 @@ function Compromissos() {
                     .schema("rumo")
                     .from("categorias")
                     .select(
-                        "id,nome,tipo"
+                        "id,nome,tipo,icone,cor"
                     )
                     .eq(
                         "ativo",
@@ -413,6 +444,11 @@ function Compromissos() {
         setCategoriaId("");
         setContaId("");
 
+        setNovaCategoriaAberta(false);
+        setNovaCategoriaNome("");
+        setNovaCategoriaIcone("receipt");
+        setNovaCategoriaCor("#F97316");
+
         setFrequencia(
             "mensal"
         );
@@ -427,6 +463,139 @@ function Compromissos() {
         setValorEstimado("");
 
         setModalNovo(true);
+
+    }
+
+
+    async function salvarNovaCategoria() {
+
+        const nomeLimpo =
+            novaCategoriaNome.trim();
+
+        if (!nomeLimpo) {
+
+            showToast(
+                "Informe o nome",
+                "Digite um nome para a nova categoria.",
+                "warning"
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            setSalvandoCategoria(true);
+
+            const {
+                data: { user },
+                error: erroUsuario
+            } =
+                await supabase.auth.getUser();
+
+
+            if (erroUsuario) {
+                throw erroUsuario;
+            }
+
+
+            if (!user) {
+                throw new Error(
+                    "Usuário não autenticado."
+                );
+            }
+
+
+            const {
+                data: novaCategoria,
+                error
+            } =
+                await supabase
+                    .schema("rumo")
+                    .from("categorias")
+                    .insert({
+                        usuario_id:
+                            user.id,
+
+                        nome:
+                            nomeLimpo,
+
+                        tipo:
+                            "despesa",
+
+                        icone:
+                            novaCategoriaIcone,
+
+                        cor:
+                            novaCategoriaCor,
+
+                        ativo:
+                            true
+                    })
+                    .select(
+                        "id,nome,tipo,icone,cor"
+                    )
+                    .single();
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            setCategorias(
+                (atuais) =>
+                    [
+                        ...atuais,
+                        novaCategoria
+                    ].sort(
+                        (a, b) =>
+                            a.nome.localeCompare(
+                                b.nome,
+                                "pt-BR"
+                            )
+                    )
+            );
+
+
+            setCategoriaId(
+                novaCategoria.id
+            );
+
+            setNovaCategoriaAberta(
+                false
+            );
+
+            setNovaCategoriaNome("");
+
+
+            showToast(
+                "Categoria criada",
+                `${novaCategoria.nome} foi adicionada e selecionada.`,
+                "success"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao criar categoria:",
+                error
+            );
+
+            showToast(
+                "Erro",
+                error.message ||
+                "Não foi possível criar a categoria.",
+                "danger"
+            );
+
+        } finally {
+
+            setSalvandoCategoria(false);
+
+        }
 
     }
 
@@ -889,7 +1058,9 @@ function Compromissos() {
 
         <MainLayout>
 
-            <div className="compromissos-page">
+            <PageContainer>
+
+                <div className="compromissos-page">
 
                 <PageHeader
                     titulo="Compromissos"
@@ -910,6 +1081,29 @@ function Compromissos() {
 
 
                 <section className="compromissos-resumo">
+
+                    <div className="compromissos-resumo-card ativo">
+
+                        <CalendarClock size={20} />
+
+                        <div>
+                            <span>
+                                Compromissos ativos
+                            </span>
+
+                            <strong>
+                                {
+                                    compromissos.length
+                                }
+                            </strong>
+
+                            <small>
+                                pagamentos recorrentes
+                            </small>
+                        </div>
+
+                    </div>
+
 
                     <div className="compromissos-resumo-card">
 
@@ -963,6 +1157,31 @@ function Compromissos() {
                         </div>
 
                     </div>
+
+                </section>
+
+
+                <section className="compromissos-lista-header">
+
+                    <div>
+                        <span>
+                            RECORRÊNCIAS
+                        </span>
+
+                        <h2>
+                            Seus compromissos
+                        </h2>
+
+                        <p>
+                            Acompanhe o que vence, o que atrasou e o que já foi pago.
+                        </p>
+                    </div>
+
+                    <strong>
+                        {
+                            compromissos.length
+                        }
+                    </strong>
 
                 </section>
 
@@ -1036,7 +1255,25 @@ function Compromissos() {
                                                 <div className="compromisso-card-topo">
 
                                                     <div className="compromisso-card-icone">
-                                                        <ReceiptText size={20} />
+                                                        <IconeCategoria
+                                                            nome={
+                                                                compromisso
+                                                                    .categoria
+                                                                    ?.nome
+                                                            }
+                                                            icone={
+                                                                compromisso
+                                                                    .categoria
+                                                                    ?.icone
+                                                            }
+                                                            cor={
+                                                                compromisso
+                                                                    .categoria
+                                                                    ?.cor
+                                                            }
+                                                            tipo="despesa"
+                                                            size={21}
+                                                        />
                                                     </div>
 
 
@@ -1194,10 +1431,23 @@ function Compromissos() {
                                 </div>
 
 
-                                <div className="compromissos-form">
+                                <div className="compromissos-form compromissos-form-novo">
 
-                                    <label>
-                                        Nome
+                                    <div className="compromissos-form-intro">
+                                        <span>
+                                            DADOS DO COMPROMISSO
+                                        </span>
+
+                                        <p>
+                                            Defina o essencial agora. O Rumo cuida das próximas cobranças.
+                                        </p>
+                                    </div>
+
+
+                                    <label className="compromissos-campo compromissos-campo-full">
+                                        <span>
+                                            Nome
+                                        </span>
 
                                         <input
                                             value={nome}
@@ -1207,223 +1457,443 @@ function Compromissos() {
                                                 )
                                             }
                                             placeholder="Ex.: Energia elétrica"
+                                            autoFocus
                                         />
                                     </label>
 
 
-                                    <label>
-                                        Categoria
+                                    <div className="compromissos-form-grid">
 
-                                        <select
-                                            value={categoriaId}
-                                            onChange={(e) =>
-                                                setCategoriaId(
-                                                    e.target.value
-                                                )
-                                            }
-                                        >
-                                            <option value="">
-                                                Selecione
-                                            </option>
+                                        <div className="compromissos-campo">
 
-                                            {
-                                                categorias.map(
-                                                    (categoria) => (
-                                                        <option
-                                                            key={
-                                                                categoria.id
-                                                            }
-                                                            value={
-                                                                categoria.id
-                                                            }
-                                                        >
-                                                            {
-                                                                categoria.nome
-                                                            }
-                                                        </option>
-                                                    )
-                                                )
-                                            }
-                                        </select>
-                                    </label>
+                                            <div className="compromissos-campo-label-row">
+                                                <span>
+                                                    Categoria
+                                                </span>
 
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setNovaCategoriaAberta(
+                                                            (aberta) =>
+                                                                !aberta
+                                                        )
+                                                    }
+                                                >
+                                                    <Plus size={14} />
+                                                    Nova
+                                                </button>
+                                            </div>
 
-                                    <label>
-                                        Conta habitual
-
-                                        <select
-                                            value={contaId}
-                                            onChange={(e) =>
-                                                setContaId(
-                                                    e.target.value
-                                                )
-                                            }
-                                        >
-                                            <option value="">
-                                                Definir ao pagar
-                                            </option>
-
-                                            {
-                                                contas.map(
-                                                    (conta) => (
-                                                        <option
-                                                            key={
-                                                                conta.id
-                                                            }
-                                                            value={
-                                                                conta.id
-                                                            }
-                                                        >
-                                                            {
-                                                                conta.nome
-                                                            }
-                                                        </option>
-                                                    )
-                                                )
-                                            }
-                                        </select>
-                                    </label>
-
-
-                                    <label>
-                                        Frequência
-
-                                        <select
-                                            value={frequencia}
-                                            onChange={(e) =>
-                                                setFrequencia(
-                                                    e.target.value
-                                                )
-                                            }
-                                        >
-                                            <option value="semanal">
-                                                Semanal
-                                            </option>
-
-                                            <option value="quinzenal">
-                                                Quinzenal
-                                            </option>
-
-                                            <option value="mensal">
-                                                Mensal
-                                            </option>
-
-                                            <option value="anual">
-                                                Anual
-                                            </option>
-                                        </select>
-                                    </label>
-
-
-                                    <label>
-                                        Primeiro vencimento
-
-                                        <input
-                                            type="date"
-                                            value={dataInicio}
-                                            onChange={(e) =>
-                                                setDataInicio(
-                                                    e.target.value
-                                                )
-                                            }
-                                        />
-                                    </label>
-
-
-                                    <div className="compromissos-tipo-valor">
-
-                                        <span>
-                                            Tipo de valor
-                                        </span>
-
-
-                                        <div>
-
-                                            <button
-                                                type="button"
-                                                className={
-                                                    tipoValor ===
-                                                        "fixo"
-                                                        ? "ativo"
-                                                        : ""
-                                                }
-                                                onClick={() =>
-                                                    setTipoValor(
-                                                        "fixo"
+                                            <select
+                                                value={categoriaId}
+                                                onChange={(e) =>
+                                                    setCategoriaId(
+                                                        e.target.value
                                                     )
                                                 }
                                             >
-                                                Fixo
-                                            </button>
+                                                <option value="">
+                                                    Selecione uma categoria
+                                                </option>
 
-
-                                            <button
-                                                type="button"
-                                                className={
-                                                    tipoValor ===
-                                                        "variavel"
-                                                        ? "ativo"
-                                                        : ""
-                                                }
-                                                onClick={() =>
-                                                    setTipoValor(
-                                                        "variavel"
+                                                {
+                                                    categorias.map(
+                                                        (categoria) => (
+                                                            <option
+                                                                key={
+                                                                    categoria.id
+                                                                }
+                                                                value={
+                                                                    categoria.id
+                                                                }
+                                                            >
+                                                                {
+                                                                    categoria.nome
+                                                                }
+                                                            </option>
+                                                        )
                                                     )
                                                 }
-                                            >
-                                                Variável
-                                            </button>
+                                            </select>
 
                                         </div>
+
+
+                                        <label className="compromissos-campo">
+                                            <span>
+                                                Conta habitual
+                                            </span>
+
+                                            <select
+                                                value={contaId}
+                                                onChange={(e) =>
+                                                    setContaId(
+                                                        e.target.value
+                                                    )
+                                                }
+                                            >
+                                                <option value="">
+                                                    Definir ao pagar
+                                                </option>
+
+                                                {
+                                                    contas.map(
+                                                        (conta) => (
+                                                            <option
+                                                                key={
+                                                                    conta.id
+                                                                }
+                                                                value={
+                                                                    conta.id
+                                                                }
+                                                            >
+                                                                {
+                                                                    conta.nome
+                                                                }
+                                                            </option>
+                                                        )
+                                                    )
+                                                }
+                                            </select>
+                                        </label>
+
+
+                                        <label className="compromissos-campo">
+                                            <span>
+                                                Frequência
+                                            </span>
+
+                                            <select
+                                                value={frequencia}
+                                                onChange={(e) =>
+                                                    setFrequencia(
+                                                        e.target.value
+                                                    )
+                                                }
+                                            >
+                                                <option value="semanal">
+                                                    Semanal
+                                                </option>
+
+                                                <option value="quinzenal">
+                                                    Quinzenal
+                                                </option>
+
+                                                <option value="mensal">
+                                                    Mensal
+                                                </option>
+
+                                                <option value="anual">
+                                                    Anual
+                                                </option>
+                                            </select>
+                                        </label>
+
+
+                                        <label className="compromissos-campo">
+                                            <span>
+                                                Primeiro vencimento
+                                            </span>
+
+                                            <input
+                                                type="date"
+                                                value={dataInicio}
+                                                onChange={(e) =>
+                                                    setDataInicio(
+                                                        e.target.value
+                                                    )
+                                                }
+                                            />
+                                        </label>
 
                                     </div>
 
 
                                     {
-                                        tipoValor ===
-                                            "fixo" ? (
+                                        novaCategoriaAberta && (
 
-                                            <label>
-                                                Valor
+                                            <div className="compromissos-nova-categoria">
+
+                                                <div className="compromissos-nova-categoria-topo">
+                                                    <div>
+                                                        <strong>
+                                                            Nova categoria
+                                                        </strong>
+
+                                                        <small>
+                                                            Ela será criada como despesa e já ficará selecionada.
+                                                        </small>
+                                                    </div>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setNovaCategoriaAberta(
+                                                                false
+                                                            )
+                                                        }
+                                                        aria-label="Fechar nova categoria"
+                                                    >
+                                                        <X size={16} />
+                                                    </button>
+                                                </div>
+
 
                                                 <input
-                                                    type="number"
-                                                    min="0"
-                                                    step="0.01"
-                                                    value={valorPadrao}
+                                                    value={
+                                                        novaCategoriaNome
+                                                    }
                                                     onChange={(e) =>
-                                                        setValorPadrao(
+                                                        setNovaCategoriaNome(
                                                             e.target.value
                                                         )
                                                     }
-                                                    placeholder="0,00"
+                                                    placeholder="Ex.: Moradia, Assinaturas, Igreja..."
                                                 />
-                                            </label>
 
-                                        ) : (
 
-                                            <label>
-                                                Valor estimado
-                                                <small>
-                                                    Opcional. O valor real poderá ser informado depois.
-                                                </small>
+                                                <div className="compromissos-categoria-opcoes">
 
-                                                <input
-                                                    type="number"
-                                                    min="0"
-                                                    step="0.01"
-                                                    value={valorEstimado}
-                                                    onChange={(e) =>
-                                                        setValorEstimado(
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    placeholder="0,00"
-                                                />
-                                            </label>
+                                                    <span>
+                                                        Ícone
+                                                    </span>
+
+                                                    <div className="compromissos-categoria-icones">
+
+                                                        {
+                                                            OPCOES_ICONES_CATEGORIA.map(
+                                                                (opcao) => (
+
+                                                                    <button
+                                                                        key={
+                                                                            opcao.valor
+                                                                        }
+                                                                        type="button"
+                                                                        className={
+                                                                            novaCategoriaIcone ===
+                                                                                opcao.valor
+                                                                                ? "ativo"
+                                                                                : ""
+                                                                        }
+                                                                        onClick={() =>
+                                                                            setNovaCategoriaIcone(
+                                                                                opcao.valor
+                                                                            )
+                                                                        }
+                                                                        title={
+                                                                            opcao.rotulo
+                                                                        }
+                                                                        aria-label={
+                                                                            opcao.rotulo
+                                                                        }
+                                                                    >
+                                                                        <IconeCategoria
+                                                                            icone={
+                                                                                opcao.valor
+                                                                            }
+                                                                            cor={
+                                                                                novaCategoriaCor
+                                                                            }
+                                                                            tipo="despesa"
+                                                                            size={18}
+                                                                        />
+                                                                    </button>
+
+                                                                )
+                                                            )
+                                                        }
+
+                                                    </div>
+
+                                                </div>
+
+
+                                                <div className="compromissos-categoria-opcoes">
+
+                                                    <span>
+                                                        Cor
+                                                    </span>
+
+                                                    <div className="compromissos-categoria-cores">
+
+                                                        {
+                                                            CORES_CATEGORIA.map(
+                                                                (cor) => (
+
+                                                                    <button
+                                                                        key={cor}
+                                                                        type="button"
+                                                                        className={
+                                                                            novaCategoriaCor ===
+                                                                                cor
+                                                                                ? "ativo"
+                                                                                : ""
+                                                                        }
+                                                                        style={{
+                                                                            backgroundColor:
+                                                                                cor
+                                                                        }}
+                                                                        onClick={() =>
+                                                                            setNovaCategoriaCor(
+                                                                                cor
+                                                                            )
+                                                                        }
+                                                                        aria-label={
+                                                                            `Usar cor ${cor}`
+                                                                        }
+                                                                    />
+
+                                                                )
+                                                            )
+                                                        }
+
+                                                    </div>
+
+                                                </div>
+
+
+                                                <div className="compromissos-nova-categoria-acoes">
+
+                                                    <button
+                                                        type="button"
+                                                        className="secundario"
+                                                        onClick={() =>
+                                                            setNovaCategoriaAberta(
+                                                                false
+                                                            )
+                                                        }
+                                                    >
+                                                        Cancelar
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        className="primario"
+                                                        disabled={
+                                                            salvandoCategoria
+                                                        }
+                                                        onClick={
+                                                            salvarNovaCategoria
+                                                        }
+                                                    >
+                                                        {
+                                                            salvandoCategoria
+                                                                ? "Criando..."
+                                                                : "Criar categoria"
+                                                        }
+                                                    </button>
+
+                                                </div>
+
+                                            </div>
 
                                         )
                                     }
+
+
+                                    <div className="compromissos-valor-bloco">
+
+                                        <div className="compromissos-tipo-valor">
+
+                                            <span>
+                                                Tipo de valor
+                                            </span>
+
+                                            <div>
+
+                                                <button
+                                                    type="button"
+                                                    className={
+                                                        tipoValor ===
+                                                            "fixo"
+                                                            ? "ativo"
+                                                            : ""
+                                                    }
+                                                    onClick={() =>
+                                                        setTipoValor(
+                                                            "fixo"
+                                                        )
+                                                    }
+                                                >
+                                                    Fixo
+                                                </button>
+
+
+                                                <button
+                                                    type="button"
+                                                    className={
+                                                        tipoValor ===
+                                                            "variavel"
+                                                            ? "ativo"
+                                                            : ""
+                                                    }
+                                                    onClick={() =>
+                                                        setTipoValor(
+                                                            "variavel"
+                                                        )
+                                                    }
+                                                >
+                                                    Variável
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        {
+                                            tipoValor ===
+                                                "fixo" ? (
+
+                                                <label className="compromissos-campo">
+                                                    <span>
+                                                        Valor
+                                                    </span>
+
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        step="0.01"
+                                                        value={valorPadrao}
+                                                        onChange={(e) =>
+                                                            setValorPadrao(
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="0,00"
+                                                    />
+                                                </label>
+
+                                            ) : (
+
+                                                <label className="compromissos-campo">
+                                                    <span>
+                                                        Valor estimado
+                                                    </span>
+
+                                                    <small>
+                                                        Opcional. O valor real pode ser informado quando a cobrança chegar.
+                                                    </small>
+
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        step="0.01"
+                                                        value={valorEstimado}
+                                                        onChange={(e) =>
+                                                            setValorEstimado(
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="0,00"
+                                                    />
+                                                </label>
+
+                                            )
+                                        }
+
+                                    </div>
 
                                 </div>
 
@@ -1915,7 +2385,9 @@ function Compromissos() {
                     )
                 }
 
-            </div>
+                </div>
+
+            </PageContainer>
 
         </MainLayout>
 
