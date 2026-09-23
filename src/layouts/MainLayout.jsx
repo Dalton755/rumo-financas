@@ -15,6 +15,7 @@ import {
   BellRing,
   BrainCircuit,
   Calculator,
+  CalendarClock,
   CreditCard,
   LayoutDashboard,
   LockKeyhole,
@@ -45,6 +46,11 @@ const navegacaoPrincipal = [
     nome: "Movimentações",
     rota: "/movimentacoes",
     Icone: ArrowLeftRight,
+  },
+  {
+    nome: "Compromissos",
+    rota: "/compromissos",
+    Icone: CalendarClock,
   },
   {
     nome: "Relatórios",
@@ -414,15 +420,15 @@ function MainLayout({ children }) {
         </NavLink>
 
         <NavLink
-          to="/calculos"
+          to="/compromissos"
           className={({ isActive }) =>
             isActive
               ? "rumo-bottom-item active"
               : "rumo-bottom-item"
           }
         >
-          <Calculator size={20} />
-          <span>Cálculos</span>
+          <CalendarClock size={20} />
+          <span>Compromissos</span>
         </NavLink>
 
         <NavLink

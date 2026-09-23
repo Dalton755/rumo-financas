@@ -5,6 +5,7 @@ import RedefinirSenha from "../pages/RedefinirSenha";
 import Dashboard from "../pages/Dashboard";
 import Contas from "../pages/Contas";
 import Movimentacoes from "../pages/Movimentacoes";
+import Compromissos from "../pages/Compromissos";
 import Relatorios from "../pages/Relatorios";
 import Inteligencia from "../pages/Inteligencia";
 import Metas from "../pages/Metas";
@@ -60,6 +61,15 @@ function AppRoutes() {
                     element={
                         <ProtectedRoute>
                             <Movimentacoes />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/compromissos"
+                    element={
+                        <ProtectedRoute>
+                            <Compromissos />
                         </ProtectedRoute>
                     }
                 />
