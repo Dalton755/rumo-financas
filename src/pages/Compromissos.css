@@ -729,7 +729,13 @@
     cursor: pointer;
 }
 
+.compromissos-campo.categoria-expandida {
+    grid-column: 1 / -1;
+}
+
 .compromissos-nova-categoria {
+    margin-top: 4px;
+
     padding: 16px;
 
     border: 1px solid
