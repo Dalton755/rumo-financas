@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 
 import { useDashboard } from "../context/DashboardContext";
 import { supabase } from "../services/supabase";
+import { listarProximosCompromissos } from "../services/compromissos";
 
 import MainLayout from "../layouts/MainLayout";
 import PageContainer from "../components/ui/PageContainer";
@@ -40,23 +41,6 @@ function formatarMoeda(valor) {
                 currency: "BRL"
             }
         );
-}
-
-function dataIso(data) {
-    const ano =
-        data.getFullYear();
-
-    const mes =
-        String(
-            data.getMonth() + 1
-        ).padStart(2, "0");
-
-    const dia =
-        String(
-            data.getDate()
-        ).padStart(2, "0");
-
-    return `${ano}-${mes}-${dia}`;
 }
 
 function obterSaudacao() {
@@ -204,66 +188,24 @@ function Dashboard() {
         }
     }
 
-    async function carregarProximos(
-        userId
-    ) {
-        const hoje =
-            new Date();
+    async function carregarProximos() {
+        try {
+            const data =
+                await listarProximosCompromissos({
+                    dias: 7,
+                    limite: 5
+                });
 
-        const limite =
-            new Date();
-
-        limite.setDate(
-            limite.getDate() + 7
-        );
-
-        const {
-            data,
-            error
-        } =
-            await supabase
-                .schema("rumo")
-                .from(
-                    "compromissos_ocorrencias"
-                )
-                .select(`
-                    id,
-                    vencimento,
-                    valor_previsto,
-                    valor_real,
-                    status,
-                    compromisso:compromissos (
-                        nome
-                    )
-                `)
-                .eq(
-                    "usuario_id",
-                    userId
-                )
-                .eq(
-                    "status",
-                    "pendente"
-                )
-                .gte(
-                    "vencimento",
-                    dataIso(hoje)
-                )
-                .lte(
-                    "vencimento",
-                    dataIso(limite)
-                )
-                .order(
-                    "vencimento",
-                    {
-                        ascending: true
-                    }
-                )
-                .limit(5);
-
-        if (!error) {
             setProximosCompromissos(
                 data || []
             );
+        } catch (error) {
+            console.error(
+                "[RUMO DASHBOARD] Erro ao carregar compromissos:",
+                error
+            );
+
+            setProximosCompromissos([]);
         }
     }
 
@@ -314,9 +256,7 @@ function Dashboard() {
                     user.id
                 );
 
-                carregarProximos(
-                    user.id
-                );
+                carregarProximos();
             }
         }
 
