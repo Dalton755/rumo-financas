@@ -55,6 +55,35 @@ export async function atualizarAlertasInteligentes() {
 }
 
 
+export async function atualizarAlertasCompromissos() {
+
+  const {
+    data,
+    error
+  } = await supabase
+    .schema("rumo")
+    .rpc(
+      "atualizar_alertas_compromissos"
+    );
+
+
+  if (error) {
+
+    console.error(
+      "[RUMO ALERTAS] Erro ao atualizar compromissos:",
+      error
+    );
+
+    throw error;
+
+  }
+
+
+  return data;
+
+}
+
+
 export async function listarAlertasAtivos() {
 
   const user =
@@ -129,6 +158,13 @@ export async function carregarCentralAlertas() {
    * financeira atual do usuário.
    */
   await atualizarAlertasInteligentes();
+
+
+  /*
+   * Compromissos possuem seu próprio motor porque
+   * não são movimentações financeiras realizadas.
+   */
+  await atualizarAlertasCompromissos();
 
 
   /*
