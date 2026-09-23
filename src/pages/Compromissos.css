@@ -2,44 +2,123 @@
     width: 100%;
 }
 
+
+/* =========================================================
+   HEADER
+========================================================= */
+
 .compromissos-btn-novo {
+    min-height: 44px;
+
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 11px;
-    background: #0891b2;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 11px 18px;
+
+    border: 0;
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #22c7e8,
+            #22b8cf
+        );
+
     color: #fff;
-    font-weight: 700;
+
+    font-size: 14px;
+    font-weight: 850;
+
     cursor: pointer;
+
+    box-shadow:
+        0 10px 24px
+        rgba(34, 184, 207, .2);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
 }
+
+.compromissos-btn-novo:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 15px 32px
+        rgba(34, 184, 207, .28);
+}
+
+
+/* =========================================================
+   RESUMO
+========================================================= */
 
 .compromissos-resumo {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 230px));
-    gap: 14px;
-    margin: 28px 0;
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 16px;
+
+    margin-top: 28px;
 }
 
 .compromissos-resumo-card {
+    min-width: 0;
+
     display: flex;
-    gap: 12px;
-    padding: 16px;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    background: #fff;
+    align-items: center;
+    gap: 15px;
+
+    padding: 20px;
+
+    border: 1px solid #e8edf3;
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fff,
+            #fbfdff
+        );
+
+    box-shadow:
+        0 8px 26px
+        rgba(15, 23, 42, .045);
 }
 
 .compromissos-resumo-card > svg {
+    width: 46px;
+    height: 46px;
+
+    flex: 0 0 46px;
+
+    padding: 11px;
+    box-sizing: border-box;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(34, 199, 232, .16),
+            rgba(34, 184, 207, .07)
+        );
+
     color: #0891b2;
 }
 
 .compromissos-resumo-card.atrasado > svg {
+    background: rgba(239, 68, 68, .09);
     color: #dc2626;
 }
 
-.compromissos-resumo-card div {
+.compromissos-resumo-card > div {
+    min-width: 0;
+
     display: flex;
     flex-direction: column;
 }
@@ -47,81 +126,248 @@
 .compromissos-resumo-card span,
 .compromissos-resumo-card small {
     color: #64748b;
-    font-size: 11px;
+}
+
+.compromissos-resumo-card span {
+    margin-bottom: 5px;
+
+    font-size: 12px;
+    font-weight: 750;
 }
 
 .compromissos-resumo-card strong {
-    color: #172033;
-    font-size: 18px;
+    display: block;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    color: #0f172a;
+
+    font-size: 20px;
+    font-weight: 850;
+
+    white-space: nowrap;
+}
+
+.compromissos-resumo-card small {
+    margin-top: 2px;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   LISTA
+========================================================= */
+
+.compromissos-lista-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+
+    margin-top: 30px;
+    margin-bottom: 18px;
+}
+
+.compromissos-lista-header > div > span {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #0891b2;
+
+    font-size: 11px;
+    font-weight: 900;
+
+    letter-spacing: .1em;
+}
+
+.compromissos-lista-header h2 {
+    margin: 0;
+
+    color: #0f172a;
+
+    font-size: 24px;
+    font-weight: 850;
+}
+
+.compromissos-lista-header p {
+    margin: 5px 0 0;
+
+    color: #64748b;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.compromissos-lista-header > strong {
+    min-width: 34px;
+    height: 34px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 10px;
+
+    border-radius: 999px;
+
+    background: #f1f5f9;
+    color: #64748b;
+
+    font-size: 12px;
+    font-weight: 850;
 }
 
 .compromissos-grid {
     display: grid;
     grid-template-columns:
-        repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
+        repeat(2, minmax(0, 1fr));
+
+    gap: 18px;
 }
 
 .compromisso-card {
-    padding: 18px;
-    border: 1px solid #e2e8f0;
-    border-radius: 18px;
-    background: #fff;
+    position: relative;
+
+    min-width: 0;
+
+    padding: 22px;
+
+    overflow: hidden;
+
+    border: 1px solid #e5eaf0;
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            150deg,
+            #fff,
+            #fbfdff
+        );
+
+    box-shadow:
+        0 8px 24px
+        rgba(15, 23, 42, .045);
+
+    transition:
+        transform .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+.compromisso-card::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    width: 4px;
+
+    background: #22b8cf;
+}
+
+.compromisso-card:hover {
+    transform: translateY(-3px);
+
+    border-color:
+        rgba(34, 184, 207, .24);
+
+    box-shadow:
+        0 16px 35px
+        rgba(15, 23, 42, .075);
 }
 
 .compromisso-card-topo {
     display: flex;
-    gap: 11px;
-    align-items: center;
+    align-items: flex-start;
+    gap: 12px;
 }
 
 .compromisso-card-icone {
     width: 42px;
     height: 42px;
+
+    flex: 0 0 42px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
-    background: #ecfeff;
-    color: #0891b2;
+
+    border-radius: 13px;
+
+    background:
+        rgba(34, 184, 207, .08);
+}
+
+.compromisso-card-titulo {
+    min-width: 0;
 }
 
 .compromisso-card-titulo h3 {
-    margin: 0;
-    color: #172033;
-    font-size: 15px;
+    margin: 5px 0 0;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    color: #0f172a;
+
+    font-size: 17px;
+    font-weight: 850;
+
+    white-space: nowrap;
 }
 
 .compromisso-card-titulo span {
+    display: block;
+
+    margin-top: 3px;
+
     color: #64748b;
-    font-size: 11px;
+
+    font-size: 12px;
 }
 
 .compromisso-card-valor {
-    margin-top: 18px;
-    color: #172033;
-    font-size: 19px;
-    font-weight: 800;
+    margin-top: 20px;
+
+    color: #0f172a;
+
+    font-size: 22px;
+    font-weight: 900;
 }
 
 .compromisso-card-meta {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: 8px;
-    margin-top: 7px;
+
+    margin-top: 8px;
+
     color: #64748b;
+
     font-size: 11px;
+    font-weight: 650;
 }
 
 .compromisso-status {
+    width: fit-content;
+
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    margin-top: 14px;
-    padding: 5px 9px;
+
+    margin-top: 15px;
+    padding: 6px 9px;
+
     border-radius: 999px;
+
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 850;
 }
 
 .compromisso-status.pago {
@@ -147,36 +393,96 @@
 
 .compromisso-btn-detalhes {
     width: 100%;
-    margin-top: 16px;
-    padding: 9px;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
+    min-height: 42px;
+
+    margin-top: 17px;
+    padding: 0 13px;
+
+    border: 1px solid #dfe6ec;
+    border-radius: 12px;
+
     background: #fff;
     color: #0891b2;
+
     font-size: 12px;
-    font-weight: 750;
+    font-weight: 800;
+
     cursor: pointer;
+
+    transition:
+        background .18s ease,
+        border-color .18s ease;
+}
+
+.compromisso-btn-detalhes:hover {
+    border-color:
+        rgba(34, 184, 207, .35);
+
+    background: #f4fdff;
 }
 
 .compromissos-vazio {
-    padding: 50px 20px;
+    min-height: 260px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 42px 20px;
+
+    border: 1px dashed #dbe4ea;
+    border-radius: 20px;
+
+    background: #fbfdff;
+
     text-align: center;
     color: #64748b;
 }
 
-.compromissos-vazio h3 {
-    color: #172033;
+.compromissos-vazio svg {
+    margin-bottom: 12px;
+
+    color: #22b8cf;
 }
+
+.compromissos-vazio h3 {
+    margin: 0;
+
+    color: #0f172a;
+
+    font-size: 18px;
+    font-weight: 850;
+}
+
+.compromissos-vazio p {
+    max-width: 430px;
+
+    margin: 8px 0 0;
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   MODAIS
+========================================================= */
 
 .compromissos-overlay {
     position: fixed;
     inset: 0;
     z-index: 15000;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    background: rgba(15, 23, 42, .55);
+
+    padding: 24px;
+
+    background:
+        rgba(15, 23, 42, .52);
+
+    backdrop-filter: blur(4px);
 }
 
 .compromissos-overlay-frente {
@@ -184,239 +490,836 @@
 }
 
 .compromissos-modal {
-    width: min(94vw, 480px);
-    max-height: 90vh;
-    overflow-y: auto;
-    border-radius: 20px;
+    width: min(94vw, 650px);
+    max-height: min(92vh, 820px);
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    border: 1px solid
+        rgba(226, 232, 240, .9);
+
+    border-radius: 24px;
+
     background: #fff;
-    box-shadow: 0 24px 70px rgba(15, 23, 42, .24);
+
+    box-shadow:
+        0 30px 90px
+        rgba(15, 23, 42, .24);
+}
+
+.compromissos-modal-lista {
+    width: min(94vw, 700px);
+}
+
+.compromissos-modal-pagamento {
+    width: min(94vw, 520px);
 }
 
 .compromissos-modal-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    padding: 20px;
-    border-bottom: 1px solid #eef2f7;
+    gap: 18px;
+
+    flex: 0 0 auto;
+
+    padding: 22px 24px;
+
+    border-bottom: 1px solid #edf2f7;
+
+    background:
+        linear-gradient(
+            180deg,
+            #fff,
+            #fbfdff
+        );
 }
 
 .compromissos-modal-header h2 {
     margin: 0;
-    color: #172033;
-    font-size: 18px;
+
+    color: #0f172a;
+
+    font-size: 20px;
+    font-weight: 900;
 }
 
 .compromissos-modal-header p {
-    margin: 4px 0 0;
+    margin: 5px 0 0;
+
     color: #64748b;
+
     font-size: 12px;
+    line-height: 1.5;
 }
 
 .compromissos-modal-header > button {
-    border: none;
-    background: transparent;
+    width: 36px;
+    height: 36px;
+
+    flex: 0 0 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 11px;
+
+    background: #fff;
+    color: #64748b;
+
     cursor: pointer;
 }
 
 .compromissos-form {
+    flex: 1 1 auto;
+
+    overflow-y: auto;
+
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    padding: 20px;
+    gap: 16px;
+
+    padding: 22px 24px;
 }
 
+.compromissos-form-intro {
+    padding: 13px 14px;
+
+    border: 1px solid
+        rgba(34, 184, 207, .13);
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(34, 199, 232, .08),
+            rgba(139, 92, 246, .04)
+        );
+}
+
+.compromissos-form-intro span {
+    color: #0891b2;
+
+    font-size: 10px;
+    font-weight: 900;
+
+    letter-spacing: .09em;
+}
+
+.compromissos-form-intro p {
+    margin: 4px 0 0;
+
+    color: #64748b;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.compromissos-form-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 14px;
+}
+
+.compromissos-campo,
 .compromissos-form label {
+    min-width: 0;
+
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 7px;
+
     color: #475569;
+
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 750;
+}
+
+.compromissos-campo-full {
+    width: 100%;
+}
+
+.compromissos-campo > span,
+.compromissos-form label > span {
+    color: #334155;
 }
 
 .compromissos-form label small {
     color: #94a3b8;
+
     font-size: 10px;
-    font-weight: 500;
+    font-weight: 550;
+    line-height: 1.4;
 }
 
 .compromissos-form input,
 .compromissos-form select {
     width: 100%;
-    min-height: 42px;
-    padding: 9px 11px;
+    min-width: 0;
+    min-height: 46px;
+
+    padding: 10px 12px;
+
     border: 1px solid #dbe4ea;
-    border-radius: 11px;
+    border-radius: 12px;
+
+    outline: none;
+
     background: #fff;
+    color: #0f172a;
+
+    font: inherit;
+    font-weight: 600;
+
+    transition:
+        border-color .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
+}
+
+.compromissos-form input:focus,
+.compromissos-form select:focus {
+    border-color:
+        rgba(34, 184, 207, .75);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(34, 184, 207, .11);
+}
+
+.compromissos-campo-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    min-height: 24px;
+}
+
+.compromissos-campo-label-row > span {
+    color: #334155;
+}
+
+.compromissos-campo-label-row > button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    padding: 4px 7px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: #ecfeff;
+    color: #0891b2;
+
+    font-size: 10px;
+    font-weight: 850;
+
+    cursor: pointer;
+}
+
+.compromissos-nova-categoria {
+    padding: 16px;
+
+    border: 1px solid
+        rgba(34, 184, 207, .22);
+
+    border-radius: 16px;
+
+    background: #fafdff;
+}
+
+.compromissos-nova-categoria-topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-bottom: 12px;
+}
+
+.compromissos-nova-categoria-topo > div {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.compromissos-nova-categoria-topo strong {
+    color: #0f172a;
+
+    font-size: 13px;
+    font-weight: 850;
+}
+
+.compromissos-nova-categoria-topo small {
+    margin-top: 3px;
+
+    color: #64748b;
+
+    font-size: 10px;
+    line-height: 1.45;
+}
+
+.compromissos-nova-categoria-topo > button {
+    width: 30px;
+    height: 30px;
+
+    flex: 0 0 30px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+
+    background: #fff;
+    color: #64748b;
+}
+
+.compromissos-categoria-opcoes {
+    margin-top: 14px;
+}
+
+.compromissos-categoria-opcoes > span {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #475569;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.compromissos-categoria-icones {
+    display: grid;
+    grid-template-columns:
+        repeat(9, minmax(0, 1fr));
+
+    gap: 7px;
+}
+
+.compromissos-categoria-icones button {
+    aspect-ratio: 1;
+
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+
+    background: #fff;
+
+    cursor: pointer;
+
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease;
+}
+
+.compromissos-categoria-icones button:hover {
+    transform: translateY(-1px);
+
+    border-color: #3bc9db;
+}
+
+.compromissos-categoria-icones button.ativo {
+    border-color: #3bc9db;
+
+    background: #ecfeff;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(59, 201, 219, .13);
+}
+
+.compromissos-categoria-cores {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+.compromissos-categoria-cores button {
+    width: 28px;
+    height: 28px;
+
+    padding: 0;
+
+    border: 3px solid #fff;
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 0 0 1px #cbd5e1;
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+.compromissos-categoria-cores button.ativo {
+    transform: scale(1.14);
+
+    box-shadow:
+        0 0 0 2px #334155;
+}
+
+.compromissos-nova-categoria-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+
+    margin-top: 15px;
+}
+
+.compromissos-nova-categoria-acoes button {
+    min-height: 38px;
+
+    padding: 0 12px;
+
+    border-radius: 10px;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+.compromissos-nova-categoria-acoes .secundario {
+    border: 1px solid #dbe4ea;
+
+    background: #fff;
+    color: #64748b;
+}
+
+.compromissos-nova-categoria-acoes .primario {
+    border: 0;
+
+    background: #0f172a;
+    color: #fff;
+}
+
+.compromissos-valor-bloco {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+    gap: 14px;
+    align-items: end;
+
+    padding-top: 2px;
 }
 
 .compromissos-tipo-valor > span {
     display: block;
+
     margin-bottom: 7px;
-    color: #475569;
+
+    color: #334155;
+
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 750;
 }
 
 .compromissos-tipo-valor > div {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+
+    gap: 7px;
 }
 
 .compromissos-tipo-valor button {
-    min-height: 40px;
+    min-height: 46px;
+
     border: 1px solid #dbe4ea;
-    border-radius: 10px;
+    border-radius: 12px;
+
     background: #fff;
     color: #64748b;
-    font-weight: 700;
+
+    font-weight: 800;
+
     cursor: pointer;
 }
 
 .compromissos-tipo-valor button.ativo {
-    border-color: #22b8cf;
+    border-color:
+        rgba(34, 184, 207, .55);
+
     background: #ecfeff;
     color: #0891b2;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(34, 184, 207, .08);
 }
 
 .compromissos-modal-footer {
+    position: sticky;
+    bottom: 0;
+
+    z-index: 2;
+
+    flex: 0 0 auto;
+
     display: flex;
     justify-content: flex-end;
     gap: 9px;
-    padding: 16px 20px;
-    border-top: 1px solid #eef2f7;
+
+    padding: 16px 24px;
+
+    border-top: 1px solid #edf2f7;
+
+    background:
+        rgba(255, 255, 255, .97);
+
+    backdrop-filter: blur(8px);
 }
 
 .compromissos-modal-footer button {
-    min-height: 40px;
-    padding: 0 14px;
-    border-radius: 10px;
-    font-weight: 700;
+    min-height: 42px;
+
+    padding: 0 15px;
+
+    border-radius: 11px;
+
+    font-size: 12px;
+    font-weight: 800;
+
     cursor: pointer;
 }
 
 .compromissos-modal-footer .cancelar {
     border: 1px solid #e2e8f0;
+
     background: #fff;
     color: #64748b;
 }
 
 .compromissos-modal-footer .salvar {
-    border: none;
-    background: #0891b2;
+    border: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #22c7e8,
+            #22b8cf
+        );
+
     color: #fff;
+
+    box-shadow:
+        0 8px 20px
+        rgba(34, 184, 207, .18);
 }
 
+
+/* =========================================================
+   OCORRÊNCIAS
+========================================================= */
+
 .compromissos-ocorrencias {
+    overflow-y: auto;
+
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 16px 20px 20px;
+    gap: 9px;
+
+    padding: 18px 20px 22px;
 }
 
 .compromisso-ocorrencia {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    padding: 12px;
+    gap: 12px;
+
+    padding: 13px 14px;
+
     border: 1px solid #edf2f7;
-    border-radius: 12px;
+    border-radius: 13px;
+
+    background: #fff;
 }
 
 .compromisso-ocorrencia > div:first-child {
+    min-width: 0;
+
     display: flex;
     flex-direction: column;
 }
 
 .compromisso-ocorrencia strong {
-    color: #172033;
+    color: #0f172a;
+
     font-size: 12px;
+    font-weight: 800;
 }
 
 .compromisso-ocorrencia span {
     color: #64748b;
+
     font-size: 11px;
 }
 
 .ocorrencia-acoes {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+
+    gap: 7px;
 }
 
 .ocorrencia-acoes button {
-    padding: 7px 10px;
-    border: none;
+    min-height: 34px;
+
+    padding: 0 10px;
+
+    border: 0;
     border-radius: 9px;
+
     background: #0891b2;
     color: #fff;
+
     font-size: 10px;
-    font-weight: 750;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+.ocorrencia-btn-valor {
+    border:
+        1px solid #dbe4ea !important;
+
+    background:
+        #f8fafc !important;
+
+    color:
+        #0891b2 !important;
 }
 
 .ocorrencia-atrasada {
     color: #dc2626 !important;
-    font-weight: 800;
+
+    font-weight: 850;
 }
 
 .ocorrencia-paga {
     padding: 5px 8px;
+
     border-radius: 999px;
+
     background: #ecfdf5;
     color: #15803d !important;
-    font-weight: 800;
+
+    font-weight: 850;
 }
 
-@media (max-width: 600px) {
+.ocorrencia-estimativa {
+    margin-left: 6px;
+
+    color: #94a3b8 !important;
+
+    font-size: 9px !important;
+    font-weight: 650;
+}
+
+.compromissos-estimativa-info {
+    padding: 11px 12px;
+
+    border: 1px solid #edf2f7;
+    border-radius: 11px;
+
+    background: #f8fafc;
+    color: #64748b;
+
+    font-size: 11px;
+}
+
+.compromissos-estimativa-info strong {
+    color: #0f172a;
+}
+
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
+@media (max-width: 980px) {
 
     .compromissos-resumo {
-        grid-template-columns: 1fr 1fr;
-        gap: 9px;
-    }
-
-    .compromissos-resumo-card {
-        padding: 12px;
-    }
-
-    .compromissos-resumo-card strong {
-        font-size: 15px;
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
     }
 
     .compromissos-grid {
         grid-template-columns: 1fr;
     }
 
-    .compromissos-btn-novo {
+}
+
+
+@media (max-width: 700px) {
+
+    .compromissos-resumo {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 10px;
+    }
+
+    .compromissos-resumo-card {
+        padding: 14px;
+
+        gap: 10px;
+    }
+
+    .compromissos-resumo-card.ativo {
+        grid-column: 1 / -1;
+    }
+
+    .compromissos-resumo-card > svg {
+        width: 40px;
+        height: 40px;
+
+        flex-basis: 40px;
+
+        padding: 9px;
+    }
+
+    .compromissos-resumo-card strong {
+        font-size: 17px;
+    }
+
+    .compromissos-lista-header {
+        align-items: flex-start;
+    }
+
+    .compromissos-lista-header h2 {
+        font-size: 21px;
+    }
+
+    .compromissos-overlay {
+        align-items: flex-end;
+
+        padding: 0;
+    }
+
+    .compromissos-modal,
+    .compromissos-modal-lista,
+    .compromissos-modal-pagamento {
         width: 100%;
-        justify-content: center;
-        margin-top: 10px;
+        max-height: 92dvh;
+
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+
+        border-radius:
+            22px 22px 0 0;
+    }
+
+    .compromissos-modal-header {
+        padding: 18px 16px;
+    }
+
+    .compromissos-form {
+        padding: 18px 16px;
+    }
+
+    .compromissos-form-grid,
+    .compromissos-valor-bloco {
+        grid-template-columns: 1fr;
+    }
+
+    .compromissos-categoria-icones {
+        grid-template-columns:
+            repeat(7, minmax(0, 1fr));
+    }
+
+    .compromissos-modal-footer {
+        padding:
+            12px 16px
+            calc(
+                12px +
+                env(safe-area-inset-bottom)
+            );
+    }
+
+    .compromissos-modal-footer button {
+        flex: 1;
     }
 
 }
 
-.ocorrencia-btn-valor {
-    background: #f8fafc !important;
-    color: #0891b2 !important;
-    border: 1px solid #dbe4ea !important;
-}
 
-.ocorrencia-estimativa {
-    margin-left: 6px;
-    color: #94a3b8 !important;
-    font-size: 9px !important;
-    font-weight: 600;
-}
+@media (max-width: 520px) {
 
-.compromissos-estimativa-info {
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: #f8fafc;
-    color: #64748b;
-    font-size: 11px;
-}
+    .compromissos-btn-novo {
+        width: 100%;
 
-.compromissos-estimativa-info strong {
-    color: #172033;
+        margin-top: 10px;
+    }
+
+    .compromisso-card {
+        padding: 17px 16px;
+    }
+
+    .compromisso-card-valor {
+        font-size: 20px;
+    }
+
+    .compromisso-card-meta {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .compromissos-categoria-icones {
+        grid-template-columns:
+            repeat(6, minmax(0, 1fr));
+    }
+
+    .compromissos-nova-categoria-acoes {
+        flex-direction: column-reverse;
+    }
+
+    .compromissos-nova-categoria-acoes button {
+        width: 100%;
+    }
+
+    .compromisso-ocorrencia {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .ocorrencia-acoes {
+        width: 100%;
+
+        justify-content: flex-start;
+    }
+
 }
