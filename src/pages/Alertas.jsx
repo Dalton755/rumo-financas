@@ -171,6 +171,58 @@ function montarDetalhe(alerta) {
 
 
   if (
+    alerta?.tipo === "COMPROMISSO"
+  ) {
+
+    const dias =
+      Number(
+        dados.dias_restantes ?? 0
+      );
+
+    const vencimento =
+      dados.vencimento
+        ? new Date(
+            `${dados.vencimento}T12:00:00`
+          ).toLocaleDateString(
+            "pt-BR"
+          )
+        : "";
+
+    return (
+      <>
+        <strong>
+          {
+            dias === 0
+              ? "Vence hoje"
+              : dias === 1
+                ? "Vence amanhã"
+                : `Vence em ${dias} dias`
+          }
+        </strong>
+
+        <span>
+          {
+            vencimento
+              ? `Vencimento: ${vencimento}`
+              : "Próximo vencimento"
+          }
+          {
+            Number(
+              dados.valor_total || 0
+            ) > 0
+              ? ` • ${formatarMoeda(
+                  dados.valor_total
+                )}`
+              : ""
+          }
+        </span>
+      </>
+    );
+
+  }
+
+
+  if (
     alerta?.tipo ===
     "MOVIMENTACAO_FUTURA"
   ) {
