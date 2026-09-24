@@ -17,6 +17,7 @@ import {
 import MainLayout from "../layouts/MainLayout";
 import PageHeader from "../components/ui/PageHeader";
 import PageContainer from "../components/ui/PageContainer";
+import MoneyCalculatorInput from "../components/ui/MoneyCalculatorInput";
 import IconeCategoria, {
     CORES_CATEGORIA,
     OPCOES_ICONES_CATEGORIA
@@ -1853,28 +1854,22 @@ function Compromissos() {
                                             tipoValor ===
                                                 "fixo" ? (
 
-                                                <label className="compromissos-campo">
+                                                <div className="compromissos-campo">
                                                     <span>
                                                         Valor
                                                     </span>
 
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        step="0.01"
+                                                    <MoneyCalculatorInput
                                                         value={valorPadrao}
-                                                        onChange={(e) =>
-                                                            setValorPadrao(
-                                                                e.target.value
-                                                            )
-                                                        }
-                                                        placeholder="0,00"
+                                                        onChange={setValorPadrao}
+                                                        placeholder="Valor"
+                                                        ariaLabel="Valor do compromisso"
                                                     />
-                                                </label>
+                                                </div>
 
                                             ) : (
 
-                                                <label className="compromissos-campo">
+                                                <div className="compromissos-campo">
                                                     <span>
                                                         Valor estimado
                                                     </span>
@@ -1883,19 +1878,13 @@ function Compromissos() {
                                                         Opcional. O valor real pode ser informado quando a cobrança chegar.
                                                     </small>
 
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        step="0.01"
+                                                    <MoneyCalculatorInput
                                                         value={valorEstimado}
-                                                        onChange={(e) =>
-                                                            setValorEstimado(
-                                                                e.target.value
-                                                            )
-                                                        }
-                                                        placeholder="0,00"
+                                                        onChange={setValorEstimado}
+                                                        placeholder="Valor estimado"
+                                                        ariaLabel="Valor estimado do compromisso"
                                                     />
-                                                </label>
+                                                </div>
 
                                             )
                                         }
