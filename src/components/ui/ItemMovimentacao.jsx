@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import {
+    ArrowRightLeft,
     MoreHorizontal,
     Pencil,
     Trash2
@@ -71,6 +72,10 @@ export default function ItemMovimentacao({
         movimentacao?.tipo ===
         "receita";
 
+    const transferencia =
+        movimentacao?.tipo ===
+        "transferencia";
+
     const prevista =
         Boolean(
             movimentacao?.prevista
@@ -96,9 +101,11 @@ export default function ItemMovimentacao({
         <div className="item-mov">
             <div
                 className={
-                    `item-icon ${receita
-                        ? "receita"
-                        : "despesa"
+                    `item-icon ${transferencia
+                        ? "transferencia"
+                        : receita
+                            ? "receita"
+                            : "despesa"
                     }`
                 }
                 style={{
@@ -106,28 +113,40 @@ export default function ItemMovimentacao({
                         corComTransparencia(
                             movimentacao?.categoriaCor ||
                             (
-                                receita
-                                    ? "#22C55E"
-                                    : "#EF4444"
+                                transferencia
+                                    ? "#0F766E"
+                                    : receita
+                                        ? "#22C55E"
+                                        : "#EF4444"
                             )
                         )
                 }}
             >
-                <IconeCategoria
-                    nome={
-                        movimentacao?.categoria
-                    }
-                    icone={
-                        movimentacao?.categoriaIcone
-                    }
-                    cor={
-                        movimentacao?.categoriaCor
-                    }
-                    tipo={
-                        movimentacao?.tipo
-                    }
-                    size={19}
-                />
+                {
+                    transferencia
+                        ? (
+                            <ArrowRightLeft
+                                size={18}
+                            />
+                        )
+                        : (
+                            <IconeCategoria
+                                nome={
+                                    movimentacao?.categoria
+                                }
+                                icone={
+                                    movimentacao?.categoriaIcone
+                                }
+                                cor={
+                                    movimentacao?.categoriaCor
+                                }
+                                tipo={
+                                    movimentacao?.tipo
+                                }
+                                size={19}
+                            />
+                        )
+                }
             </div>
 
             <div className="item-info">
@@ -137,8 +156,19 @@ export default function ItemMovimentacao({
 
                 <div className="item-info-meta">
                     <span>
-                        {movimentacao?.categoria ||
-                            "Sem categoria"}
+                        {
+                            transferencia
+                                ? (
+                                    movimentacao?.conta &&
+                                    movimentacao?.contaDestino
+                                        ? `${movimentacao.conta} → ${movimentacao.contaDestino}`
+                                        : "Transferência entre contas"
+                                )
+                                : (
+                                    movimentacao?.categoria ||
+                                    "Sem categoria"
+                                )
+                        }
                     </span>
 
                     {prevista && (
@@ -172,13 +202,21 @@ export default function ItemMovimentacao({
 
             <div
                 className={
-                    `item-valor ${receita
-                        ? "receita"
-                        : "despesa"
+                    `item-valor ${transferencia
+                        ? "transferencia"
+                        : receita
+                            ? "receita"
+                            : "despesa"
                     }`
                 }
             >
-                {receita ? "+" : "-"}
+                {
+                    transferencia
+                        ? "↔ "
+                        : receita
+                            ? "+"
+                            : "-"
+                }
                 {formatarMoeda(
                     Math.abs(
                         Number(

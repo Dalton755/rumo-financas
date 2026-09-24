@@ -86,21 +86,38 @@ function Movimentacoes() {
     ...new Map(
 
       movimentacoes
-        .filter((mov) => mov.conta?.nome)
-        .map((mov) => [
+        .flatMap((mov) => [
 
-          mov.conta.nome,
+          mov.conta?.nome
+            ? [
+                mov.conta.nome,
+                {
+                  id:
+                    mov.conta_id ||
+                    mov.conta.nome,
 
-          {
-            id:
-              mov.conta_id ||
-              mov.conta.nome,
+                  nome:
+                    mov.conta.nome
+                }
+              ]
+            : null,
 
-            nome:
-              mov.conta.nome
-          }
+          mov.conta_destino?.nome
+            ? [
+                mov.conta_destino.nome,
+                {
+                  id:
+                    mov.conta_destino_id ||
+                    mov.conta_destino.nome,
+
+                  nome:
+                    mov.conta_destino.nome
+                }
+              ]
+            : null
 
         ])
+        .filter(Boolean)
 
     ).values()
 
@@ -356,6 +373,9 @@ function Movimentacoes() {
             !contaSelecionada ||
 
             mov.conta?.nome ===
+            contaSelecionada ||
+
+            mov.conta_destino?.nome ===
             contaSelecionada;
 
 
@@ -549,7 +569,7 @@ function Movimentacoes() {
 
         titulo="Movimentações"
 
-        subtitulo="Gerencie todas as suas receitas e despesas."
+        subtitulo="Gerencie receitas, despesas e transferências entre suas contas."
 
       >
 
@@ -883,7 +903,7 @@ function Movimentacoes() {
 
           <option value="">
 
-            Receitas e Despesas
+            Todos os tipos
 
           </option>
 
@@ -896,6 +916,12 @@ function Movimentacoes() {
           <option value="despesa">
 
             Despesas
+
+          </option>
+
+          <option value="transferencia">
+
+            Transferências
 
           </option>
 
@@ -954,6 +980,12 @@ function Movimentacoes() {
 
                 contaBanco:
                   mov.conta?.banco,
+
+                contaDestino:
+                  mov.conta_destino?.nome,
+
+                contaDestinoBanco:
+                  mov.conta_destino?.banco,
 
                 data:
                   new Date(
