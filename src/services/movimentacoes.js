@@ -14,6 +14,7 @@ export async function listarMovimentacoes(usuarioId) {
             data_movimentacao,
             observacao,
             conta_id,
+            conta_destino_id,
             categoria_id,
             categoria:categorias!movimentacoes_categoria_id_fkey(
                 nome,
@@ -21,6 +22,10 @@ export async function listarMovimentacoes(usuarioId) {
                 cor
             ),
             conta:contas!movimentacoes_conta_id_fkey(
+                nome,
+                banco
+            ),
+            conta_destino:contas!movimentacoes_conta_destino_id_fkey(
                 nome,
                 banco
             )
