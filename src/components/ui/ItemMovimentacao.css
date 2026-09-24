@@ -121,6 +121,11 @@
     color: #c24141;
 }
 
+.item-valor.transferencia,
+.item-icon.transferencia {
+    color: #0f766e;
+}
+
 .item-menu-container {
     position: relative;
 }
