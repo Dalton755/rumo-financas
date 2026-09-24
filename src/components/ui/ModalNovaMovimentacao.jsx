@@ -39,6 +39,10 @@ export default function ModalNovaMovimentacao({
         movimentacao?.conta_id || ""
     );
 
+    const [contaDestinoId, setContaDestinoId] = useState(
+        movimentacao?.conta_destino_id || ""
+    );
+
     const [categoriaId, setCategoriaId] = useState(
         movimentacao?.categoria_id || ""
     );
@@ -125,11 +129,42 @@ export default function ModalNovaMovimentacao({
             return;
         }
 
-        if (!categoriaId) {
+        if (
+            tipo !== "transferencia" &&
+            !categoriaId
+        ) {
 
             showToast(
                 "Erro",
                 "Selecione uma categoria.",
+                "danger"
+            );
+
+            return;
+        }
+
+        if (
+            tipo === "transferencia" &&
+            !contaDestinoId
+        ) {
+
+            showToast(
+                "Erro",
+                "Selecione a conta de destino.",
+                "danger"
+            );
+
+            return;
+        }
+
+        if (
+            tipo === "transferencia" &&
+            contaDestinoId === contaId
+        ) {
+
+            showToast(
+                "Erro",
+                "A conta de origem e a conta de destino devem ser diferentes.",
                 "danger"
             );
 
@@ -157,7 +192,15 @@ export default function ModalNovaMovimentacao({
 
             conta_id: contaId,
 
-            categoria_id: categoriaId,
+            conta_destino_id:
+                tipo === "transferencia"
+                    ? contaDestinoId
+                    : null,
+
+            categoria_id:
+                tipo === "transferencia"
+                    ? null
+                    : categoriaId,
 
             data_movimentacao: dataMovimento,
 
@@ -544,9 +587,23 @@ export default function ModalNovaMovimentacao({
 
                         <select
                             value={tipo}
-                            onChange={(e) =>
-                                setTipo(e.target.value)
-                            }
+                            onChange={(e) => {
+                                const proximoTipo =
+                                    e.target.value;
+
+                                setTipo(
+                                    proximoTipo
+                                );
+
+                                if (
+                                    proximoTipo ===
+                                    "transferencia"
+                                ) {
+                                    setCategoriaId("");
+                                } else {
+                                    setContaDestinoId("");
+                                }
+                            }}
                         >
 
                             <option value="receita">
@@ -555,6 +612,10 @@ export default function ModalNovaMovimentacao({
 
                             <option value="despesa">
                                 Despesa
+                            </option>
+
+                            <option value="transferencia">
+                                Transferência
                             </option>
 
                         </select>
@@ -587,7 +648,11 @@ export default function ModalNovaMovimentacao({
                             >
 
                                 <option value="">
-                                    Selecione uma conta
+                                    {
+                                        tipo === "transferencia"
+                                            ? "Conta de origem"
+                                            : "Selecione uma conta"
+                                    }
                                 </option>
 
                                 {contas.map((conta) => (
@@ -613,48 +678,87 @@ export default function ModalNovaMovimentacao({
 
                         </div>
 
-                        <div className="movimentacao-campo-com-acao">
+                        {
+                            tipo === "transferencia" && (
+                                <div className="movimentacao-campo-com-acao">
 
-                            <select
-                                value={categoriaId}
-                                onChange={(e) =>
-                                    setCategoriaId(
-                                        e.target.value
-                                    )
-                                }
-                            >
-
-                                <option value="">
-                                    Selecione uma categoria
-                                </option>
-
-                                {categorias
-                                    .filter(
-                                        (categoria) =>
-                                            categoria.tipo === tipo
-                                    )
-                                    .map((categoria) => (
-
-                                        <option
-                                            key={categoria.id}
-                                            value={categoria.id}
-                                        >
-                                            {categoria.nome}
+                                    <select
+                                        value={contaDestinoId}
+                                        onChange={(e) =>
+                                            setContaDestinoId(
+                                                e.target.value
+                                            )
+                                        }
+                                    >
+                                        <option value="">
+                                            Conta de destino
                                         </option>
 
-                                    ))}
+                                        {contas
+                                            .filter(
+                                                (conta) =>
+                                                    conta.id !== contaId
+                                            )
+                                            .map((conta) => (
+                                                <option
+                                                    key={conta.id}
+                                                    value={conta.id}
+                                                >
+                                                    {conta.nome}
+                                                </option>
+                                            ))}
+                                    </select>
 
-                            </select>
+                                </div>
+                            )
+                        }
 
-                            <button
-                                type="button"
-                                className="movimentacao-btn-adicionar"
-                                onClick={abrirNovaCategoria}
-                            >
-                                + Nova
-                            </button>
+                        {
+                            tipo !== "transferencia" && (
+                                <div className="movimentacao-campo-com-acao">
 
-                        </div>
+                                    <select
+                                        value={categoriaId}
+                                        onChange={(e) =>
+                                            setCategoriaId(
+                                                e.target.value
+                                            )
+                                        }
+                                    >
+
+                                        <option value="">
+                                            Selecione uma categoria
+                                        </option>
+
+                                        {categorias
+                                            .filter(
+                                                (categoria) =>
+                                                    categoria.tipo === tipo
+                                            )
+                                            .map((categoria) => (
+
+                                                <option
+                                                    key={categoria.id}
+                                                    value={categoria.id}
+                                                >
+                                                    {categoria.nome}
+                                                </option>
+
+                                            ))}
+
+                                    </select>
+
+                                    <button
+                                        type="button"
+                                        className="movimentacao-btn-adicionar"
+                                        onClick={abrirNovaCategoria}
+                                    >
+                                        + Nova
+                                    </button>
+
+                                </div>
+                            )
+                        }
 
                         <label className="movimentacao-data-campo">
                             <span>
