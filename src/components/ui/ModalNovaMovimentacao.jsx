@@ -656,13 +656,20 @@ export default function ModalNovaMovimentacao({
 
                         </div>
 
-                        <input
-                            type="date"
-                            value={dataMovimento}
-                            onChange={(e) =>
-                                setDataMovimento(e.target.value)
-                            }
-                        />
+                        <label className="movimentacao-data-campo">
+                            <span>
+                                Data
+                            </span>
+
+                            <input
+                                type="date"
+                                value={dataMovimento}
+                                onChange={(e) =>
+                                    setDataMovimento(e.target.value)
+                                }
+                                aria-label="Data da movimentação"
+                            />
+                        </label>
 
                         <textarea
                             placeholder="Observações (opcional)"
