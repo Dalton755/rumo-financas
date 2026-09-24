@@ -687,6 +687,29 @@
         background .18s ease;
 }
 
+.compromissos-campo .money-calculator-field {
+    min-height: 46px;
+
+    border-color: #dbe4ea;
+    border-radius: 12px;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+.compromissos-campo .money-calculator-field:focus-visible {
+    outline: 0;
+
+    border-color:
+        rgba(34, 184, 207, .75);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(34, 184, 207, .11);
+}
+
+
 .compromissos-form input:focus,
 .compromissos-form select:focus {
     border-color:
