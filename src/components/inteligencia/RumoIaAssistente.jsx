@@ -1138,7 +1138,11 @@ function RumoIaAssistente({
 
 
           {
-            !acaoPendente && (
+            !acaoPendente &&
+            (
+              resposta ||
+              !feedbackAcao
+            ) && (
               <div
                 className={
                   resposta
