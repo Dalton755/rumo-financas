@@ -266,18 +266,30 @@ function Dashboard() {
     const diasParcelaDivida =
         parcelaDividaPrioritaria
             ?.semana_referencia
-            ? Math.round(
-                (
+            ? (() => {
+                const hoje =
+                    new Date();
+
+                hoje.setHours(
+                    12,
+                    0,
+                    0,
+                    0
+                );
+
+                const vencimento =
                     new Date(
                         `${parcelaDividaPrioritaria.semana_referencia}T12:00:00`
-                    ) -
-                    new Date(
-                        new Date()
-                            .toDateString()
-                    )
-                ) /
-                86400000
-            )
+                    );
+
+                return Math.round(
+                    (
+                        vencimento -
+                        hoje
+                    ) /
+                    86400000
+                );
+            })()
             : null;
 
     const rumoHoje =
@@ -345,8 +357,10 @@ function Dashboard() {
                                     totalObrigacoes
                                 )} e superam o saldo disponível.`,
                         acao:
-                            "Ver compromissos",
+                            "Ver obrigação",
                         rota:
+                            primeiraObrigacao
+                                ?.rota ||
                             "/compromissos"
                     };
                 }
@@ -731,7 +745,7 @@ function Dashboard() {
                         <span>Próximos 7 dias</span>
                         <strong>
                             {formatarMoeda(
-                                totalProximos
+                                totalObrigacoes
                             )}
                         </strong>
                     </div>
