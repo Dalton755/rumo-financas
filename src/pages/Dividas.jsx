@@ -959,6 +959,119 @@ function Dividas() {
   }
 
 
+  async function marcarParcelaComoPaga(
+    parcela
+  ) {
+    if (
+      !dividaDetalhe ||
+      !parcela ||
+      parcela.status === "pago"
+    ) {
+      return;
+    }
+
+    const previsto =
+      Number(
+        parcela.valor_previsto ||
+        0
+      );
+
+    const jaPago =
+      Number(
+        parcela.valor_pago ||
+        0
+      );
+
+    const restanteParcela =
+      Math.max(
+        0,
+        previsto -
+        jaPago
+      );
+
+    const saldoDivida =
+      Number(
+        dividaDetalhe.saldo_atual ||
+        0
+      );
+
+    const aplicar =
+      Math.min(
+        restanteParcela,
+        saldoDivida
+      );
+
+    if (aplicar <= 0) {
+      return;
+    }
+
+    const confirmou =
+      window.confirm(
+        `Confirmar pagamento de ${formatarMoeda(
+          aplicar
+        )} nesta parcela?`
+      );
+
+    if (!confirmou) {
+      return;
+    }
+
+    try {
+      setSalvando(true);
+
+      const novoPago =
+        jaPago +
+        aplicar;
+
+      const novoPrevisto =
+        aplicar <
+        restanteParcela
+          ? novoPago
+          : previsto;
+
+      await atualizarParcelaPlanoQuitacao(
+        parcela.id,
+        {
+          valorPrevisto:
+            novoPrevisto,
+          valorPago:
+            novoPago,
+        }
+      );
+
+      showToast(
+        "Parcela paga",
+        "A parcela saiu das pendências e o saldo da dívida foi atualizado.",
+        "success"
+      );
+
+      await atualizarDetalheDepoisDaAcao(
+        dividaDetalhe.id
+      );
+
+      await carregarPlano(
+        dividaDetalhe.id
+      );
+
+    } catch (error) {
+      console.error(
+        "[RUMO DIVIDAS] Marcar parcela paga:",
+        error
+      );
+
+      showToast(
+        "Não foi possível concluir",
+        error?.message ??
+        "Tente novamente.",
+        "error"
+      );
+
+    } finally {
+      setSalvando(false);
+    }
+  }
+
+
   async function removerParcela(
     parcela
   ) {
@@ -1328,6 +1441,29 @@ function Dividas() {
           ).length,
       };
     }, [plano]);
+
+  const proximaParcela =
+    useMemo(
+      () =>
+        [...plano]
+          .filter(
+            (parcela) =>
+              parcela.status !==
+              "pago"
+          )
+          .sort(
+            (a, b) =>
+              String(
+                a.semana_referencia
+              ).localeCompare(
+                String(
+                  b.semana_referencia
+                )
+              )
+          )[0] ||
+        null,
+      [plano]
+    );
 
 
   if (carregando) {
@@ -2302,11 +2438,11 @@ function Dividas() {
 
                         <div>
                           <strong>
-                            Plano semanal
+                            Plano de quitação
                           </strong>
 
                           <span>
-                            Organize quanto pretende pagar em cada semana.
+                            Defina a data e o valor de cada pagamento. O Rumo usa esse plano em alertas e projeções.
                           </span>
                         </div>
                       </div>
@@ -2315,7 +2451,7 @@ function Dividas() {
                       <div className="divida-plano-form-grid">
                         <label>
                           <span>
-                            Semana
+                            Data prevista
                           </span>
 
                           <input
@@ -2414,6 +2550,61 @@ function Dividas() {
                   </div>
                 </div>
 
+                {
+                  proximaParcela && (
+                    <div
+                      className={
+                        `divida-proxima-acao status-${proximaParcela.status}`
+                      }
+                    >
+                      <div>
+                        <span>
+                          Próxima ação
+                        </span>
+
+                        <strong>
+                          {
+                            `${formatarMoeda(
+                              Math.max(
+                                0,
+                                Number(
+                                  proximaParcela.valor_previsto ||
+                                  0
+                                ) -
+                                Number(
+                                  proximaParcela.valor_pago ||
+                                  0
+                                )
+                              )
+                            )} • ${formatarData(
+                              proximaParcela.semana_referencia
+                            )}`
+                          }
+                        </strong>
+
+                        <small>
+                          Essa parcela já entra no Rumo de Hoje, nos alertas e nas projeções.
+                        </small>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          marcarParcelaComoPaga(
+                            proximaParcela
+                          )
+                        }
+                        disabled={
+                          salvando
+                        }
+                      >
+                        <CheckCircle2 size={16} />
+                        Marcar como paga
+                      </button>
+                    </div>
+                  )
+                }
+
 
                 <div className="divida-subtitulo">
                   <History size={19} />
@@ -2505,6 +2696,27 @@ function Dividas() {
                           </span>
 
                           <div className="divida-parcela-acoes">
+                            {
+                              parcela.status !==
+                              "pago" && (
+                                <button
+                                  type="button"
+                                  className="pagar"
+                                  onClick={() =>
+                                    marcarParcelaComoPaga(
+                                      parcela
+                                    )
+                                  }
+                                  disabled={
+                                    salvando
+                                  }
+                                >
+                                  <CheckCircle2 size={15} />
+                                  Marcar paga
+                                </button>
+                              )
+                            }
+
                             <button
                               type="button"
                               title="Atualizar valor pago"
