@@ -15,6 +15,7 @@ import {
 import MainLayout from "../layouts/MainLayout";
 import PageContainer from "../components/ui/PageContainer";
 import PageHeader from "../components/ui/PageHeader";
+import RumoIaAssistente from "../components/inteligencia/RumoIaAssistente";
 
 import { obterInteligenciaFinanceira } from "../services/inteligencia";
 
@@ -254,8 +255,8 @@ function Inteligencia() {
     <MainLayout>
       <PageContainer>
         <PageHeader
-          titulo="Inteligência Financeira"
-          subtitulo="O Rumo analisa seus números e mostra o que merece sua atenção."
+          titulo="Rumo IA"
+          subtitulo="Entenda sua situação, simule decisões e faça perguntas usando seus dados financeiros reais."
         >
           <span className="inteligencia-premium-badge">
             <Sparkles size={15} />
@@ -381,6 +382,10 @@ function Inteligencia() {
             </div>
           </article>
         </section>
+
+        <RumoIaAssistente
+          dados={dados}
+        />
 
         <section className="inteligencia-painel">
           <div className="inteligencia-painel-cabecalho">
