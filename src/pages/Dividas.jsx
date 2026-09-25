@@ -39,8 +39,10 @@ import {
   criarParcelaPlanoQuitacao,
   excluirDivida,
   excluirParcelaPlanoQuitacao,
+  listarContasPagamentoDivida,
   listarDividas,
   listarPlanoQuitacao,
+  pagarParcelaPlanoQuitacao,
   registrarPagamentoDivida,
   simularQuitacao,
 } from "../services/dividas";
@@ -331,6 +333,29 @@ function Dividas() {
 
 
   const [
+    contasPagamento,
+    setContasPagamento,
+  ] = useState([]);
+
+  const [
+    contaPagamentoId,
+    setContaPagamentoId,
+  ] = useState("");
+
+  const [
+    dataPagamento,
+    setDataPagamento,
+  ] = useState(
+    hojeISO()
+  );
+
+  const [
+    parcelaPagando,
+    setParcelaPagando,
+  ] = useState(null);
+
+
+  const [
     pagamentoSimulacao,
     setPagamentoSimulacao,
   ] = useState("");
@@ -362,6 +387,7 @@ function Dividas() {
 
   useEffect(() => {
     carregarDividas();
+    carregarContasPagamento();
   }, []);
 
 
@@ -389,6 +415,33 @@ function Dividas() {
 
     } finally {
       setCarregando(false);
+    }
+  }
+
+
+  async function carregarContasPagamento() {
+    try {
+      const dados =
+        await listarContasPagamentoDivida();
+
+      setContasPagamento(
+        dados || []
+      );
+
+      setContaPagamentoId(
+        (atual) =>
+          atual ||
+          dados?.[0]?.id ||
+          ""
+      );
+
+    } catch (error) {
+      console.error(
+        "[RUMO DIVIDAS] Contas para pagamento:",
+        error
+      );
+
+      setContasPagamento([]);
     }
   }
 
@@ -632,6 +685,10 @@ function Dividas() {
     );
 
     setPagamento("");
+    setDataPagamento(
+      hojeISO()
+    );
+    setParcelaPagando(null);
 
     setPagamentoSimulacao(
       divida.parcela_minima
@@ -664,6 +721,10 @@ function Dividas() {
     setPlano([]);
 
     setPagamento("");
+    setDataPagamento(
+      hojeISO()
+    );
+    setParcelaPagando(null);
     setPagamentoSimulacao("");
 
     setValorPrevisto("");
@@ -708,12 +769,14 @@ function Dividas() {
 
       await registrarPagamentoDivida(
         dividaDetalhe.id,
-        pagamento
+        pagamento,
+        contaPagamentoId,
+        dataPagamento
       );
 
       showToast(
         "Pagamento registrado",
-        "O saldo devedor foi atualizado.",
+        "A dívida e o saldo da conta foram atualizados.",
         "success"
       );
 
@@ -959,7 +1022,7 @@ function Dividas() {
   }
 
 
-  async function marcarParcelaComoPaga(
+  function marcarParcelaComoPaga(
     parcela
   ) {
     if (
@@ -970,80 +1033,48 @@ function Dividas() {
       return;
     }
 
-    const previsto =
-      Number(
-        parcela.valor_previsto ||
-        0
+    setParcelaPagando(
+      parcela
+    );
+
+    setDataPagamento(
+      hojeISO()
+    );
+  }
+
+
+  async function confirmarPagamentoParcela() {
+    if (
+      !parcelaPagando ||
+      !contaPagamentoId
+    ) {
+      showToast(
+        "Selecione uma conta",
+        "Informe de qual conta saiu o pagamento.",
+        "error"
       );
 
-    const jaPago =
-      Number(
-        parcela.valor_pago ||
-        0
-      );
-
-    const restanteParcela =
-      Math.max(
-        0,
-        previsto -
-        jaPago
-      );
-
-    const saldoDivida =
-      Number(
-        dividaDetalhe.saldo_atual ||
-        0
-      );
-
-    const aplicar =
-      Math.min(
-        restanteParcela,
-        saldoDivida
-      );
-
-    if (aplicar <= 0) {
-      return;
-    }
-
-    const confirmou =
-      window.confirm(
-        `Confirmar pagamento de ${formatarMoeda(
-          aplicar
-        )} nesta parcela?`
-      );
-
-    if (!confirmou) {
       return;
     }
 
     try {
       setSalvando(true);
 
-      const novoPago =
-        jaPago +
-        aplicar;
-
-      const novoPrevisto =
-        aplicar <
-        restanteParcela
-          ? novoPago
-          : previsto;
-
-      await atualizarParcelaPlanoQuitacao(
-        parcela.id,
-        {
-          valorPrevisto:
-            novoPrevisto,
-          valorPago:
-            novoPago,
-        }
-      );
+      await pagarParcelaPlanoQuitacao({
+        parcelaId:
+          parcelaPagando.id,
+        contaId:
+          contaPagamentoId,
+        dataPagamento,
+      });
 
       showToast(
         "Parcela paga",
-        "A parcela saiu das pendências e o saldo da dívida foi atualizado.",
+        "A parcela, a dívida e o saldo da conta foram atualizados.",
         "success"
       );
+
+      setParcelaPagando(null);
 
       await atualizarDetalheDepoisDaAcao(
         dividaDetalhe.id
@@ -1055,7 +1086,7 @@ function Dividas() {
 
     } catch (error) {
       console.error(
-        "[RUMO DIVIDAS] Marcar parcela paga:",
+        "[RUMO DIVIDAS] Pagar parcela:",
         error
       );
 
@@ -1070,7 +1101,6 @@ function Dividas() {
       setSalvando(false);
     }
   }
-
 
   async function removerParcela(
     parcela
@@ -2242,28 +2272,88 @@ function Dividas() {
                           </strong>
 
                           <span>
-                            O valor será abatido diretamente do saldo devedor.
+                            O Rumo registra a saída na conta e abate o mesmo valor da dívida.
                           </span>
                         </div>
                       </div>
 
-                      <div className="divida-pagamento-linha">
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          value={
-                            pagamento
-                          }
-                          onChange={(
-                            event
-                          ) =>
-                            setPagamento(
-                              event.target.value
-                            )
-                          }
-                          placeholder="Valor pago"
-                        />
+                      <div className="divida-pagamento-grid">
+                        <label>
+                          <span>
+                            Valor
+                          </span>
+
+                          <MoneyCalculatorInput
+                            value={pagamento}
+                            onChange={setPagamento}
+                            placeholder="R$ 0,00"
+                            ariaLabel="Valor do pagamento"
+                          />
+                        </label>
+
+                        <label>
+                          <span>
+                            Conta utilizada
+                          </span>
+
+                          <select
+                            value={
+                              contaPagamentoId
+                            }
+                            onChange={(
+                              event
+                            ) =>
+                              setContaPagamentoId(
+                                event.target.value
+                              )
+                            }
+                          >
+                            <option value="">
+                              Selecione
+                            </option>
+
+                            {
+                              contasPagamento.map(
+                                (conta) => (
+                                  <option
+                                    key={
+                                      conta.id
+                                    }
+                                    value={
+                                      conta.id
+                                    }
+                                  >
+                                    {
+                                      conta.banco
+                                        ? `${conta.nome} • ${conta.banco}`
+                                        : conta.nome
+                                    }
+                                  </option>
+                                )
+                              )
+                            }
+                          </select>
+                        </label>
+
+                        <label>
+                          <span>
+                            Data
+                          </span>
+
+                          <input
+                            type="date"
+                            value={
+                              dataPagamento
+                            }
+                            onChange={(
+                              event
+                            ) =>
+                              setDataPagamento(
+                                event.target.value
+                              )
+                            }
+                          />
+                        </label>
 
                         <button
                           type="button"
@@ -2271,10 +2361,11 @@ function Dividas() {
                             registrarPagamento
                           }
                           disabled={
-                            salvando
+                            salvando ||
+                            !contaPagamentoId
                           }
                         >
-                          Registrar
+                          Registrar pagamento
                         </button>
                       </div>
                     </section>
@@ -2757,6 +2848,192 @@ function Dividas() {
             </div>
           </div>
         )}
+
+        {
+          parcelaPagando && (
+            <div className="dividas-modal-overlay dividas-pagamento-overlay">
+              <div className="dividas-modal dividas-modal-pagar-parcela">
+                <div className="dividas-modal-header">
+                  <div>
+                    <span>
+                      CONFIRMAR PAGAMENTO
+                    </span>
+
+                    <h2>
+                      Marcar parcela como paga
+                    </h2>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="dividas-modal-fechar"
+                    onClick={() =>
+                      setParcelaPagando(
+                        null
+                      )
+                    }
+                    disabled={
+                      salvando
+                    }
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div className="dividas-pagamento-parcela-body">
+                  <div className="dividas-pagamento-parcela-valor">
+                    <span>
+                      Valor pendente
+                    </span>
+
+                    <strong>
+                      {
+                        formatarMoeda(
+                          Math.min(
+                            Math.max(
+                              0,
+                              Number(
+                                parcelaPagando.valor_previsto ||
+                                0
+                              ) -
+                              Number(
+                                parcelaPagando.valor_pago ||
+                                0
+                              )
+                            ),
+                            Number(
+                              dividaDetalhe?.saldo_atual ||
+                              0
+                            )
+                          )
+                        )
+                      }
+                    </strong>
+
+                    <small>
+                      {
+                        dividaDetalhe
+                          ?.nome
+                      }
+                      {" • "}
+                      {
+                        formatarData(
+                          parcelaPagando
+                            .semana_referencia
+                        )
+                      }
+                    </small>
+                  </div>
+
+                  <label>
+                    <span>
+                      Conta utilizada
+                    </span>
+
+                    <select
+                      value={
+                        contaPagamentoId
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        setContaPagamentoId(
+                          event.target.value
+                        )
+                      }
+                    >
+                      <option value="">
+                        Selecione uma conta
+                      </option>
+
+                      {
+                        contasPagamento.map(
+                          (conta) => (
+                            <option
+                              key={
+                                conta.id
+                              }
+                              value={
+                                conta.id
+                              }
+                            >
+                              {
+                                conta.banco
+                                  ? `${conta.nome} • ${conta.banco}`
+                                  : conta.nome
+                              }
+                            </option>
+                          )
+                        )
+                      }
+                    </select>
+                  </label>
+
+                  <label>
+                    <span>
+                      Data do pagamento
+                    </span>
+
+                    <input
+                      type="date"
+                      value={
+                        dataPagamento
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        setDataPagamento(
+                          event.target.value
+                        )
+                      }
+                    />
+                  </label>
+
+                  <p>
+                    Ao confirmar, o Rumo registra uma saída na conta escolhida, baixa a parcela e recalcula o saldo da dívida.
+                  </p>
+                </div>
+
+                <div className="dividas-modal-footer">
+                  <button
+                    type="button"
+                    className="dividas-btn-fechar"
+                    onClick={() =>
+                      setParcelaPagando(
+                        null
+                      )
+                    }
+                    disabled={
+                      salvando
+                    }
+                  >
+                    Cancelar
+                  </button>
+
+                  <button
+                    type="button"
+                    className="dividas-btn-salvar"
+                    onClick={
+                      confirmarPagamentoParcela
+                    }
+                    disabled={
+                      salvando ||
+                      !contaPagamentoId
+                    }
+                  >
+                    <CheckCircle2 size={17} />
+
+                    {
+                      salvando
+                        ? "Registrando..."
+                        : "Confirmar pagamento"
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        }
       </PageContainer>
     </MainLayout>
   );
