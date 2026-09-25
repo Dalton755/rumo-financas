@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { useDashboard } from "../context/DashboardContext";
 import { supabase } from "../services/supabase";
 import { listarProximosCompromissos } from "../services/compromissos";
+import { buscarCotacaoDolar } from "../services/cambio";
 
 import MainLayout from "../layouts/MainLayout";
 import PageContainer from "../components/ui/PageContainer";
@@ -22,6 +23,7 @@ import {
     ArrowDownRight,
     ArrowRight,
     ArrowUpRight,
+    Banknote,
     Bell,
     Calculator,
     CalendarDays,
@@ -39,6 +41,17 @@ function formatarMoeda(valor) {
             {
                 style: "currency",
                 currency: "BRL"
+            }
+        );
+}
+
+function formatarCotacao(valor) {
+    return Number(valor || 0)
+        .toLocaleString(
+            "pt-BR",
+            {
+                minimumFractionDigits: 4,
+                maximumFractionDigits: 4
             }
         );
 }
@@ -80,6 +93,11 @@ function Dashboard() {
         proximosCompromissos,
         setProximosCompromissos
     ] = useState([]);
+
+    const [
+        cotacaoDolar,
+        setCotacaoDolar
+    ] = useState(null);
 
     const saudacao =
         obterSaudacao();
@@ -261,6 +279,33 @@ function Dashboard() {
         }
 
         carregarUsuario();
+    }, []);
+
+    useEffect(() => {
+        let ativo = true;
+
+        buscarCotacaoDolar()
+            .then(
+                (dados) => {
+                    if (ativo) {
+                        setCotacaoDolar(
+                            dados
+                        );
+                    }
+                }
+            )
+            .catch(
+                (error) => {
+                    console.warn(
+                        "[RUMO DASHBOARD] Cotação indisponível:",
+                        error
+                    );
+                }
+            );
+
+        return () => {
+            ativo = false;
+        };
     }, []);
 
     useEffect(() => {
@@ -446,6 +491,44 @@ function Dashboard() {
                         </div>
                     </div>
                 </section>
+
+                <Link
+                    to="/calculos?calc=cambio"
+                    className="dashboard-exchange-card"
+                >
+                    <span className="dashboard-exchange-icon">
+                        <Banknote size={18} />
+                    </span>
+
+                    <span className="dashboard-exchange-copy">
+                        <small>
+                            Dólar hoje
+                        </small>
+
+                        <strong>
+                            {cotacaoDolar
+                                ? `US$ 1 = R$ ${formatarCotacao(cotacaoDolar.venda)}`
+                                : "Atualizando cotação..."
+                            }
+                        </strong>
+                    </span>
+
+                    <span className="dashboard-exchange-source">
+                        {cotacaoDolar
+                            ? cotacaoDolar.fallback
+                                ? "Fonte alternativa"
+                                : "BCB · PTAX"
+                            : "USD/BRL"
+                        }
+                    </span>
+
+                    <span className="dashboard-exchange-action">
+                        Converter
+                        <ChevronRight
+                            size={14}
+                        />
+                    </span>
+                </Link>
 
                 <section className="dashboard-priority-grid">
                     <article className="dashboard-upcoming">
