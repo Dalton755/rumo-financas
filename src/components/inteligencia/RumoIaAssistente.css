@@ -400,3 +400,321 @@
     font-size: 8px;
   }
 }
+
+
+/* =========================================================
+   RUMO IA • AÇÕES CONFIRMÁVEIS
+========================================================= */
+
+.rumo-ia-command-examples {
+  margin-top: 12px;
+  padding: 10px 11px;
+
+  border: 1px solid #dcecef;
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f7fcfd,
+      #ffffff 72%
+    );
+}
+
+.rumo-ia-command-examples span {
+  display: block;
+
+  color: #0f7c8c;
+
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .04em;
+}
+
+.rumo-ia-command-examples p {
+  margin: 4px 0 0;
+
+  color: #718093;
+
+  font-size: 8px;
+  line-height: 1.55;
+}
+
+.rumo-ia-action-review {
+  margin-top: 10px;
+  padding: 13px;
+
+  border: 1px solid #d8e6ea;
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f8fcfd,
+      #ffffff 76%
+    );
+}
+
+.rumo-ia-action-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.rumo-ia-action-head span,
+.rumo-ia-action-head strong {
+  display: block;
+}
+
+.rumo-ia-action-head span {
+  color: #0d8a9d;
+
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: .09em;
+}
+
+.rumo-ia-action-head strong {
+  margin-top: 3px;
+
+  color: #2b394c;
+
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.rumo-ia-action-close {
+  width: 30px;
+  height: 30px;
+
+  display: grid;
+  place-items: center;
+
+  flex: 0 0 auto;
+
+  border: 1px solid #e2e8ee;
+  border-radius: 9px;
+
+  background: #ffffff;
+  color: #718093;
+
+  cursor: pointer;
+}
+
+.rumo-ia-action-fields {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 8px;
+
+  margin-top: 11px;
+}
+
+.rumo-ia-action-field {
+  min-width: 0;
+}
+
+.rumo-ia-action-field.full {
+  grid-column: 1 / -1;
+}
+
+.rumo-ia-action-field > span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #7b8796;
+
+  font-size: 7px;
+  font-weight: 800;
+}
+
+.rumo-ia-action-field input,
+.rumo-ia-action-field select {
+  width: 100%;
+  min-height: 37px;
+
+  padding: 0 9px;
+
+  border: 1px solid #dce4ea;
+  border-radius: 9px;
+
+  background: #ffffff;
+  color: #334155;
+
+  font-size: 8px;
+  outline: none;
+}
+
+.rumo-ia-action-field input:focus,
+.rumo-ia-action-field select:focus {
+  border-color: #9ed6df;
+  box-shadow:
+    0 0 0 3px
+    rgba(
+      14,
+      165,
+      183,
+      .08
+    );
+}
+
+.rumo-ia-action-summary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-top: 10px;
+  padding: 8px 9px;
+
+  border-radius: 9px;
+
+  background: #f6f8fa;
+  color: #6f7d8d;
+}
+
+.rumo-ia-action-summary svg {
+  flex: 0 0 auto;
+
+  color: #0f8da1;
+}
+
+.rumo-ia-action-summary span {
+  font-size: 7.5px;
+  line-height: 1.4;
+}
+
+.rumo-ia-action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+
+  margin-top: 10px;
+}
+
+.rumo-ia-action-buttons button {
+  min-height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  padding: 0 11px;
+
+  border-radius: 9px;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.rumo-ia-action-buttons .secondary {
+  border: 1px solid #dfe6eb;
+
+  background: #ffffff;
+  color: #607084;
+}
+
+.rumo-ia-action-buttons .primary {
+  border: 0;
+
+  background: #172033;
+  color: #ffffff;
+}
+
+.rumo-ia-action-buttons button:disabled {
+  opacity: .5;
+  cursor: default;
+}
+
+.rumo-ia-action-feedback {
+  margin-top: 9px;
+  padding: 9px 10px;
+
+  border-radius: 10px;
+}
+
+.rumo-ia-action-feedback strong,
+.rumo-ia-action-feedback span {
+  display: block;
+}
+
+.rumo-ia-action-feedback strong {
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.rumo-ia-action-feedback span {
+  margin-top: 3px;
+
+  font-size: 8px;
+}
+
+.rumo-ia-action-feedback.sucesso {
+  border: 1px solid #d3e8dc;
+
+  background: #f7fcf9;
+  color: #21724a;
+}
+
+.rumo-ia-action-feedback.erro {
+  border: 1px solid #efd4d4;
+
+  background: #fff9f9;
+  color: #a94545;
+}
+
+@media (max-width: 640px) {
+  .rumo-ia-command-examples {
+    margin-top: 9px;
+    padding: 8px 9px;
+  }
+
+  .rumo-ia-command-examples p {
+    font-size: 7px;
+  }
+
+  .rumo-ia-action-review {
+    padding: 10px;
+    border-radius: 11px;
+  }
+
+  .rumo-ia-action-fields {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .rumo-ia-action-field.full {
+    grid-column: auto;
+  }
+
+  .rumo-ia-action-head strong {
+    font-size: 10px;
+  }
+
+  .rumo-ia-action-field input,
+  .rumo-ia-action-field select {
+    min-height: 36px;
+    font-size: 8px;
+  }
+
+  .rumo-ia-action-buttons {
+    display: grid;
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .rumo-ia-action-buttons button {
+    width: 100%;
+  }
+}
