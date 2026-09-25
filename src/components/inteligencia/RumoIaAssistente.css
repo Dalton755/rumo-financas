@@ -1,0 +1,402 @@
+.rumo-ia-area {
+  margin-bottom: 24px;
+}
+
+.rumo-ia-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.rumo-ia-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #0891b2;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.rumo-ia-heading h2 {
+  margin: 5px 0 3px;
+  color: #1f2937;
+  font-size: 20px;
+  font-weight: 850;
+}
+
+.rumo-ia-heading p {
+  margin: 0;
+  color: #7b8796;
+  font-size: 12px;
+}
+
+.rumo-ia-local-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid #dcecef;
+  border-radius: 999px;
+  background: #f7fcfd;
+  color: #0f7c8c;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.rumo-ia-resumo {
+  margin-bottom: 12px;
+  padding: 14px 16px;
+  border: 1px solid #dce7ec;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.rumo-ia-resumo > span {
+  display: block;
+  color: #8a96a4;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.rumo-ia-resumo > strong {
+  display: block;
+  margin-top: 4px;
+  color: #273548;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.rumo-ia-resumo > p {
+  margin: 4px 0 0;
+  color: #6f7d8d;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.rumo-ia-resumo.critico {
+  border-color: #f0d3d3;
+  background: #fff9f9;
+}
+
+.rumo-ia-resumo.atencao {
+  border-color: #f0dfc7;
+  background: #fffbf5;
+}
+
+.rumo-ia-resumo.positivo {
+  border-color: #d6e9de;
+  background: #f8fcfa;
+}
+
+.rumo-ia-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr);
+  gap: 12px;
+}
+
+.rumo-ia-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #e4eaf0;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .045);
+}
+
+.rumo-ia-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rumo-ia-card-icon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #ecfeff, #eef2ff);
+  color: #0f8da1;
+}
+
+.rumo-ia-card-head strong,
+.rumo-ia-card-head small {
+  display: block;
+}
+
+.rumo-ia-card-head strong {
+  color: #2a384b;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.rumo-ia-card-head small {
+  margin-top: 2px;
+  color: #8a96a4;
+  font-size: 9px;
+}
+
+.rumo-ia-sugestoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 13px;
+}
+
+.rumo-ia-sugestoes button {
+  padding: 7px 9px;
+  border: 1px solid #e1e8ee;
+  border-radius: 999px;
+  background: #f9fbfc;
+  color: #526174;
+  font-size: 8px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.rumo-ia-sugestoes button:hover {
+  border-color: #bfdfe5;
+  color: #0f7c8c;
+}
+
+.rumo-ia-pergunta-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.rumo-ia-pergunta-form input,
+.rumo-ia-money-input input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #273548;
+  font: inherit;
+}
+
+.rumo-ia-pergunta-form input {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid #dde5eb;
+  border-radius: 11px;
+  background: #fff;
+  font-size: 10px;
+}
+
+.rumo-ia-pergunta-form button {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 11px;
+  background: #172033;
+  color: #fff;
+  cursor: pointer;
+}
+
+.rumo-ia-resposta {
+  margin-top: 10px;
+  padding: 11px 12px;
+  border: 1px solid #e4e9ee;
+  border-radius: 12px;
+  background: #fafcfd;
+}
+
+.rumo-ia-resposta strong {
+  display: block;
+  color: #344255;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.rumo-ia-resposta p {
+  margin: 4px 0 0;
+  color: #718093;
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.rumo-ia-resposta.critico {
+  border-color: #f0d2d2;
+  background: #fff9f9;
+}
+
+.rumo-ia-resposta.atencao {
+  border-color: #efdfc7;
+  background: #fffbf6;
+}
+
+.rumo-ia-resposta.positivo {
+  border-color: #d5e9dd;
+  background: #f8fcfa;
+}
+
+.rumo-ia-simulador form {
+  margin-top: 14px;
+}
+
+.rumo-ia-simulador label {
+  display: block;
+  margin-bottom: 5px;
+  color: #7a8797;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.rumo-ia-money-input {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 0 11px;
+  border: 1px solid #dde5eb;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.rumo-ia-money-input span {
+  color: #718093;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.rumo-ia-money-input input {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.rumo-ia-simulador form > button {
+  width: 100%;
+  min-height: 39px;
+  margin-top: 8px;
+  border: 0;
+  border-radius: 10px;
+  background: #172033;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.rumo-ia-simulador form > button:disabled {
+  cursor: default;
+  opacity: .6;
+}
+
+@media (max-width: 900px) {
+  .rumo-ia-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .rumo-ia-area {
+    margin-bottom: 10px;
+  }
+
+  .rumo-ia-heading {
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .rumo-ia-heading h2 {
+    font-size: 14px;
+  }
+
+  .rumo-ia-heading p {
+    font-size: 8px;
+    line-height: 1.45;
+  }
+
+  .rumo-ia-local-badge {
+    padding: 5px 7px;
+    font-size: 7px;
+  }
+
+  .rumo-ia-resumo {
+    padding: 10px 11px;
+    border-radius: 12px;
+  }
+
+  .rumo-ia-resumo > strong {
+    font-size: 10px;
+  }
+
+  .rumo-ia-resumo > p {
+    font-size: 8px;
+    line-height: 1.45;
+  }
+
+  .rumo-ia-grid {
+    gap: 8px;
+  }
+
+  .rumo-ia-card {
+    padding: 11px;
+    border-radius: 13px;
+  }
+
+  .rumo-ia-card-icon {
+    width: 31px;
+    height: 31px;
+    border-radius: 9px;
+  }
+
+  .rumo-ia-card-head strong {
+    font-size: 10px;
+  }
+
+  .rumo-ia-card-head small {
+    font-size: 7px;
+  }
+
+  .rumo-ia-sugestoes {
+    gap: 5px;
+    margin-top: 9px;
+  }
+
+  .rumo-ia-sugestoes button {
+    padding: 6px 8px;
+    font-size: 7px;
+  }
+
+  .rumo-ia-pergunta-form {
+    margin-top: 8px;
+  }
+
+  .rumo-ia-pergunta-form input {
+    min-height: 37px;
+    font-size: 8px;
+  }
+
+  .rumo-ia-pergunta-form button {
+    width: 37px;
+    height: 37px;
+  }
+
+  .rumo-ia-resposta {
+    margin-top: 8px;
+    padding: 9px 10px;
+  }
+
+  .rumo-ia-resposta strong {
+    font-size: 9px;
+  }
+
+  .rumo-ia-resposta p {
+    font-size: 8px;
+  }
+}
