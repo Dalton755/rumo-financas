@@ -29,7 +29,10 @@ import {
     Calculator,
     CalendarDays,
     ChevronRight,
+    CircleAlert,
     Compass,
+    Sparkles,
+    Target,
     Wallet
 } from "lucide-react";
 
@@ -146,7 +149,24 @@ function Dashboard() {
         saldoDisponivel -
         totalProximos;
 
-    const leituraRumo =
+    const primeiroCompromisso =
+        proximosCompromissos?.[0] ||
+        null;
+
+    const dataPrimeiroCompromisso =
+        primeiroCompromisso?.vencimento
+            ? new Date(
+                `${primeiroCompromisso.vencimento}T12:00:00`
+            ).toLocaleDateString(
+                "pt-BR",
+                {
+                    day: "2-digit",
+                    month: "2-digit"
+                }
+            )
+            : null;
+
+    const rumoHoje =
         useMemo(
             () => {
                 if (
@@ -158,13 +178,25 @@ function Dashboard() {
                         saldoDisponivel;
 
                     return {
-                        status: "attention",
+                        status: "critico",
+                        etiqueta:
+                            "Ação necessária",
                         titulo:
-                            "Sua semana exige atenção.",
-                        descricao:
-                            `Os compromissos dos próximos 7 dias superam seu saldo em ${formatarMoeda(
+                            `Garanta ${formatarMoeda(
                                 falta
-                            )}.`
+                            )} para cobrir sua semana`,
+                        descricao:
+                            dataPrimeiroCompromisso
+                                ? `Seus próximos compromissos somam ${formatarMoeda(
+                                    totalProximos
+                                )}. O primeiro vence em ${dataPrimeiroCompromisso}.`
+                                : `Seus próximos compromissos somam ${formatarMoeda(
+                                    totalProximos
+                                )} e superam o saldo disponível.`,
+                        acao:
+                            "Ver compromissos",
+                        rota:
+                            "/compromissos"
                     };
                 }
 
@@ -172,18 +204,31 @@ function Dashboard() {
                     totalProximos > 0
                 ) {
                     return {
-                        status: "positive",
+                        status: "atencao",
+                        etiqueta:
+                            "Prioridade da semana",
                         titulo:
-                            "Seus próximos vencimentos estão cobertos.",
-                        descricao:
-                            `Depois de reservar ${formatarMoeda(
+                            `Proteja ${formatarMoeda(
                                 totalProximos
-                            )}, ficam ${formatarMoeda(
-                                Math.max(
-                                    0,
-                                    saldoAposProximos
-                                )
-                            )} fora dos compromissos identificados para os próximos 7 dias.`
+                            )} para os próximos vencimentos`,
+                        descricao:
+                            dataPrimeiroCompromisso
+                                ? `O primeiro compromisso vence em ${dataPrimeiroCompromisso}. Depois de reservar tudo, ficam ${formatarMoeda(
+                                    Math.max(
+                                        0,
+                                        saldoAposProximos
+                                    )
+                                )} disponíveis.`
+                                : `Depois de reservar os próximos vencimentos, ficam ${formatarMoeda(
+                                    Math.max(
+                                        0,
+                                        saldoAposProximos
+                                    )
+                                )} disponíveis.`,
+                        acao:
+                            "Organizar semana",
+                        rota:
+                            "/compromissos"
                     };
                 }
 
@@ -191,35 +236,48 @@ function Dashboard() {
                     resultadoMes < 0
                 ) {
                     return {
-                        status: "attention",
+                        status: "atencao",
+                        etiqueta:
+                            "Ajuste recomendado",
                         titulo:
-                            "Seu mês está pedindo ajuste.",
+                            "Revise seus gastos antes da próxima saída",
                         descricao:
-                            `As despesas superam as receitas em ${formatarMoeda(
+                            `As despesas estão ${formatarMoeda(
                                 Math.abs(
                                     resultadoMes
                                 )
-                            )} neste período.`
+                            )} acima das receitas neste mês.`,
+                        acao:
+                            "Analisar gastos",
+                        rota:
+                            "/inteligencia"
                     };
                 }
 
                 return {
-                    status: "positive",
+                    status: "positivo",
+                    etiqueta:
+                        "Seu rumo hoje",
                     titulo:
-                        "Seu cenário imediato está tranquilo.",
+                        "Nada urgente. Use a folga para avançar.",
                     descricao:
                         resultadoMes > 0
-                            ? `Seu fluxo do mês está positivo em ${formatarMoeda(
+                            ? `Seu mês está positivo em ${formatarMoeda(
                                 resultadoMes
-                            )} e não há vencimentos pendentes nos próximos 7 dias.`
-                            : "Não há vencimentos pendentes nos próximos 7 dias."
+                            )} e não há compromissos pendentes nos próximos 7 dias.`
+                            : "Não há vencimentos pendentes nos próximos 7 dias. Você pode planejar o próximo objetivo.",
+                    acao:
+                        "Planejar próximo passo",
+                    rota:
+                        "/metas"
                 };
             },
             [
                 totalProximos,
                 saldoDisponivel,
                 saldoAposProximos,
-                resultadoMes
+                resultadoMes,
+                dataPrimeiroCompromisso
             ]
         );
 
@@ -415,7 +473,7 @@ function Dashboard() {
                     titulo={
                         `${saudacao}, ${nomeUsuario}`
                     }
-                    subtitulo="Seu dinheiro, seus próximos compromissos e o que realmente sobra."
+                    subtitulo="Abra, entenda a prioridade e saiba qual é o próximo passo."
                 >
                     <div className="dashboard-header-actions">
                         <MesFiltro
@@ -441,6 +499,91 @@ function Dashboard() {
                         </Link>
                     </div>
                 </PageHeader>
+
+                <section
+                    className={
+                        `dashboard-rumo-hoje ${rumoHoje.status}`
+                    }
+                >
+                    <div className="dashboard-rumo-status">
+                        <span className="dashboard-rumo-icon">
+                            {
+                                rumoHoje.status === "critico"
+                                    ? <CircleAlert size={20} />
+                                    : rumoHoje.status === "atencao"
+                                        ? <Target size={20} />
+                                        : <Compass size={20} />
+                            }
+                        </span>
+
+                        <div className="dashboard-rumo-copy">
+                            <span className="dashboard-rumo-label">
+                                {rumoHoje.etiqueta}
+                            </span>
+
+                            <h2>
+                                {rumoHoje.titulo}
+                            </h2>
+
+                            <p>
+                                {rumoHoje.descricao}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="dashboard-rumo-actions">
+                        <Link
+                            to={rumoHoje.rota}
+                            className="dashboard-rumo-primary"
+                        >
+                            {rumoHoje.acao}
+                            <ArrowRight size={15} />
+                        </Link>
+
+                        <Link
+                            to="/inteligencia"
+                            className="dashboard-rumo-ai"
+                        >
+                            <Sparkles size={15} />
+                            Perguntar ao Rumo IA
+                        </Link>
+                    </div>
+                </section>
+
+                <section className="dashboard-rumo-snapshot">
+                    <div>
+                        <span>Disponível agora</span>
+                        <strong>
+                            {formatarMoeda(
+                                saldoDisponivel
+                            )}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Próximos 7 dias</span>
+                        <strong>
+                            {formatarMoeda(
+                                totalProximos
+                            )}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Depois da semana</span>
+                        <strong
+                            className={
+                                saldoAposProximos >= 0
+                                    ? "positivo"
+                                    : "negativo"
+                            }
+                        >
+                            {formatarMoeda(
+                                saldoAposProximos
+                            )}
+                        </strong>
+                    </div>
+                </section>
 
                 <section className="dashboard-value-hero">
                     <div className="dashboard-balance">
@@ -701,11 +844,7 @@ function Dashboard() {
                         </div>
                     </article>
 
-                    <article
-                        className={
-                            `dashboard-guidance ${leituraRumo.status}`
-                        }
-                    >
+                    <article className="dashboard-guidance ai-entry">
                         <div className="dashboard-guidance-icon">
                             <BrainCircuit
                                 size={19}
@@ -714,15 +853,15 @@ function Dashboard() {
 
                         <div className="dashboard-guidance-copy">
                             <span>
-                                Rumo IA • leitura da semana
+                                Rumo IA
                             </span>
 
                             <strong>
-                                {leituraRumo.titulo}
+                                Quer entender melhor antes de decidir?
                             </strong>
 
                             <p>
-                                {leituraRumo.descricao}
+                                Pergunte quanto pode gastar, como estão seus próximos 30 dias ou simule uma compra antes de fazê-la.
                             </p>
                         </div>
 
@@ -730,7 +869,7 @@ function Dashboard() {
                             to="/inteligencia"
                             className="dashboard-guidance-link"
                         >
-                            Perguntar ao Rumo
+                            Abrir Rumo IA
                             <ChevronRight
                                 size={15}
                             />
