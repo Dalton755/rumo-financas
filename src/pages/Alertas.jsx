@@ -224,6 +224,52 @@ function montarDetalhe(alerta) {
 
   if (
     alerta?.tipo ===
+    "DIVIDA_PARCELA"
+  ) {
+
+    const dias =
+      Number(
+        dados.dias_restantes ??
+        0
+      );
+
+    return (
+      <>
+        <strong>
+          {
+            dias < 0
+              ? `Atrasada há ${Math.abs(
+                  dias
+                )} dia(s)`
+              : dias === 0
+                ? "Vence hoje"
+                : dias === 1
+                  ? "Vence amanhã"
+                  : `Vence em ${dias} dias`
+          }
+        </strong>
+
+        <span>
+          Restante:{" "}
+          {
+            formatarMoeda(
+              dados.valor_restante
+            )
+          }
+          {
+            dados.divida
+              ? ` • ${dados.divida}`
+              : ""
+          }
+        </span>
+      </>
+    );
+
+  }
+
+
+  if (
+    alerta?.tipo ===
     "MOVIMENTACAO_FUTURA"
   ) {
 
