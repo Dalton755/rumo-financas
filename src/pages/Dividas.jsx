@@ -230,9 +230,18 @@ function adicionarMeses(
 
 
 function hojeISO() {
-  return new Date()
-    .toISOString()
-    .slice(0, 10);
+  const data =
+    new Date();
+
+  return [
+    data.getFullYear(),
+    String(
+      data.getMonth() + 1
+    ).padStart(2, "0"),
+    String(
+      data.getDate()
+    ).padStart(2, "0"),
+  ].join("-");
 }
 
 
