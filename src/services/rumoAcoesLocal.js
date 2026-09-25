@@ -202,7 +202,7 @@ function limparDescricao(
     String(texto || "");
 
   const padroes = [
-    /\b(gastei|paguei|comprei|recebi|ganhei|entrou|caiu|guardar|juntar|economizar|criar uma meta|crie uma meta|quero uma meta|meta de)\b/gi,
+    /\b(gastei|paguei|comprei|recebi|ganhei|entrou|caiu|quero|guardar|juntar|economizar|criar uma meta|crie uma meta|quero uma meta|meta de)\b/gi,
     /\b(hoje|ontem|amanhã|amanha)\b/gi,
     /\b(no|na|pelo|pela|com o|com a)\s+(cart[aã]o|cr[eé]dito)\b/gi,
     /\bem\s+\d{1,3}\s*x\b/gi,
@@ -226,7 +226,7 @@ function limparDescricao(
   ) {
     resultado =
       resultado.replace(
-        /(?:r\$\s*)?\d{1,3}(?:\.\d{3})*(?:,\d{1,2})|(?:r\$\s*)?\d+(?:[.,]\d{1,2})?/gi,
+        /(?:r\$\s*)?(?:\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+\.\d{1,2}|\d+(?:,\d{1,2})?)/gi,
         " "
       );
   }
