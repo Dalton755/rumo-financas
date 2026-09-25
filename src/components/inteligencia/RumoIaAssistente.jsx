@@ -35,6 +35,8 @@ import {
   listarOpcoesRumoAcoes,
 } from "../../services/rumoAcoesLocal";
 
+import MoneyCalculatorInput from "../ui/MoneyCalculatorInput";
+
 import {
   avaliarCompra,
   gerarResumoRumo,
@@ -371,16 +373,9 @@ function RumoIaAssistente({
         acao
       );
 
-      setResposta({
-        tipo:
-          "informacao",
-
-        titulo:
-          "Entendi isso como uma ação",
-
-        resposta:
-          "Revise os dados abaixo. Nada será salvo até você tocar em Confirmar ação.",
-      });
+      setResposta(
+        null
+      );
 
       return;
     }
@@ -433,16 +428,9 @@ function RumoIaAssistente({
           )}`,
       });
 
-      setResposta({
-        tipo:
-          "positivo",
-
-        titulo:
-          resultado.titulo,
-
-        resposta:
-          "A ação foi confirmada e o Rumo já está recalculando seu cenário financeiro.",
-      });
+      setResposta(
+        null
+      );
 
       setPergunta("");
       setAcaoPendente(
@@ -684,22 +672,22 @@ function RumoIaAssistente({
                       Valor
                     </span>
 
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
+                    <MoneyCalculatorInput
                       value={
                         acaoPendente
                           .valor
                       }
                       onChange={(
-                        event
+                        valor
                       ) =>
                         atualizarAcao(
                           "valor",
-                          event.target.value
+                          valor
                         )
                       }
+                      placeholder="R$ 0,00"
+                      ariaLabel="Valor da ação"
+                      className="rumo-ia-action-money"
                     />
                   </label>
 
@@ -1149,35 +1137,39 @@ function RumoIaAssistente({
           }
 
 
-          <div
-            className={
-              resposta
-                ? `rumo-ia-resposta ${resposta.tipo}`
-                : "rumo-ia-resposta neutra"
-            }
-          >
-            {resposta ? (
-              <>
-                <strong>
-                  {resposta.titulo}
-                </strong>
+          {
+            !acaoPendente && (
+              <div
+                className={
+                  resposta
+                    ? `rumo-ia-resposta ${resposta.tipo}`
+                    : "rumo-ia-resposta neutra"
+                }
+              >
+                {resposta ? (
+                  <>
+                    <strong>
+                      {resposta.titulo}
+                    </strong>
 
-                <p>
-                  {resposta.resposta}
-                </p>
-              </>
-            ) : (
-              <>
-                <strong>
-                  Pronto para analisar ou registrar
-                </strong>
+                    <p>
+                      {resposta.resposta}
+                    </p>
+                  </>
+                ) : !feedbackAcao ? (
+                  <>
+                    <strong>
+                      Pronto para analisar ou registrar
+                    </strong>
 
-                <p>
-                  Faça uma pergunta ou descreva algo que aconteceu com seu dinheiro.
-                </p>
-              </>
-            )}
-          </div>
+                    <p>
+                      Faça uma pergunta ou descreva algo que aconteceu com seu dinheiro.
+                    </p>
+                  </>
+                ) : null}
+              </div>
+            )
+          }
 
         </article>
 
