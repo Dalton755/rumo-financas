@@ -27,34 +27,57 @@ begin
     v_hoje := (now() at time zone 'America/Sao_Paulo')::date;
 
     for v_item in
-        select
-            p.id as parcela_id,
-            p.divida_id,
-            p.semana_referencia as vencimento,
-            p.valor_previsto,
-            coalesce(p.valor_pago, 0) as valor_pago,
-            p.status,
-            d.nome as divida_nome,
-            d.credor
-        from rumo.plano_quitacao p
-        join rumo.dividas d
-          on d.id = p.divida_id
-         and d.usuario_id = v_usuario_id
-         and d.status <> 'quitada'
-        where p.status <> 'pago'
-          and p.semana_referencia <= v_hoje + 7
-        order by p.semana_referencia asc, p.created_at asc
+        with base as (
+            select
+                p.id as parcela_id,
+                p.divida_id,
+                p.semana_referencia as vencimento,
+                p.valor_previsto,
+                coalesce(p.valor_pago, 0) as valor_pago,
+                greatest(
+                    coalesce(p.valor_previsto, 0) -
+                    coalesce(p.valor_pago, 0),
+                    0
+                ) as restante_bruto,
+                p.created_at,
+                d.nome as divida_nome,
+                d.credor,
+                greatest(coalesce(d.saldo_atual, 0), 0) as saldo_divida
+            from rumo.plano_quitacao p
+            join rumo.dividas d
+              on d.id = p.divida_id
+             and d.usuario_id = v_usuario_id
+             and d.status <> 'quitada'
+            where p.status <> 'pago'
+        ),
+        calculado as (
+            select
+                b.*,
+                greatest(
+                    least(
+                        b.restante_bruto,
+                        b.saldo_divida -
+                        coalesce(
+                            sum(b.restante_bruto) over (
+                                partition by b.divida_id
+                                order by b.vencimento asc, b.created_at asc
+                                rows between unbounded preceding and 1 preceding
+                            ),
+                            0
+                        )
+                    ),
+                    0
+                ) as valor_restante
+            from base b
+        )
+        select *
+        from calculado
+        where valor_restante > 0
+          and vencimento <= v_hoje + 7
+        order by vencimento asc, created_at asc
     loop
         v_dias := v_item.vencimento - v_hoje;
-        v_restante := greatest(
-            coalesce(v_item.valor_previsto, 0) -
-            coalesce(v_item.valor_pago, 0),
-            0
-        );
-
-        if v_restante <= 0 then
-            continue;
-        end if;
+        v_restante := v_item.valor_restante;
 
         v_chave := 'DIVIDA_PARCELA:' || v_item.parcela_id::text;
         v_chaves_ativas := array_append(v_chaves_ativas, v_chave);
@@ -153,7 +176,6 @@ $function$;
 revoke execute on function rumo.atualizar_alertas_dividas() from public;
 revoke execute on function rumo.atualizar_alertas_dividas() from anon;
 grant execute on function rumo.atualizar_alertas_dividas() to authenticated;
-
 
 create or replace function rumo.pagar_parcela_divida(
     p_parcela_id uuid,
