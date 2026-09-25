@@ -1261,3 +1261,142 @@ export function simularQuitacao({
       jurosPercentual,
   };
 }
+
+export async function listarParcelasPlanejadasDividas({
+  dias = 90,
+  incluirVencidas = true,
+} = {}) {
+  const user =
+    await obterUsuario();
+
+  const {
+    data: dividasUsuario,
+    error: erroDividas,
+  } = await supabase
+    .schema("rumo")
+    .from("dividas")
+    .select("id, nome, credor, saldo_atual, status")
+    .eq("usuario_id", user.id)
+    .neq("status", "quitada");
+
+  if (erroDividas) {
+    throw erroDividas;
+  }
+
+  const dividasAtivas =
+    dividasUsuario || [];
+
+  if (!dividasAtivas.length) {
+    return [];
+  }
+
+  const hoje =
+    new Date();
+
+  hoje.setHours(12, 0, 0, 0);
+
+  const ate =
+    new Date(hoje);
+
+  ate.setDate(
+    ate.getDate() +
+    Math.max(
+      1,
+      Number(dias) || 90
+    )
+  );
+
+  const dataIso = (data) =>
+    [
+      data.getFullYear(),
+      String(data.getMonth() + 1).padStart(2, "0"),
+      String(data.getDate()).padStart(2, "0"),
+    ].join("-");
+
+  let query =
+    supabase
+      .schema("rumo")
+      .from("plano_quitacao")
+      .select("id, divida_id, semana_referencia, valor_previsto, valor_pago, status, created_at, updated_at")
+      .in(
+        "divida_id",
+        dividasAtivas.map(
+          (item) => item.id
+        )
+      )
+      .neq("status", "pago")
+      .lte(
+        "semana_referencia",
+        dataIso(ate)
+      )
+      .order(
+        "semana_referencia",
+        {
+          ascending: true,
+        }
+      );
+
+  if (!incluirVencidas) {
+    query =
+      query.gte(
+        "semana_referencia",
+        dataIso(hoje)
+      );
+  }
+
+  const {
+    data,
+    error,
+  } = await query;
+
+  if (error) {
+    throw error;
+  }
+
+  const mapaDividas =
+    new Map(
+      dividasAtivas.map(
+        (item) => [
+          item.id,
+          item,
+        ]
+      )
+    );
+
+  return (data || [])
+    .map(
+      (parcela) => {
+        const divida =
+          mapaDividas.get(
+            parcela.divida_id
+          );
+
+        const valorPrevistoNumero =
+          Number(
+            parcela.valor_previsto ||
+            0
+          );
+
+        const valorPagoNumero =
+          Number(
+            parcela.valor_pago ||
+            0
+          );
+
+        return {
+          ...parcela,
+          valor_restante:
+            Math.max(
+              0,
+              valorPrevistoNumero -
+              valorPagoNumero
+            ),
+          divida,
+        };
+      }
+    )
+    .filter(
+      (item) =>
+        item.valor_restante > 0
+    );
+}
