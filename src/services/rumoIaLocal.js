@@ -61,9 +61,29 @@ function somarCompromissos(lista) {
   );
 }
 
+function somarParcelasDividas(lista) {
+  return (lista || []).reduce(
+    (total, item) =>
+      total +
+      numero(
+        item?.valor_restante ??
+        (
+          numero(
+            item?.valor_previsto
+          ) -
+          numero(
+            item?.valor_pago
+          )
+        )
+      ),
+    0
+  );
+}
+
 export function montarContextoRumoIa(
   dados,
-  compromissos = []
+  compromissos = [],
+  parcelasDividas = []
 ) {
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
@@ -89,6 +109,42 @@ export function montarContextoRumoIa(
     (item) => dataLocal(item?.vencimento) <= limite30
   );
 
+  const dividasPendentes =
+    (parcelasDividas || []).filter(
+      (item) => {
+        const vencimento =
+          dataLocal(
+            item?.semana_referencia
+          );
+
+        return vencimento;
+      }
+    );
+
+  const dividas7 =
+    dividasPendentes.filter(
+      (item) => {
+        const vencimento =
+          dataLocal(
+            item?.semana_referencia
+          );
+
+        return vencimento <= limite7;
+      }
+    );
+
+  const dividas30 =
+    dividasPendentes.filter(
+      (item) => {
+        const vencimento =
+          dataLocal(
+            item?.semana_referencia
+          );
+
+        return vencimento <= limite30;
+      }
+    );
+
   const saldoReal = numero(
     dados?.saldo_real_contas
   );
@@ -98,6 +154,24 @@ export function montarContextoRumoIa(
 
   const totalCompromissos30 =
     somarCompromissos(compromissos30);
+
+  const totalDividas7 =
+    somarParcelasDividas(
+      dividas7
+    );
+
+  const totalDividas30 =
+    somarParcelasDividas(
+      dividas30
+    );
+
+  const totalObrigacoes7 =
+    totalCompromissos7 +
+    totalDividas7;
+
+  const totalObrigacoes30 =
+    totalCompromissos30 +
+    totalDividas30;
 
   return {
     saldoReal,
@@ -119,18 +193,28 @@ export function montarContextoRumoIa(
     receitasPrevistas30: numero(
       dados?.proximos_30_dias?.receitas_previstas
     ),
-    despesasPrevistas30: numero(
-      dados?.proximos_30_dias?.despesas_previstas
-    ),
-    saldoPrevisto30: numero(
-      dados?.proximos_30_dias?.saldo_previsto
-    ),
+    despesasPrevistas30:
+      numero(
+        dados?.proximos_30_dias?.despesas_previstas
+      ) +
+      totalDividas30,
+    saldoPrevisto30:
+      numero(
+        dados?.proximos_30_dias?.saldo_previsto
+      ) -
+      totalDividas30,
     compromissos7,
     compromissos30,
+    dividas7,
+    dividas30,
     totalCompromissos7,
     totalCompromissos30,
+    totalDividas7,
+    totalDividas30,
+    totalObrigacoes7,
+    totalObrigacoes30,
     disponivelProtegido7:
-      saldoReal - totalCompromissos7,
+      saldoReal - totalObrigacoes7,
   };
 }
 
@@ -141,22 +225,22 @@ export function gerarResumoRumo(contexto) {
 
   const {
     saldoReal,
-    totalCompromissos7,
+    totalObrigacoes7,
     disponivelProtegido7,
     receitasMes,
     despesasMes,
     saldoPrevisto30,
   } = contexto;
 
-  if (totalCompromissos7 > saldoReal) {
+  if (totalObrigacoes7 > saldoReal) {
     const falta =
-      totalCompromissos7 - saldoReal;
+      totalObrigacoes7 - saldoReal;
 
     return {
       tipo: "critico",
       titulo: "Sua semana exige atenção",
       resposta:
-        `Há ${formatarMoedaRumo(totalCompromissos7)} em compromissos nos próximos 7 dias e ${formatarMoedaRumo(saldoReal)} de saldo real. Faltam ${formatarMoedaRumo(falta)} para cobrir esses vencimentos.`,
+        `Há ${formatarMoedaRumo(totalObrigacoes7)} em compromissos nos próximos 7 dias e ${formatarMoedaRumo(saldoReal)} de saldo real. Faltam ${formatarMoedaRumo(falta)} para cobrir esses vencimentos.`,
     };
   }
 
@@ -165,7 +249,7 @@ export function gerarResumoRumo(contexto) {
       tipo: "atencao",
       titulo: "Existe pressão nos próximos 30 dias",
       resposta:
-        `Sua projeção de 30 dias está em ${formatarMoedaRumo(saldoPrevisto30)}. Hoje, depois de proteger os compromissos dos próximos 7 dias, restam ${formatarMoedaRumo(Math.max(0, disponivelProtegido7))}.`,
+        `Sua projeção de 30 dias está em ${formatarMoedaRumo(saldoPrevisto30)}. Hoje, depois de proteger os obrigações dos próximos 7 dias, restam ${formatarMoedaRumo(Math.max(0, disponivelProtegido7))}.`,
     };
   }
 
@@ -174,7 +258,7 @@ export function gerarResumoRumo(contexto) {
       tipo: "atencao",
       titulo: "As saídas estão acima das entradas",
       resposta:
-        `Neste mês, as despesas superam as receitas em ${formatarMoedaRumo(despesasMes - receitasMes)}. Seus próximos 7 dias ainda deixam ${formatarMoedaRumo(Math.max(0, disponivelProtegido7))} fora dos compromissos já identificados.`,
+        `Neste mês, as despesas superam as receitas em ${formatarMoedaRumo(despesasMes - receitasMes)}. Seus próximos 7 dias ainda deixam ${formatarMoedaRumo(Math.max(0, disponivelProtegido7))} fora dos obrigações já identificadas.`,
     };
   }
 
@@ -182,9 +266,9 @@ export function gerarResumoRumo(contexto) {
     tipo: "positivo",
     titulo: "Seu cenário atual está coberto",
     resposta:
-      totalCompromissos7 > 0
-        ? `Seu saldo real é ${formatarMoedaRumo(saldoReal)}. Depois de reservar ${formatarMoedaRumo(totalCompromissos7)} para os próximos 7 dias, ficam ${formatarMoedaRumo(Math.max(0, disponivelProtegido7))} sem compromisso identificado nesse período.`
-        : `Seu saldo real é ${formatarMoedaRumo(saldoReal)} e não há compromissos pendentes identificados para os próximos 7 dias.`,
+      totalObrigacoes7 > 0
+        ? `Seu saldo real é ${formatarMoedaRumo(saldoReal)}. Depois de reservar ${formatarMoedaRumo(totalObrigacoes7)} para os próximos 7 dias, ficam ${formatarMoedaRumo(Math.max(0, disponivelProtegido7))} sem obrigação identificada nesse período.`
+        : `Seu saldo real é ${formatarMoedaRumo(saldoReal)} e não há obrigações pendentes identificadas para os próximos 7 dias.`,
   };
 }
 
@@ -209,7 +293,7 @@ export function avaliarCompra(
       tipo: "informacao",
       titulo: "Informe o valor da compra",
       resposta:
-        "Digite um valor maior que zero para eu comparar com seu saldo e seus compromissos dos próximos 7 dias.",
+        "Digite um valor maior que zero para eu comparar com seu saldo, compromissos e parcelas de dívidas dos próximos 7 dias.",
     };
   }
 
@@ -218,7 +302,7 @@ export function avaliarCompra(
 
   const saldoDepoisDosCompromissos =
     saldoDepois -
-    contexto.totalCompromissos7;
+    contexto.totalObrigacoes7;
 
   if (valor > contexto.saldoReal) {
     return {
@@ -234,7 +318,7 @@ export function avaliarCompra(
       tipo: "atencao",
       titulo: "A compra pressiona seus próximos vencimentos",
       resposta:
-        `Depois de gastar ${formatarMoedaRumo(valor)}, faltariam ${formatarMoedaRumo(Math.abs(saldoDepoisDosCompromissos))} para manter cobertos os compromissos dos próximos 7 dias.`,
+        `Depois de gastar ${formatarMoedaRumo(valor)}, faltariam ${formatarMoedaRumo(Math.abs(saldoDepoisDosCompromissos))} para manter cobertos os obrigações dos próximos 7 dias.`,
     };
   }
 
@@ -242,7 +326,7 @@ export function avaliarCompra(
     tipo: "positivo",
     titulo: "A compra cabe no cenário atual",
     resposta:
-      `Após uma compra de ${formatarMoedaRumo(valor)} e a reserva de ${formatarMoedaRumo(contexto.totalCompromissos7)} para os próximos 7 dias, restariam ${formatarMoedaRumo(saldoDepoisDosCompromissos)}.`,
+      `Após uma compra de ${formatarMoedaRumo(valor)} e a reserva de ${formatarMoedaRumo(contexto.totalObrigacoes7)} para os próximos 7 dias, restariam ${formatarMoedaRumo(saldoDepoisDosCompromissos)}.`,
   };
 }
 
@@ -286,8 +370,8 @@ export function responderPerguntaRumo(
       titulo: "Disponível sem tocar nos próximos vencimentos",
       resposta:
         contexto.disponivelProtegido7 >= 0
-          ? `Considerando o saldo atual e os compromissos dos próximos 7 dias, ${formatarMoedaRumo(contexto.disponivelProtegido7)} não está comprometido por esses vencimentos.`
-          : `Os compromissos dos próximos 7 dias já superam seu saldo atual em ${formatarMoedaRumo(Math.abs(contexto.disponivelProtegido7))}.`,
+          ? `Considerando o saldo atual e os obrigações dos próximos 7 dias, ${formatarMoedaRumo(contexto.disponivelProtegido7)} não está comprometido por esses vencimentos.`
+          : `Os obrigações dos próximos 7 dias já superam seu saldo atual em ${formatarMoedaRumo(Math.abs(contexto.disponivelProtegido7))}.`,
     };
   }
 
@@ -304,8 +388,8 @@ export function responderPerguntaRumo(
       titulo: "Valor não comprometido nos próximos 7 dias",
       resposta:
         contexto.disponivelProtegido7 >= 0
-          ? `Seu saldo real é ${formatarMoedaRumo(contexto.saldoReal)}. Reservando ${formatarMoedaRumo(contexto.totalCompromissos7)} para os próximos vencimentos, ficam ${formatarMoedaRumo(contexto.disponivelProtegido7)}.`
-          : `Hoje existe um déficit de ${formatarMoedaRumo(Math.abs(contexto.disponivelProtegido7))} entre seu saldo e os compromissos dos próximos 7 dias.`,
+          ? `Seu saldo real é ${formatarMoedaRumo(contexto.saldoReal)}. Reservando ${formatarMoedaRumo(contexto.totalObrigacoes7)} para os próximos vencimentos, ficam ${formatarMoedaRumo(contexto.disponivelProtegido7)}.`
+          : `Hoje existe um déficit de ${formatarMoedaRumo(Math.abs(contexto.disponivelProtegido7))} entre seu saldo e os obrigações dos próximos 7 dias.`,
     };
   }
 
@@ -318,7 +402,7 @@ export function responderPerguntaRumo(
       tipo: "informacao",
       titulo: "Seu saldo atual",
       resposta:
-        `Seu saldo real das contas é ${formatarMoedaRumo(contexto.saldoReal)}. Os compromissos identificados para os próximos 7 dias somam ${formatarMoedaRumo(contexto.totalCompromissos7)}.`,
+        `Seu saldo real das contas é ${formatarMoedaRumo(contexto.saldoReal)}. Os compromissos identificados para os próximos 7 dias somam ${formatarMoedaRumo(contexto.totalObrigacoes7)}.`,
     };
   }
 
@@ -330,15 +414,35 @@ export function responderPerguntaRumo(
   ) {
     return {
       tipo:
-        contexto.totalCompromissos7 >
+        contexto.totalObrigacoes7 >
         contexto.saldoReal
           ? "critico"
           : "informacao",
       titulo: "Próximos compromissos",
       resposta:
-        `Existem ${contexto.compromissos7.length} compromisso(s) pendente(s) nos próximos 7 dias, somando ${formatarMoedaRumo(contexto.totalCompromissos7)}. Em até 30 dias, os compromissos identificados somam ${formatarMoedaRumo(contexto.totalCompromissos30)}.`,
+        `Existem ${contexto.compromissos7.length} compromisso(s) pendente(s) nos próximos 7 dias, somando ${formatarMoedaRumo(contexto.totalObrigacoes7)}. Em até 30 dias, os compromissos identificados somam ${formatarMoedaRumo(contexto.totalCompromissos30)}.`,
     };
   }
+
+  if (
+    texto.includes("divida") ||
+    texto.includes("parcela")
+  ) {
+    return {
+      tipo:
+        contexto.totalDividas7 >
+        contexto.saldoReal
+          ? "critico"
+          : "informacao",
+      titulo:
+        "Parcelas de dívidas planejadas",
+      resposta:
+        contexto.dividas7.length > 0
+          ? `Há ${contexto.dividas7.length} parcela(s) de dívida pendente(s) até os próximos 7 dias, somando ${formatarMoedaRumo(contexto.totalDividas7)}. Em até 30 dias, elas somam ${formatarMoedaRumo(contexto.totalDividas30)}.`
+          : "Não há parcelas de dívidas pendentes previstas para os próximos 7 dias.",
+    };
+  }
+
 
   if (
     texto.includes("gasto") ||
