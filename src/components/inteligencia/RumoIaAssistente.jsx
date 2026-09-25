@@ -7,9 +7,14 @@ import {
 import {
   BrainCircuit,
   Calculator,
+  CheckCircle2,
+  CreditCard,
+  Flag,
+  ReceiptText,
   Send,
   ShieldCheck,
   Sparkles,
+  X,
 } from "lucide-react";
 
 import {
@@ -21,6 +26,18 @@ import {
 } from "../../services/dividas";
 
 import {
+  listarFaturasPendentesCartoes,
+} from "../../services/cartoes";
+
+import {
+  executarAcaoRumo,
+  interpretarAcaoRumo,
+  listarOpcoesRumoAcoes,
+} from "../../services/rumoAcoesLocal";
+
+import MoneyCalculatorInput from "../ui/MoneyCalculatorInput";
+
+import {
   avaliarCompra,
   gerarResumoRumo,
   montarContextoRumoIa,
@@ -29,15 +46,36 @@ import {
 
 import "./RumoIaAssistente.css";
 
+
 const perguntasRapidas = [
   "Quanto posso gastar agora?",
   "Quais obrigações vencem esta semana?",
   "Tenho parcelas de dívidas próximas?",
+  "Como está minha próxima fatura?",
   "Como estão meus gastos?",
   "Como estão os próximos 30 dias?",
 ];
 
-function RumoIaAssistente({ dados }) {
+
+function formatarMoeda(
+  valor
+) {
+  return Number(
+    valor || 0
+  ).toLocaleString(
+    "pt-BR",
+    {
+      style: "currency",
+      currency: "BRL",
+    }
+  );
+}
+
+
+function RumoIaAssistente({
+  dados,
+  onAtualizou,
+}) {
   const [
     compromissos,
     setCompromissos,
@@ -49,6 +87,20 @@ function RumoIaAssistente({ dados }) {
   ] = useState([]);
 
   const [
+    faturasCartao,
+    setFaturasCartao,
+  ] = useState([]);
+
+  const [
+    opcoesAcoes,
+    setOpcoesAcoes,
+  ] = useState({
+    contas: [],
+    categorias: [],
+    cartoes: [],
+  });
+
+  const [
     pergunta,
     setPergunta,
   ] = useState("");
@@ -56,6 +108,21 @@ function RumoIaAssistente({ dados }) {
   const [
     resposta,
     setResposta,
+  ] = useState(null);
+
+  const [
+    acaoPendente,
+    setAcaoPendente,
+  ] = useState(null);
+
+  const [
+    executandoAcao,
+    setExecutandoAcao,
+  ] = useState(false);
+
+  const [
+    feedbackAcao,
+    setFeedbackAcao,
   ] = useState(null);
 
   const [
@@ -73,61 +140,80 @@ function RumoIaAssistente({ dados }) {
     setCarregandoCompromissos,
   ] = useState(true);
 
-  useEffect(() => {
-    let ativo = true;
 
-    async function carregar() {
-      try {
-        setCarregandoCompromissos(true);
+  async function carregarAuxiliares() {
+    try {
+      setCarregandoCompromissos(
+        true
+      );
 
-        const [
-          resultado,
-          dividasPlanejadas,
-        ] =
-          await Promise.all([
-            listarProximosCompromissos({
-              dias: 30,
-              limite: 100,
-            }),
-            listarParcelasPlanejadasDividas({
-              dias: 30,
-              incluirVencidas: true,
-            }),
-          ]);
+      const [
+        resultado,
+        dividasPlanejadas,
+        faturasPendentes,
+        opcoes,
+      ] =
+        await Promise.all([
+          listarProximosCompromissos({
+            dias: 30,
+            limite: 100,
+          }),
 
-        if (ativo) {
-          setCompromissos(
-            resultado || []
-          );
+          listarParcelasPlanejadasDividas({
+            dias: 30,
+            incluirVencidas: true,
+          }),
 
-          setParcelasDividas(
-            dividasPlanejadas ||
-            []
-          );
+          listarFaturasPendentesCartoes({
+            dias: 30,
+            incluirVencidas: true,
+          }),
+
+          listarOpcoesRumoAcoes(),
+        ]);
+
+      setCompromissos(
+        resultado || []
+      );
+
+      setParcelasDividas(
+        dividasPlanejadas || []
+      );
+
+      setFaturasCartao(
+        faturasPendentes || []
+      );
+
+      setOpcoesAcoes(
+        opcoes || {
+          contas: [],
+          categorias: [],
+          cartoes: [],
         }
-      } catch (error) {
-        console.error(
-          "[RUMO IA] Compromissos:",
-          error
-        );
+      );
 
-        if (ativo) {
-          setCompromissos([]);
-          setParcelasDividas([]);
-        }
-      } finally {
-        if (ativo) {
-          setCarregandoCompromissos(false);
-        }
-      }
+    } catch (error) {
+      console.error(
+        "[RUMO IA] Contexto auxiliar:",
+        error
+      );
+
+      setCompromissos([]);
+      setParcelasDividas([]);
+      setFaturasCartao([]);
+
+    } finally {
+      setCarregandoCompromissos(
+        false
+      );
     }
+  }
 
-    carregar();
 
-    return () => {
-      ativo = false;
-    };
+  useEffect(() => {
+    carregarAuxiliares();
   }, []);
+
 
   const contexto =
     useMemo(
@@ -135,14 +221,17 @@ function RumoIaAssistente({ dados }) {
         montarContextoRumoIa(
           dados,
           compromissos,
-          parcelasDividas
+          parcelasDividas,
+          faturasCartao
         ),
       [
         dados,
         compromissos,
         parcelasDividas,
+        faturasCartao,
       ]
     );
+
 
   const resumo =
     useMemo(
@@ -153,25 +242,233 @@ function RumoIaAssistente({ dados }) {
       [contexto]
     );
 
-  function perguntar(texto = pergunta) {
-    const perguntaFinal =
-      String(texto || "").trim();
 
-    if (!perguntaFinal) {
+  const categoriasAcao =
+    useMemo(
+      () =>
+        opcoesAcoes.categorias
+          .filter(
+            (categoria) =>
+              categoria.tipo ===
+              (
+                acaoPendente?.tipo ===
+                "receita"
+                  ? "receita"
+                  : "despesa"
+              )
+          ),
+      [
+        opcoesAcoes.categorias,
+        acaoPendente,
+      ]
+    );
+
+
+  const acaoValida =
+    useMemo(
+      () => {
+        if (!acaoPendente) {
+          return false;
+        }
+
+        const valorOk =
+          Number(
+            acaoPendente.valor
+          ) > 0;
+
+        const descricaoOk =
+          Boolean(
+            acaoPendente.descricao
+              ?.trim()
+          );
+
+        if (
+          !valorOk ||
+          !descricaoOk
+        ) {
+          return false;
+        }
+
+        if (
+          acaoPendente.tipo ===
+          "despesa" ||
+          acaoPendente.tipo ===
+          "receita"
+        ) {
+          return Boolean(
+            acaoPendente.conta_id &&
+            acaoPendente.categoria_id &&
+            acaoPendente.data
+          );
+        }
+
+        if (
+          acaoPendente.tipo ===
+          "compra_cartao"
+        ) {
+          return Boolean(
+            acaoPendente.cartao_id &&
+            acaoPendente.categoria_id &&
+            acaoPendente.data &&
+            Number(
+              acaoPendente.parcelas
+            ) >= 1
+          );
+        }
+
+        if (
+          acaoPendente.tipo ===
+          "meta"
+        ) {
+          return true;
+        }
+
+        return false;
+      },
+      [acaoPendente]
+    );
+
+
+  function atualizarAcao(
+    campo,
+    valor
+  ) {
+    setAcaoPendente(
+      (atual) => ({
+        ...atual,
+        [campo]: valor,
+      })
+    );
+  }
+
+
+  function processarEntrada(
+    texto = pergunta
+  ) {
+    const entrada =
+      String(
+        texto || ""
+      ).trim();
+
+    if (!entrada) {
       return;
     }
 
     setPergunta(
-      perguntaFinal
+      entrada
+    );
+
+    setFeedbackAcao(
+      null
+    );
+
+    const acao =
+      interpretarAcaoRumo(
+        entrada,
+        opcoesAcoes
+      );
+
+    if (acao) {
+      setAcaoPendente(
+        acao
+      );
+
+      setResposta(
+        null
+      );
+
+      return;
+    }
+
+    setAcaoPendente(
+      null
     );
 
     setResposta(
       responderPerguntaRumo(
-        perguntaFinal,
+        entrada,
         contexto
       )
     );
   }
+
+
+  async function confirmarAcao() {
+    if (
+      !acaoPendente ||
+      !acaoValida
+    ) {
+      return;
+    }
+
+    try {
+      setExecutandoAcao(
+        true
+      );
+
+      setFeedbackAcao(
+        null
+      );
+
+      const resultado =
+        await executarAcaoRumo(
+          acaoPendente
+        );
+
+      setFeedbackAcao({
+        tipo:
+          "sucesso",
+
+        titulo:
+          resultado.titulo,
+
+        texto:
+          `${acaoPendente.descricao} • ${formatarMoeda(
+            acaoPendente.valor
+          )}`,
+      });
+
+      setResposta(
+        null
+      );
+
+      setPergunta("");
+      setAcaoPendente(
+        null
+      );
+
+      await Promise.all([
+        carregarAuxiliares(),
+        onAtualizou
+          ? onAtualizou()
+          : Promise.resolve(),
+      ]);
+
+    } catch (error) {
+      console.error(
+        "[RUMO IA] Executar ação:",
+        error
+      );
+
+      setFeedbackAcao({
+        tipo:
+          "erro",
+
+        titulo:
+          "Não foi possível concluir",
+
+        texto:
+          error?.message ||
+          "Revise os dados e tente novamente.",
+      });
+
+    } finally {
+      setExecutandoAcao(
+        false
+      );
+    }
+  }
+
 
   function simularCompra(event) {
     event?.preventDefault();
@@ -184,8 +481,10 @@ function RumoIaAssistente({ dados }) {
     );
   }
 
+
   return (
     <section className="rumo-ia-area">
+
       <div className="rumo-ia-heading">
         <div>
           <span className="rumo-ia-kicker">
@@ -194,11 +493,11 @@ function RumoIaAssistente({ dados }) {
           </span>
 
           <h2>
-            Entenda antes de decidir
+            Entenda e aja pelo mesmo campo
           </h2>
 
           <p>
-            Respostas calculadas com seus dados financeiros atuais, sem depender de uma API externa.
+            Pergunte sobre suas finanças ou descreva uma ação. O Rumo interpreta, prepara e só executa depois da sua confirmação.
           </p>
         </div>
 
@@ -207,6 +506,7 @@ function RumoIaAssistente({ dados }) {
           Motor Rumo
         </span>
       </div>
+
 
       {resumo && (
         <article
@@ -228,8 +528,11 @@ function RumoIaAssistente({ dados }) {
         </article>
       )}
 
+
       <div className="rumo-ia-grid">
+
         <article className="rumo-ia-card rumo-ia-chat">
+
           <div className="rumo-ia-card-head">
             <span className="rumo-ia-card-icon">
               <Sparkles size={18} />
@@ -237,14 +540,26 @@ function RumoIaAssistente({ dados }) {
 
             <div>
               <strong>
-                Pergunte ao Rumo
+                Fale com o Rumo
               </strong>
 
               <small>
-                Saldo, gastos, receitas, dívidas, compromissos e projeções.
+                Pergunte ou registre algo em linguagem natural.
               </small>
             </div>
           </div>
+
+
+          <div className="rumo-ia-command-examples">
+            <span>
+              Agora também entende ações:
+            </span>
+
+            <p>
+              “Gastei R$ 50 de gasolina hoje” • “Recebi R$ 850 da Shopee” • “Comprei R$ 600 no cartão em 3x” • “Quero guardar R$ 5.000”
+            </p>
+          </div>
+
 
           <div className="rumo-ia-sugestoes">
             {perguntasRapidas.map(
@@ -253,7 +568,9 @@ function RumoIaAssistente({ dados }) {
                   type="button"
                   key={item}
                   onClick={() =>
-                    perguntar(item)
+                    processarEntrada(
+                      item
+                    )
                   }
                 >
                   {item}
@@ -262,11 +579,13 @@ function RumoIaAssistente({ dados }) {
             )}
           </div>
 
+
           <form
             className="rumo-ia-pergunta-form"
             onSubmit={(event) => {
               event.preventDefault();
-              perguntar();
+
+              processarEntrada();
             }}
           >
             <input
@@ -277,50 +596,590 @@ function RumoIaAssistente({ dados }) {
                   event.target.value
                 )
               }
-              placeholder="Ex.: Posso gastar R$ 350 hoje?"
-              aria-label="Pergunte ao Rumo"
+              placeholder="Ex.: Gastei R$ 50 de gasolina hoje"
+              aria-label="Fale com o Rumo"
             />
 
             <button
               type="submit"
-              aria-label="Enviar pergunta"
+              aria-label="Enviar ao Rumo"
             >
               <Send size={17} />
             </button>
           </form>
 
-          <div
-            className={
-              resposta
-                ? `rumo-ia-resposta ${resposta.tipo}`
-                : "rumo-ia-resposta neutra"
-            }
-          >
-            {resposta ? (
-              <>
+
+          {
+            acaoPendente && (
+              <div className="rumo-ia-action-review">
+
+                <div className="rumo-ia-action-head">
+                  <div>
+                    <span>
+                      ENTENDI ASSIM
+                    </span>
+
+                    <strong>
+                      {
+                        acaoPendente
+                          .rotulo
+                      }
+                    </strong>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="rumo-ia-action-close"
+                    onClick={() =>
+                      setAcaoPendente(
+                        null
+                      )
+                    }
+                    aria-label="Cancelar ação"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+
+
+                <div className="rumo-ia-action-fields">
+
+                  <label className="rumo-ia-action-field full">
+                    <span>
+                      Descrição
+                    </span>
+
+                    <input
+                      type="text"
+                      value={
+                        acaoPendente
+                          .descricao
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        atualizarAcao(
+                          "descricao",
+                          event.target.value
+                        )
+                      }
+                    />
+                  </label>
+
+
+                  <label className="rumo-ia-action-field">
+                    <span>
+                      Valor
+                    </span>
+
+                    <MoneyCalculatorInput
+                      value={
+                        acaoPendente
+                          .valor
+                      }
+                      onChange={(
+                        valor
+                      ) =>
+                        atualizarAcao(
+                          "valor",
+                          valor
+                        )
+                      }
+                      placeholder="R$ 0,00"
+                      ariaLabel="Valor da ação"
+                      className="rumo-ia-action-money"
+                    />
+                  </label>
+
+
+                  {
+                    acaoPendente.tipo !==
+                    "meta" && (
+                      <label className="rumo-ia-action-field">
+                        <span>
+                          Data
+                        </span>
+
+                        <input
+                          type="date"
+                          value={
+                            acaoPendente
+                              .data ||
+                            ""
+                          }
+                          onChange={(
+                            event
+                          ) =>
+                            atualizarAcao(
+                              "data",
+                              event.target.value
+                            )
+                          }
+                        />
+                      </label>
+                    )
+                  }
+
+
+                  {
+                    (
+                      acaoPendente.tipo ===
+                      "despesa" ||
+                      acaoPendente.tipo ===
+                      "receita"
+                    ) && (
+                      <>
+                        <label className="rumo-ia-action-field">
+                          <span>
+                            Conta
+                          </span>
+
+                          <select
+                            value={
+                              acaoPendente
+                                .conta_id ||
+                              ""
+                            }
+                            onChange={(
+                              event
+                            ) =>
+                              atualizarAcao(
+                                "conta_id",
+                                event.target.value
+                              )
+                            }
+                          >
+                            <option value="">
+                              Selecione
+                            </option>
+
+                            {
+                              opcoesAcoes
+                                .contas
+                                .map(
+                                  (
+                                    conta
+                                  ) => (
+                                    <option
+                                      key={
+                                        conta.id
+                                      }
+                                      value={
+                                        conta.id
+                                      }
+                                    >
+                                      {
+                                        conta.banco
+                                          ? `${conta.nome} • ${conta.banco}`
+                                          : conta.nome
+                                      }
+                                    </option>
+                                  )
+                                )
+                            }
+                          </select>
+                        </label>
+
+
+                        <label className="rumo-ia-action-field">
+                          <span>
+                            Categoria
+                          </span>
+
+                          <select
+                            value={
+                              acaoPendente
+                                .categoria_id ||
+                              ""
+                            }
+                            onChange={(
+                              event
+                            ) =>
+                              atualizarAcao(
+                                "categoria_id",
+                                event.target.value
+                              )
+                            }
+                          >
+                            <option value="">
+                              Selecione
+                            </option>
+
+                            {
+                              categoriasAcao
+                                .map(
+                                  (
+                                    categoria
+                                  ) => (
+                                    <option
+                                      key={
+                                        categoria.id
+                                      }
+                                      value={
+                                        categoria.id
+                                      }
+                                    >
+                                      {
+                                        categoria.nome
+                                      }
+                                    </option>
+                                  )
+                                )
+                            }
+                          </select>
+                        </label>
+                      </>
+                    )
+                  }
+
+
+                  {
+                    acaoPendente.tipo ===
+                    "compra_cartao" && (
+                      <>
+                        <label className="rumo-ia-action-field">
+                          <span>
+                            Cartão
+                          </span>
+
+                          <select
+                            value={
+                              acaoPendente
+                                .cartao_id ||
+                              ""
+                            }
+                            onChange={(
+                              event
+                            ) =>
+                              atualizarAcao(
+                                "cartao_id",
+                                event.target.value
+                              )
+                            }
+                          >
+                            <option value="">
+                              Selecione
+                            </option>
+
+                            {
+                              opcoesAcoes
+                                .cartoes
+                                .map(
+                                  (
+                                    cartao
+                                  ) => (
+                                    <option
+                                      key={
+                                        cartao.id
+                                      }
+                                      value={
+                                        cartao.id
+                                      }
+                                    >
+                                      {
+                                        cartao.nome
+                                      }
+                                      {
+                                        cartao.final_cartao
+                                          ? ` •••• ${cartao.final_cartao}`
+                                          : ""
+                                      }
+                                    </option>
+                                  )
+                                )
+                            }
+                          </select>
+                        </label>
+
+
+                        <label className="rumo-ia-action-field">
+                          <span>
+                            Categoria
+                          </span>
+
+                          <select
+                            value={
+                              acaoPendente
+                                .categoria_id ||
+                              ""
+                            }
+                            onChange={(
+                              event
+                            ) =>
+                              atualizarAcao(
+                                "categoria_id",
+                                event.target.value
+                              )
+                            }
+                          >
+                            <option value="">
+                              Selecione
+                            </option>
+
+                            {
+                              categoriasAcao
+                                .map(
+                                  (
+                                    categoria
+                                  ) => (
+                                    <option
+                                      key={
+                                        categoria.id
+                                      }
+                                      value={
+                                        categoria.id
+                                      }
+                                    >
+                                      {
+                                        categoria.nome
+                                      }
+                                    </option>
+                                  )
+                                )
+                            }
+                          </select>
+                        </label>
+
+
+                        <label className="rumo-ia-action-field">
+                          <span>
+                            Parcelas
+                          </span>
+
+                          <input
+                            type="number"
+                            min="1"
+                            max="120"
+                            value={
+                              acaoPendente
+                                .parcelas ||
+                              1
+                            }
+                            onChange={(
+                              event
+                            ) =>
+                              atualizarAcao(
+                                "parcelas",
+                                event.target.value
+                              )
+                            }
+                          />
+                        </label>
+                      </>
+                    )
+                  }
+
+
+                  {
+                    acaoPendente.tipo ===
+                    "meta" && (
+                      <>
+                        <label className="rumo-ia-action-field">
+                          <span>
+                            Prazo
+                          </span>
+
+                          <input
+                            type="date"
+                            value={
+                              acaoPendente
+                                .prazo ||
+                              ""
+                            }
+                            onChange={(
+                              event
+                            ) =>
+                              atualizarAcao(
+                                "prazo",
+                                event.target.value
+                              )
+                            }
+                          />
+                        </label>
+
+
+                        <label className="rumo-ia-action-field">
+                          <span>
+                            Conta vinculada
+                          </span>
+
+                          <select
+                            value={
+                              acaoPendente
+                                .conta_id ||
+                              ""
+                            }
+                            onChange={(
+                              event
+                            ) =>
+                              atualizarAcao(
+                                "conta_id",
+                                event.target.value
+                              )
+                            }
+                          >
+                            <option value="">
+                              Nenhuma
+                            </option>
+
+                            {
+                              opcoesAcoes
+                                .contas
+                                .map(
+                                  (
+                                    conta
+                                  ) => (
+                                    <option
+                                      key={
+                                        conta.id
+                                      }
+                                      value={
+                                        conta.id
+                                      }
+                                    >
+                                      {
+                                        conta.nome
+                                      }
+                                    </option>
+                                  )
+                                )
+                            }
+                          </select>
+                        </label>
+                      </>
+                    )
+                  }
+
+                </div>
+
+
+                <div className="rumo-ia-action-summary">
+                  {
+                    acaoPendente.tipo ===
+                    "compra_cartao"
+                      ? <CreditCard size={16} />
+                      : acaoPendente.tipo ===
+                        "meta"
+                        ? <Flag size={16} />
+                        : <ReceiptText size={16} />
+                  }
+
+                  <span>
+                    Nada foi salvo ainda. Confira os dados antes de confirmar.
+                  </span>
+                </div>
+
+
+                <div className="rumo-ia-action-buttons">
+                  <button
+                    type="button"
+                    className="secondary"
+                    onClick={() =>
+                      setAcaoPendente(
+                        null
+                      )
+                    }
+                    disabled={
+                      executandoAcao
+                    }
+                  >
+                    Cancelar
+                  </button>
+
+                  <button
+                    type="button"
+                    className="primary"
+                    onClick={
+                      confirmarAcao
+                    }
+                    disabled={
+                      !acaoValida ||
+                      executandoAcao
+                    }
+                  >
+                    <CheckCircle2 size={16} />
+
+                    {
+                      executandoAcao
+                        ? "Confirmando..."
+                        : "Confirmar ação"
+                    }
+                  </button>
+                </div>
+
+              </div>
+            )
+          }
+
+
+          {
+            feedbackAcao && (
+              <div
+                className={
+                  `rumo-ia-action-feedback ${feedbackAcao.tipo}`
+                }
+              >
                 <strong>
-                  {resposta.titulo}
+                  {
+                    feedbackAcao
+                      .titulo
+                  }
                 </strong>
 
-                <p>
-                  {resposta.resposta}
-                </p>
-              </>
-            ) : (
-              <>
-                <strong>
-                  Pronto para analisar
-                </strong>
+                <span>
+                  {
+                    feedbackAcao
+                      .texto
+                  }
+                </span>
+              </div>
+            )
+          }
 
-                <p>
-                  Escolha uma pergunta acima ou escreva do seu jeito.
-                </p>
-              </>
-            )}
-          </div>
+
+          {
+            !acaoPendente &&
+            (
+              resposta ||
+              !feedbackAcao
+            ) && (
+              <div
+                className={
+                  resposta
+                    ? `rumo-ia-resposta ${resposta.tipo}`
+                    : "rumo-ia-resposta neutra"
+                }
+              >
+                {resposta ? (
+                  <>
+                    <strong>
+                      {resposta.titulo}
+                    </strong>
+
+                    <p>
+                      {resposta.resposta}
+                    </p>
+                  </>
+                ) : !feedbackAcao ? (
+                  <>
+                    <strong>
+                      Pronto para analisar ou registrar
+                    </strong>
+
+                    <p>
+                      Faça uma pergunta ou descreva algo que aconteceu com seu dinheiro.
+                    </p>
+                  </>
+                ) : null}
+              </div>
+            )
+          }
+
         </article>
 
+
         <article className="rumo-ia-card rumo-ia-simulador">
+
           <div className="rumo-ia-card-head">
             <span className="rumo-ia-card-icon">
               <Calculator size={18} />
@@ -336,6 +1195,7 @@ function RumoIaAssistente({ dados }) {
               </small>
             </div>
           </div>
+
 
           <form
             onSubmit={
@@ -369,12 +1229,14 @@ function RumoIaAssistente({ dados }) {
                 carregandoCompromissos
               }
             >
-              {carregandoCompromissos
-                ? "Atualizando cenário..."
-                : "Simular impacto"
+              {
+                carregandoCompromissos
+                  ? "Atualizando cenário..."
+                  : "Simular impacto"
               }
             </button>
           </form>
+
 
           <div
             className={
@@ -400,15 +1262,19 @@ function RumoIaAssistente({ dados }) {
                 </strong>
 
                 <p>
-                  O Rumo protege primeiro os compromissos identificados para os próximos 7 dias e mostra quanto sobra depois da simulação.
+                  O Rumo protege primeiro todas as obrigações dos próximos 7 dias — incluindo dívidas e faturas — e mostra quanto sobra depois da simulação.
                 </p>
               </>
             )}
           </div>
+
         </article>
+
       </div>
+
     </section>
   );
 }
+
 
 export default RumoIaAssistente;
