@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { useDashboard } from "../context/DashboardContext";
 import { supabase } from "../services/supabase";
 import { listarProximosCompromissos } from "../services/compromissos";
+import { listarParcelasPlanejadasDividas } from "../services/dividas";
 import { buscarCotacaoDolar } from "../services/cambio";
 
 import MainLayout from "../layouts/MainLayout";
@@ -99,6 +100,11 @@ function Dashboard() {
     ] = useState([]);
 
     const [
+        proximasDividas,
+        setProximasDividas
+    ] = useState([]);
+
+    const [
         cotacaoDolar,
         setCotacaoDolar
     ] = useState(null);
@@ -139,6 +145,93 @@ function Dashboard() {
             [proximosCompromissos]
         );
 
+    const totalDividasProximas =
+        useMemo(
+            () =>
+                proximasDividas
+                    .reduce(
+                        (total, item) =>
+                            total +
+                            Number(
+                                item.valor_restante ||
+                                0
+                            ),
+                        0
+                    ),
+            [proximasDividas]
+        );
+
+    const totalObrigacoes =
+        totalProximos +
+        totalDividasProximas;
+
+    const obrigacoesProximas =
+        useMemo(
+            () => [
+                ...proximosCompromissos.map(
+                    (item) => ({
+                        id:
+                            `compromisso:${item.id}`,
+                        tipo:
+                            "Compromisso",
+                        nome:
+                            item.compromisso
+                                ?.nome ||
+                            "Compromisso",
+                        vencimento:
+                            item.vencimento,
+                        valor:
+                            Number(
+                                item.valor_real ??
+                                item.valor_previsto ??
+                                0
+                            ),
+                        rota:
+                            "/compromissos"
+                    })
+                ),
+                ...proximasDividas.map(
+                    (item) => ({
+                        id:
+                            `divida:${item.id}`,
+                        tipo:
+                            "Dívida",
+                        nome:
+                            item.divida
+                                ?.nome ||
+                            "Parcela de dívida",
+                        vencimento:
+                            item.semana_referencia,
+                        valor:
+                            Number(
+                                item.valor_restante ||
+                                0
+                            ),
+                        rota:
+                            "/dividas"
+                    })
+                )
+            ]
+                .sort(
+                    (a, b) =>
+                        String(
+                            a.vencimento
+                        ).localeCompare(
+                            String(
+                                b.vencimento
+                            )
+                        )
+                )
+                .slice(
+                    0,
+                    5
+                ),
+            [
+                proximosCompromissos,
+                proximasDividas
+            ]
+        );
+
     const saldoDisponivel =
         Number(
             dashboard?.saldo_total ||
@@ -147,16 +240,16 @@ function Dashboard() {
 
     const saldoAposProximos =
         saldoDisponivel -
-        totalProximos;
+        totalObrigacoes;
 
-    const primeiroCompromisso =
-        proximosCompromissos?.[0] ||
+    const primeiraObrigacao =
+        obrigacoesProximas?.[0] ||
         null;
 
-    const dataPrimeiroCompromisso =
-        primeiroCompromisso?.vencimento
+    const dataPrimeiraObrigacao =
+        primeiraObrigacao?.vencimento
             ? new Date(
-                `${primeiroCompromisso.vencimento}T12:00:00`
+                `${primeiraObrigacao.vencimento}T12:00:00`
             ).toLocaleDateString(
                 "pt-BR",
                 {
@@ -166,15 +259,73 @@ function Dashboard() {
             )
             : null;
 
+    const parcelaDividaPrioritaria =
+        proximasDividas?.[0] ||
+        null;
+
+    const diasParcelaDivida =
+        parcelaDividaPrioritaria
+            ?.semana_referencia
+            ? Math.round(
+                (
+                    new Date(
+                        `${parcelaDividaPrioritaria.semana_referencia}T12:00:00`
+                    ) -
+                    new Date(
+                        new Date()
+                            .toDateString()
+                    )
+                ) /
+                86400000
+            )
+            : null;
+
     const rumoHoje =
         useMemo(
             () => {
                 if (
-                    totalProximos >
+                    diasParcelaDivida !== null &&
+                    diasParcelaDivida <= 0
+                ) {
+                    const valor =
+                        Number(
+                            parcelaDividaPrioritaria
+                                ?.valor_restante ||
+                            0
+                        );
+
+                    return {
+                        status:
+                            "critico",
+                        etiqueta:
+                            diasParcelaDivida < 0
+                                ? "Dívida atrasada"
+                                : "Vence hoje",
+                        titulo:
+                            diasParcelaDivida < 0
+                                ? `Resolva ${formatarMoeda(
+                                    valor
+                                )} da dívida ${parcelaDividaPrioritaria?.divida?.nome || ""}`
+                                : `Separe ${formatarMoeda(
+                                    valor
+                                )} para a dívida de hoje`,
+                        descricao:
+                            diasParcelaDivida < 0
+                                ? "Essa parcela planejada já passou da data e agora entra como prioridade máxima do seu Rumo."
+                                : "Essa parcela vence hoje e já está considerada no valor que precisa ficar protegido.",
+                        acao:
+                            "Resolver dívida",
+                        rota:
+                            "/dividas"
+                    };
+                }
+
+                if (
+                    totalObrigacoes >
                     saldoDisponivel
                 ) {
                     const falta =
-                        totalProximos -
+                        totalObrigacoes -
                         saldoDisponivel;
 
                     return {
@@ -186,12 +337,12 @@ function Dashboard() {
                                 falta
                             )} para cobrir sua semana`,
                         descricao:
-                            dataPrimeiroCompromisso
-                                ? `Seus próximos compromissos somam ${formatarMoeda(
-                                    totalProximos
-                                )}. O primeiro vence em ${dataPrimeiroCompromisso}.`
-                                : `Seus próximos compromissos somam ${formatarMoeda(
-                                    totalProximos
+                            dataPrimeiraObrigacao
+                                ? `Suas próximas obrigações somam ${formatarMoeda(
+                                    totalObrigacoes
+                                )}. O primeiro vence em ${dataPrimeiraObrigacao}.`
+                                : `Suas próximas obrigações somam ${formatarMoeda(
+                                    totalObrigacoes
                                 )} e superam o saldo disponível.`,
                         acao:
                             "Ver compromissos",
@@ -201,7 +352,7 @@ function Dashboard() {
                 }
 
                 if (
-                    totalProximos > 0
+                    totalObrigacoes > 0
                 ) {
                     return {
                         status: "atencao",
@@ -209,11 +360,11 @@ function Dashboard() {
                             "Prioridade da semana",
                         titulo:
                             `Proteja ${formatarMoeda(
-                                totalProximos
+                                totalObrigacoes
                             )} para os próximos vencimentos`,
                         descricao:
-                            dataPrimeiroCompromisso
-                                ? `O primeiro compromisso vence em ${dataPrimeiroCompromisso}. Depois de reservar tudo, ficam ${formatarMoeda(
+                            dataPrimeiraObrigacao
+                                ? `A primeira obrigação vence em ${dataPrimeiraObrigacao}. Depois de reservar tudo, ficam ${formatarMoeda(
                                     Math.max(
                                         0,
                                         saldoAposProximos
@@ -273,11 +424,13 @@ function Dashboard() {
                 };
             },
             [
-                totalProximos,
+                totalObrigacoes,
                 saldoDisponivel,
                 saldoAposProximos,
                 resultadoMes,
-                dataPrimeiroCompromisso
+                dataPrimeiraObrigacao,
+                diasParcelaDivida,
+                parcelaDividaPrioritaria
             ]
         );
 
@@ -344,14 +497,27 @@ function Dashboard() {
 
     async function carregarProximos() {
         try {
-            const data =
-                await listarProximosCompromissos({
-                    dias: 7,
-                    limite: 5
-                });
+            const [
+                compromissos,
+                dividasPlanejadas
+            ] =
+                await Promise.all([
+                    listarProximosCompromissos({
+                        dias: 7,
+                        limite: 20
+                    }),
+                    listarParcelasPlanejadasDividas({
+                        dias: 7,
+                        incluirVencidas: true
+                    })
+                ]);
 
             setProximosCompromissos(
-                data || []
+                compromissos || []
+            );
+
+            setProximasDividas(
+                dividasPlanejadas || []
             );
         } catch (error) {
             console.error(
@@ -360,6 +526,7 @@ function Dashboard() {
             );
 
             setProximosCompromissos([]);
+            setProximasDividas([]);
         }
     }
 
@@ -760,24 +927,25 @@ function Dashboard() {
                                 </span>
 
                                 <h2>
-                                    Compromissos
+                                    Obrigações
                                 </h2>
                             </div>
 
                             <strong>
                                 {formatarMoeda(
-                                    totalProximos
+                                    totalObrigacoes
                                 )}
                             </strong>
                         </div>
 
                         <div className="dashboard-upcoming-list">
                             {
-                                proximosCompromissos.length >
+                                obrigacoesProximas.length >
                                 0 ? (
-                                    proximosCompromissos.map(
+                                    obrigacoesProximas.map(
                                         (item) => (
-                                            <div
+                                            <Link
+                                                to={item.rota}
                                                 key={item.id}
                                                 className="dashboard-upcoming-item"
                                             >
@@ -790,9 +958,7 @@ function Dashboard() {
                                                 <div>
                                                     <strong>
                                                         {
-                                                            item.compromisso
-                                                                ?.nome ||
-                                                            "Compromisso"
+                                                            item.nome
                                                         }
                                                     </strong>
 
@@ -815,12 +981,14 @@ function Dashboard() {
                                                 <b>
                                                     {
                                                         formatarMoeda(
-                                                            item.valor_real ??
-                                                            item.valor_previsto
+                                                            item.valor
                                                         )
                                                     }
                                                 </b>
-                                            </div>
+                                                <span className="dashboard-upcoming-type">
+                                                    {item.tipo}
+                                                </span>
+                                            </Link>
                                         )
                                     )
                                 ) : (
@@ -835,7 +1003,7 @@ function Dashboard() {
                                             </strong>
 
                                             <span>
-                                                Nenhum compromisso pendente nos próximos 7 dias.
+                                                Nenhuma obrigação pendente nos próximos 7 dias.
                                             </span>
                                         </div>
                                     </div>
