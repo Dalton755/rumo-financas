@@ -597,7 +597,7 @@ function Projecoes() {
                                         </h2>
 
                                         <p>
-                                            Receitas e despesas já previstas para os próximos 90 dias.
+                                            Receitas, despesas e parcelas de dívidas já previstas para os próximos 90 dias.
                                         </p>
 
                                     </div>
@@ -695,7 +695,12 @@ function Projecoes() {
                                                                             }
 
                                                                             <span className="projecoes-agenda-prevista">
-                                                                                PREVISTA
+                                                                                {
+                                                                                    movimentacao.origem ===
+                                                                                    "plano_quitacao"
+                                                                                        ? "DÍVIDA PLANEJADA"
+                                                                                        : "PREVISTA"
+                                                                                }
                                                                             </span>
 
                                                                         </div>
@@ -711,7 +716,13 @@ function Projecoes() {
 
                                                                         <strong>
                                                                             {
-                                                                                movimentacao.conta
+                                                                                movimentacao.conta ||
+                                                                                (
+                                                                                    movimentacao.origem ===
+                                                                                    "plano_quitacao"
+                                                                                        ? "Plano de dívida"
+                                                                                        : "—"
+                                                                                )
                                                                             }
                                                                         </strong>
 
