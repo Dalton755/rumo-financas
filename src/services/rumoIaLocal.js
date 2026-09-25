@@ -98,7 +98,7 @@ export function montarContextoRumoIa(
   faturasCartao = []
 ) {
   const hoje = new Date();
-  hoje.setHours(0, 0, 0, 0);
+  hoje.setHours(12, 0, 0, 0);
 
   const limite7 = new Date(hoje);
   limite7.setDate(limite7.getDate() + 7);
@@ -372,7 +372,7 @@ export function avaliarCompra(
       tipo: "atencao",
       titulo: "A compra pressiona seus próximos vencimentos",
       resposta:
-        `Depois de gastar ${formatarMoedaRumo(valor)}, faltariam ${formatarMoedaRumo(Math.abs(saldoDepoisDosCompromissos))} para manter cobertos as obrigações dos próximos 7 dias.`,
+        `Depois de gastar ${formatarMoedaRumo(valor)}, faltariam ${formatarMoedaRumo(Math.abs(saldoDepoisDosCompromissos))} para manter cobertas as obrigações dos próximos 7 dias.`,
     };
   }
 
@@ -461,7 +461,22 @@ export function responderPerguntaRumo(
   }
 
   if (
-    texto.includes("compromisso") ||
+    texto.includes("compromisso")
+  ) {
+    return {
+      tipo:
+        contexto.totalCompromissos7 >
+        contexto.saldoReal
+          ? "critico"
+          : "informacao",
+      titulo:
+        "Próximos compromissos",
+      resposta:
+        `Existem ${contexto.compromissos7.length} compromisso(s) pendente(s) nos próximos 7 dias, somando ${formatarMoedaRumo(contexto.totalCompromissos7)}. Em até 30 dias, eles somam ${formatarMoedaRumo(contexto.totalCompromissos30)}.`,
+    };
+  }
+
+  if (
     texto.includes("venc") ||
     texto.includes("contas da semana") ||
     texto.includes("quanto devo")
@@ -472,9 +487,10 @@ export function responderPerguntaRumo(
         contexto.saldoReal
           ? "critico"
           : "informacao",
-      titulo: "Próximos compromissos",
+      titulo:
+        "Obrigações da semana",
       resposta:
-        `Existem ${contexto.compromissos7.length} compromisso(s) pendente(s) nos próximos 7 dias, somando ${formatarMoedaRumo(contexto.totalObrigacoes7)}. Em até 30 dias, os compromissos identificados somam ${formatarMoedaRumo(contexto.totalCompromissos30)}.`,
+        `Nos próximos 7 dias, compromissos, dívidas e faturas somam ${formatarMoedaRumo(contexto.totalObrigacoes7)}. Em até 30 dias, essas obrigações somam ${formatarMoedaRumo(contexto.totalObrigacoes30)}.`,
     };
   }
 
