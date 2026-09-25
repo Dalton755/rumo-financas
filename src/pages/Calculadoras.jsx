@@ -1,9 +1,12 @@
 import {
+  useCallback,
+  useEffect,
   useMemo,
   useState
 } from "react";
 
 import {
+  ArrowLeftRight,
   BadgePercent,
   Banknote,
   Calculator,
@@ -13,6 +16,7 @@ import {
   Percent,
   PiggyBank,
   ReceiptText,
+  RefreshCw,
   Scale,
   TrendingUp,
   WalletCards
@@ -22,6 +26,10 @@ import MainLayout from "../layouts/MainLayout";
 import PageContainer from "../components/ui/PageContainer";
 import PageHeader from "../components/ui/PageHeader";
 import MoneyCalculatorInput from "../components/ui/MoneyCalculatorInput";
+
+import {
+  buscarCotacaoDolar
+} from "../services/cambio";
 
 import "./Calculadoras.css";
 
@@ -41,6 +49,107 @@ function numero(valor) {
   return Number.isFinite(n)
     ? n
     : 0;
+}
+
+function numeroCambio(valor) {
+  let texto =
+    String(
+      valor ?? ""
+    )
+      .trim()
+      .replace(
+        /[^0-9,.-]/g,
+        ""
+      );
+
+  if (
+    texto.includes(",") &&
+    texto.includes(".")
+  ) {
+    texto =
+      texto
+        .replace(
+          /\./g,
+          ""
+        )
+        .replace(
+          ",",
+          "."
+        );
+  } else {
+    texto =
+      texto.replace(
+        ",",
+        "."
+      );
+  }
+
+  const n =
+    Number(texto);
+
+  return Number.isFinite(n)
+    ? n
+    : 0;
+}
+
+function dolar(valor) {
+  return Number(valor || 0)
+    .toLocaleString(
+      "pt-BR",
+      {
+        style: "currency",
+        currency: "USD"
+      }
+    );
+}
+
+function cotacaoNumero(valor) {
+  return Number(valor || 0)
+    .toLocaleString(
+      "pt-BR",
+      {
+        minimumFractionDigits: 4,
+        maximumFractionDigits: 4
+      }
+    );
+}
+
+function dataHoraCotacao(valor) {
+  if (!valor) {
+    return "—";
+  }
+
+  const normalizado =
+    String(valor)
+      .replace(
+        " ",
+        "T"
+      );
+
+  const data =
+    new Date(
+      normalizado
+    );
+
+  if (
+    Number.isNaN(
+      data.getTime()
+    )
+  ) {
+    return String(valor);
+  }
+
+  return data
+    .toLocaleString(
+      "pt-BR",
+      {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }
+    );
 }
 
 function diferencaAnosCompletos(
@@ -305,6 +414,14 @@ function Resultado({
 
 const calculadoras = [
   {
+    id: "cambio",
+    titulo: "Câmbio USD/BRL",
+    descricao:
+      "Cotação do dólar e conversão rápida.",
+    Icone: Banknote,
+    grupo: "dia-a-dia"
+  },
+  {
     id: "rescisao",
     titulo: "Rescisão CLT",
     descricao:
@@ -380,7 +497,24 @@ const calculadoras = [
 
 export default function Calculadoras() {
   const [selecionada, setSelecionada] =
-    useState("rescisao");
+    useState(
+      () => {
+        const id =
+          new URLSearchParams(
+            window.location.search
+          )
+            .get(
+              "calc"
+            );
+
+        return calculadoras.some(
+          (item) =>
+            item.id === id
+        )
+          ? id
+          : "rescisao";
+      }
+    );
 
   const [busca, setBusca] =
     useState("");
@@ -449,6 +583,109 @@ export default function Calculadoras() {
 
   const [numeroParcelas, setNumeroParcelas] =
     useState("12");
+
+  const [valorCambio, setValorCambio] =
+    useState("1");
+
+  const [sentidoCambio, setSentidoCambio] =
+    useState("USD_BRL");
+
+  const [cotacao, setCotacao] =
+    useState(null);
+
+  const [
+    carregandoCotacao,
+    setCarregandoCotacao
+  ] = useState(false);
+
+  const [
+    erroCotacao,
+    setErroCotacao
+  ] = useState("");
+
+  const atualizarCotacao =
+    useCallback(
+      async () => {
+        setCarregandoCotacao(
+          true
+        );
+
+        setErroCotacao(
+          ""
+        );
+
+        try {
+          const dados =
+            await buscarCotacaoDolar();
+
+          setCotacao(
+            dados
+          );
+        } catch (error) {
+          console.error(
+            "[RUMO CÂMBIO] Erro ao atualizar cotação:",
+            error
+          );
+
+          setErroCotacao(
+            error?.message ||
+            "Não foi possível atualizar a cotação."
+          );
+        } finally {
+          setCarregandoCotacao(
+            false
+          );
+        }
+      },
+      []
+    );
+
+  useEffect(
+    () => {
+      atualizarCotacao();
+    },
+    [
+      atualizarCotacao
+    ]
+  );
+
+  const resultadoCambio =
+    useMemo(
+      () => {
+        const valor =
+          Math.max(
+            0,
+            numeroCambio(
+              valorCambio
+            )
+          );
+
+        const taxa =
+          Number(
+            cotacao?.venda ||
+            0
+          );
+
+        const convertido =
+          !taxa
+            ? 0
+            : sentidoCambio ===
+              "USD_BRL"
+              ? valor * taxa
+              : valor / taxa;
+
+        return {
+          valor,
+          taxa,
+          convertido
+        };
+      },
+      [
+        valorCambio,
+        sentidoCambio,
+        cotacao
+      ]
+    );
 
   const filtradas =
     calculadoras.filter(
@@ -896,6 +1133,246 @@ export default function Calculadoras() {
     ]);
 
   function renderCalculadora() {
+    if (
+      selecionada ===
+      "cambio"
+    ) {
+      const deUsd =
+        sentidoCambio ===
+        "USD_BRL";
+
+      return (
+        <>
+          <div className="cambio-quote-panel">
+            <div className="cambio-quote-head">
+              <div>
+                <span>
+                  Dólar hoje
+                </span>
+
+                <strong>
+                  {cotacao
+                    ? `US$ 1 = R$ ${cotacaoNumero(cotacao.venda)}`
+                    : carregandoCotacao
+                      ? "Atualizando cotação..."
+                      : "Cotação indisponível"
+                  }
+                </strong>
+
+                <small>
+                  {cotacao
+                    ? `${cotacao.fonte} · ${cotacao.referencia} · ${dataHoraCotacao(cotacao.dataHora)}`
+                    : "Fonte principal: Banco Central do Brasil."
+                  }
+                </small>
+              </div>
+
+              <button
+                type="button"
+                className="cambio-refresh"
+                onClick={
+                  atualizarCotacao
+                }
+                disabled={
+                  carregandoCotacao
+                }
+              >
+                <RefreshCw
+                  size={15}
+                  className={
+                    carregandoCotacao
+                      ? "spinning"
+                      : ""
+                  }
+                />
+
+                <span>
+                  Atualizar
+                </span>
+              </button>
+            </div>
+
+            {cotacao && (
+              <div className="cambio-rates">
+                <div>
+                  <span>
+                    Compra
+                  </span>
+
+                  <strong>
+                    R$ {cotacaoNumero(
+                      cotacao.compra
+                    )}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Venda
+                  </span>
+
+                  <strong>
+                    R$ {cotacaoNumero(
+                      cotacao.venda
+                    )}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Referência
+                  </span>
+
+                  <strong>
+                    {cotacao.tipoBoletim}
+                  </strong>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {erroCotacao && (
+            <p className="calc-helper cambio-error">
+              {erroCotacao}
+            </p>
+          )}
+
+          <div className="cambio-direction-row">
+            <button
+              type="button"
+              className="cambio-direction"
+              onClick={() =>
+                setSentidoCambio(
+                  deUsd
+                    ? "BRL_USD"
+                    : "USD_BRL"
+                )
+              }
+            >
+              <span>
+                {deUsd
+                  ? "USD"
+                  : "BRL"
+                }
+              </span>
+
+              <ArrowLeftRight
+                size={16}
+              />
+
+              <span>
+                {deUsd
+                  ? "BRL"
+                  : "USD"
+                }
+              </span>
+            </button>
+
+            <small>
+              Toque para inverter as moedas.
+            </small>
+          </div>
+
+          <div className="calc-form-grid">
+            <Campo
+              label={
+                deUsd
+                  ? "Valor em dólar"
+                  : "Valor em reais"
+              }
+            >
+              <input
+                type="text"
+                inputMode="decimal"
+                value={
+                  valorCambio
+                }
+                onChange={(e) =>
+                  setValorCambio(
+                    e.target.value
+                  )
+                }
+                placeholder={
+                  deUsd
+                    ? "100,00"
+                    : "500,00"
+                }
+              />
+            </Campo>
+
+            <Campo
+              label="Cotação usada"
+              dica="A conversão usa a cotação de venda como referência."
+            >
+              <input
+                type="text"
+                value={
+                  resultadoCambio.taxa
+                    ? `R$ ${cotacaoNumero(resultadoCambio.taxa)}`
+                    : "Aguardando cotação"
+                }
+                readOnly
+              />
+            </Campo>
+          </div>
+
+          <div className="calc-results-grid">
+            <Resultado
+              titulo={
+                deUsd
+                  ? "Valor estimado em reais"
+                  : "Valor estimado em dólar"
+              }
+              valor={
+                deUsd
+                  ? moeda(
+                      resultadoCambio.convertido
+                    )
+                  : dolar(
+                      resultadoCambio.convertido
+                    )
+              }
+              destaque
+              detalhe={
+                cotacao?.fallback
+                  ? cotacao.aviso
+                  : "Conversão de referência; bancos, cartões, IOF e spreads podem alterar o valor final."
+              }
+            />
+
+            <Resultado
+              titulo="Valor informado"
+              valor={
+                deUsd
+                  ? dolar(
+                      resultadoCambio.valor
+                    )
+                  : moeda(
+                      resultadoCambio.valor
+                    )
+              }
+            />
+
+            <Resultado
+              titulo="Fonte"
+              valor={
+                cotacao?.fallback
+                  ? "Alternativa"
+                  : "BCB · PTAX"
+              }
+              detalhe={
+                cotacao
+                  ? dataHoraCotacao(
+                      cotacao.dataHora
+                    )
+                  : "Aguardando atualização"
+              }
+            />
+          </div>
+        </>
+      );
+    }
+
     if (
       selecionada ===
       "rescisao"

@@ -365,6 +365,186 @@
   padding: 10px 11px;
 }
 
+.cambio-quote-panel {
+  margin-bottom: 15px;
+  padding: 14px;
+
+  border: 1px solid #dcecef;
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f4fbfc,
+      #ffffff 72%
+    );
+}
+
+.cambio-quote-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cambio-quote-head span,
+.cambio-quote-head strong,
+.cambio-quote-head small {
+  display: block;
+}
+
+.cambio-quote-head > div > span {
+  color: #6f7f90;
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.cambio-quote-head > div > strong {
+  margin-top: 4px;
+
+  color: #1f3348;
+
+  font-size: 19px;
+  font-weight: 850;
+  letter-spacing: -.03em;
+}
+
+.cambio-quote-head > div > small {
+  margin-top: 4px;
+
+  color: #8c99a7;
+
+  font-size: 7px;
+  line-height: 1.4;
+}
+
+.cambio-refresh {
+  min-height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  padding: 0 9px;
+
+  border: 1px solid #d8e8eb;
+  border-radius: 9px;
+
+  background: #ffffff;
+  color: #0b7f91;
+
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.cambio-refresh:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
+.cambio-refresh .spinning {
+  animation:
+    cambio-spin .8s linear infinite;
+}
+
+@keyframes cambio-spin {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+.cambio-rates {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 7px;
+
+  margin-top: 12px;
+}
+
+.cambio-rates > div {
+  min-width: 0;
+
+  padding: 9px;
+
+  border: 1px solid #e7eff2;
+  border-radius: 10px;
+
+  background: rgba(255,255,255,.78);
+}
+
+.cambio-rates span,
+.cambio-rates strong {
+  display: block;
+}
+
+.cambio-rates span {
+  color: #8a97a6;
+
+  font-size: 7px;
+  font-weight: 700;
+}
+
+.cambio-rates strong {
+  margin-top: 3px;
+
+  overflow: hidden;
+
+  color: #405066;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cambio-direction-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-bottom: 11px;
+}
+
+.cambio-direction {
+  min-height: 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 0 11px;
+
+  border: 1px solid #dbe9ec;
+  border-radius: 10px;
+
+  background: #f4fafb;
+  color: #0b7f91;
+
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.cambio-direction-row > small {
+  color: #94a3b8;
+
+  font-size: 7px;
+}
+
+.cambio-error {
+  border-color: #f1d7d7;
+  background: #fff8f8;
+  color: #a94b4b;
+}
+
 @media (max-width: 850px) {
   .calculadoras-shell {
     grid-template-columns: 1fr;
@@ -397,6 +577,29 @@
 }
 
 @media (max-width: 575.98px) {
+  .cambio-quote-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cambio-refresh {
+    align-self: flex-start;
+  }
+
+  .cambio-rates {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cambio-rates > div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .cambio-direction-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
   .calculadora-workspace {
     padding: 16px;
   }
