@@ -21,6 +21,10 @@ import {
 } from "../../services/dividas";
 
 import {
+  listarFaturasPendentesCartoes,
+} from "../../services/cartoes";
+
+import {
   avaliarCompra,
   gerarResumoRumo,
   montarContextoRumoIa,
@@ -33,6 +37,7 @@ const perguntasRapidas = [
   "Quanto posso gastar agora?",
   "Quais obrigações vencem esta semana?",
   "Tenho parcelas de dívidas próximas?",
+  "Como está minha próxima fatura?",
   "Como estão meus gastos?",
   "Como estão os próximos 30 dias?",
 ];
@@ -46,6 +51,11 @@ function RumoIaAssistente({ dados }) {
   const [
     parcelasDividas,
     setParcelasDividas,
+  ] = useState([]);
+
+  const [
+    faturasCartao,
+    setFaturasCartao,
   ] = useState([]);
 
   const [
@@ -83,6 +93,7 @@ function RumoIaAssistente({ dados }) {
         const [
           resultado,
           dividasPlanejadas,
+          faturasPendentes,
         ] =
           await Promise.all([
             listarProximosCompromissos({
@@ -90,6 +101,10 @@ function RumoIaAssistente({ dados }) {
               limite: 100,
             }),
             listarParcelasPlanejadasDividas({
+              dias: 30,
+              incluirVencidas: true,
+            }),
+            listarFaturasPendentesCartoes({
               dias: 30,
               incluirVencidas: true,
             }),
@@ -104,6 +119,11 @@ function RumoIaAssistente({ dados }) {
             dividasPlanejadas ||
             []
           );
+
+          setFaturasCartao(
+            faturasPendentes ||
+            []
+          );
         }
       } catch (error) {
         console.error(
@@ -114,6 +134,7 @@ function RumoIaAssistente({ dados }) {
         if (ativo) {
           setCompromissos([]);
           setParcelasDividas([]);
+          setFaturasCartao([]);
         }
       } finally {
         if (ativo) {
@@ -135,12 +156,14 @@ function RumoIaAssistente({ dados }) {
         montarContextoRumoIa(
           dados,
           compromissos,
-          parcelasDividas
+          parcelasDividas,
+          faturasCartao
         ),
       [
         dados,
         compromissos,
         parcelasDividas,
+        faturasCartao,
       ]
     );
 
@@ -241,7 +264,7 @@ function RumoIaAssistente({ dados }) {
               </strong>
 
               <small>
-                Saldo, gastos, receitas, dívidas, compromissos e projeções.
+                Saldo, gastos, receitas, dívidas, cartões, compromissos e projeções.
               </small>
             </div>
           </div>
@@ -400,7 +423,7 @@ function RumoIaAssistente({ dados }) {
                 </strong>
 
                 <p>
-                  O Rumo protege primeiro os compromissos identificados para os próximos 7 dias e mostra quanto sobra depois da simulação.
+                  O Rumo protege primeiro todas as obrigações dos próximos 7 dias — incluindo dívidas e faturas — e mostra quanto sobra depois da simulação.
                 </p>
               </>
             )}
