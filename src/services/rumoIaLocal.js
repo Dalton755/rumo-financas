@@ -20,7 +20,7 @@ function normalizarTexto(texto) {
 
 export function extrairValorDaPergunta(texto) {
   const bruto = String(texto || "");
-  const match = bruto.match(/(?:r\$\s*)?(\d{1,3}(?:\.\d{3})*(?:,\d{1,2})|\d+(?:[.,]\d{1,2})?)/i);
+  const match = bruto.match(/(?:r\$\s*)?(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+\.\d{1,2}|\d+(?:,\d{1,2})?)/i);
 
   if (!match?.[1]) {
     return null;
