@@ -25,6 +25,7 @@ import {
     ArrowUpRight,
     Banknote,
     Bell,
+    BrainCircuit,
     Calculator,
     CalendarDays,
     ChevronRight,
@@ -144,6 +145,83 @@ function Dashboard() {
     const saldoAposProximos =
         saldoDisponivel -
         totalProximos;
+
+    const leituraRumo =
+        useMemo(
+            () => {
+                if (
+                    totalProximos >
+                    saldoDisponivel
+                ) {
+                    const falta =
+                        totalProximos -
+                        saldoDisponivel;
+
+                    return {
+                        status: "attention",
+                        titulo:
+                            "Sua semana exige atenção.",
+                        descricao:
+                            `Os compromissos dos próximos 7 dias superam seu saldo em ${formatarMoeda(
+                                falta
+                            )}.`
+                    };
+                }
+
+                if (
+                    totalProximos > 0
+                ) {
+                    return {
+                        status: "positive",
+                        titulo:
+                            "Seus próximos vencimentos estão cobertos.",
+                        descricao:
+                            `Depois de reservar ${formatarMoeda(
+                                totalProximos
+                            )}, ficam ${formatarMoeda(
+                                Math.max(
+                                    0,
+                                    saldoAposProximos
+                                )
+                            )} fora dos compromissos identificados para os próximos 7 dias.`
+                    };
+                }
+
+                if (
+                    resultadoMes < 0
+                ) {
+                    return {
+                        status: "attention",
+                        titulo:
+                            "Seu mês está pedindo ajuste.",
+                        descricao:
+                            `As despesas superam as receitas em ${formatarMoeda(
+                                Math.abs(
+                                    resultadoMes
+                                )
+                            )} neste período.`
+                    };
+                }
+
+                return {
+                    status: "positive",
+                    titulo:
+                        "Seu cenário imediato está tranquilo.",
+                    descricao:
+                        resultadoMes > 0
+                            ? `Seu fluxo do mês está positivo em ${formatarMoeda(
+                                resultadoMes
+                            )} e não há vencimentos pendentes nos próximos 7 dias.`
+                            : "Não há vencimentos pendentes nos próximos 7 dias."
+                };
+            },
+            [
+                totalProximos,
+                saldoDisponivel,
+                saldoAposProximos,
+                resultadoMes
+            ]
+        );
 
     async function carregarDashboard(
         userId,
@@ -625,34 +703,26 @@ function Dashboard() {
 
                     <article
                         className={
-                            resultadoMes >= 0
-                                ? "dashboard-guidance positive"
-                                : "dashboard-guidance attention"
+                            `dashboard-guidance ${leituraRumo.status}`
                         }
                     >
                         <div className="dashboard-guidance-icon">
-                            <Compass
+                            <BrainCircuit
                                 size={19}
                             />
                         </div>
 
                         <div className="dashboard-guidance-copy">
                             <span>
-                                Leitura do Rumo
+                                Rumo IA • leitura da semana
                             </span>
 
                             <strong>
-                                {resultadoMes >= 0
-                                    ? "Seu fluxo está positivo neste período."
-                                    : "Suas saídas estão acima das entradas."
-                                }
+                                {leituraRumo.titulo}
                             </strong>
 
                             <p>
-                                {resultadoMes >= 0
-                                    ? `Você preservou ${formatarMoeda(resultadoMes)} entre receitas e despesas.`
-                                    : `Seu fluxo está negativo em ${formatarMoeda(Math.abs(resultadoMes))}. Reveja os maiores gastos.`
-                                }
+                                {leituraRumo.descricao}
                             </p>
                         </div>
 
@@ -660,7 +730,7 @@ function Dashboard() {
                             to="/inteligencia"
                             className="dashboard-guidance-link"
                         >
-                            Ver análise
+                            Perguntar ao Rumo
                             <ChevronRight
                                 size={15}
                             />
