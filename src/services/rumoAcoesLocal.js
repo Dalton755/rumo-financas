@@ -234,7 +234,7 @@ function limparDescricao(
   resultado =
     resultado
       .replace(
-        /\b(de|do|da|dos|das|para|por|um|uma)\b/gi,
+        /\b(de|do|da|dos|das|no|na|nos|nas|em|para|por|um|uma)\b/gi,
         " "
       )
       .replace(
@@ -432,6 +432,93 @@ function sugerirPorNome(
 }
 
 
+function sugerirConta(
+  texto,
+  contas,
+  historico,
+  {
+    tipo,
+    categoriaId,
+  } = {}
+) {
+  const porNome =
+    sugerirPorNome(
+      texto,
+      contas
+    );
+
+  if (porNome) {
+    return porNome;
+  }
+
+  if (
+    (contas || []).length === 1
+  ) {
+    return contas[0].id;
+  }
+
+  const candidatos =
+    (historico || [])
+      .filter(
+        (item) =>
+          item.conta_id &&
+          (
+            !tipo ||
+            item.tipo === tipo
+          )
+      );
+
+  const mesmaCategoria =
+    categoriaId
+      ? candidatos.filter(
+          (item) =>
+            item.categoria_id ===
+            categoriaId
+        )
+      : [];
+
+  const base =
+    mesmaCategoria.length
+      ? mesmaCategoria
+      : candidatos;
+
+  if (!base.length) {
+    return "";
+  }
+
+  const frequencia =
+    new Map();
+
+  base.forEach(
+    (item) => {
+      frequencia.set(
+        item.conta_id,
+        (
+          frequencia.get(
+            item.conta_id
+          ) ||
+          0
+        ) +
+        1
+      );
+    }
+  );
+
+  const ordem =
+    [...frequencia.entries()]
+      .sort(
+        (a, b) =>
+          b[1] - a[1]
+      );
+
+  return (
+    ordem[0]?.[0] ||
+    base[0]?.conta_id ||
+    ""
+  );
+}
+
+
 function detectarTipo(texto) {
   const normal =
     normalizar(texto);
@@ -507,6 +594,7 @@ export async function listarOpcoesRumoAcoes() {
   const [
     contasResp,
     categoriasResp,
+    historicoResp,
     cartoes,
   ] =
     await Promise.all([
@@ -542,6 +630,29 @@ export async function listarOpcoesRumoAcoes() {
         )
         .order("nome"),
 
+      supabase
+        .schema("rumo")
+        .from("movimentacoes")
+        .select(
+          "conta_id,categoria_id,tipo,data_movimentacao"
+        )
+        .eq(
+          "usuario_id",
+          user.id
+        )
+        .not(
+          "conta_id",
+          "is",
+          null
+        )
+        .order(
+          "data_movimentacao",
+          {
+            ascending: false
+          }
+        )
+        .limit(120),
+
       listarCartoes(),
     ]);
 
@@ -553,6 +664,10 @@ export async function listarOpcoesRumoAcoes() {
     throw categoriasResp.error;
   }
 
+  if (historicoResp.error) {
+    throw historicoResp.error;
+  }
+
   return {
     contas:
       contasResp.data ||
@@ -560,6 +675,10 @@ export async function listarOpcoesRumoAcoes() {
 
     categorias:
       categoriasResp.data ||
+      [],
+
+    historico:
+      historicoResp.data ||
       [],
 
     cartoes:
@@ -605,6 +724,24 @@ export function interpretarAcaoRumo(
     tipo === "despesa" ||
     tipo === "receita"
   ) {
+    const categoriaId =
+      sugerirCategoria(
+        texto,
+        opcoes.categorias,
+        tipo
+      );
+
+    const contaId =
+      sugerirConta(
+        texto,
+        opcoes.contas,
+        opcoes.historico,
+        {
+          tipo,
+          categoriaId,
+        }
+      );
+
     return {
       tipo,
       rotulo:
@@ -624,17 +761,10 @@ export function interpretarAcaoRumo(
       data,
 
       conta_id:
-        sugerirPorNome(
-          texto,
-          opcoes.contas
-        ),
+        contaId,
 
       categoria_id:
-        sugerirCategoria(
-          texto,
-          opcoes.categorias,
-          tipo
-        ),
+        categoriaId,
 
       observacao:
         "Criado pelo Rumo IA",
