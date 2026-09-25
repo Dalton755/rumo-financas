@@ -385,6 +385,9 @@ function Inteligencia() {
 
         <RumoIaAssistente
           dados={dados}
+          onAtualizou={
+            carregarInteligencia
+          }
         />
 
         <section className="inteligencia-painel">
