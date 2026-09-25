@@ -821,3 +821,325 @@ export async function pagarFaturaCartao({
     return data;
 
 }
+
+export async function listarFaturasPendentesCartoes({
+    dias = 90,
+    incluirVencidas = true
+} = {}) {
+
+    const user =
+        await obterUsuario();
+
+
+    const {
+        data: cartoes,
+        error: erroCartoes
+    } =
+        await supabase
+            .schema("rumo")
+            .from("cartoes")
+            .select(`
+                id,
+                nome,
+                banco,
+                final_cartao,
+                fechamento_dia,
+                vencimento_dia
+            `)
+            .eq(
+                "usuario_id",
+                user.id
+            )
+            .eq(
+                "ativo",
+                true
+            );
+
+
+    if (erroCartoes) {
+        throw erroCartoes;
+    }
+
+
+    const cartoesAtivos =
+        cartoes || [];
+
+
+    if (!cartoesAtivos.length) {
+        return [];
+    }
+
+
+    const {
+        data: compras,
+        error: erroCompras
+    } =
+        await supabase
+            .schema("rumo")
+            .from("compras_cartao")
+            .select(`
+                id,
+                cartao_id,
+                descricao,
+                status
+            `)
+            .eq(
+                "usuario_id",
+                user.id
+            )
+            .eq(
+                "status",
+                "ativa"
+            )
+            .in(
+                "cartao_id",
+                cartoesAtivos.map(
+                    (item) =>
+                        item.id
+                )
+            );
+
+
+    if (erroCompras) {
+        throw erroCompras;
+    }
+
+
+    const comprasAtivas =
+        compras || [];
+
+
+    if (!comprasAtivas.length) {
+        return [];
+    }
+
+
+    const hoje =
+        new Date();
+
+    hoje.setHours(
+        12,
+        0,
+        0,
+        0
+    );
+
+
+    const limite =
+        new Date(hoje);
+
+    limite.setDate(
+        limite.getDate() +
+        Math.max(
+            1,
+            Number(dias) || 90
+        )
+    );
+
+
+    const dataIso =
+        (data) =>
+            [
+                data.getFullYear(),
+                String(
+                    data.getMonth() + 1
+                ).padStart(
+                    2,
+                    "0"
+                ),
+                String(
+                    data.getDate()
+                ).padStart(
+                    2,
+                    "0"
+                )
+            ].join("-");
+
+
+    let query =
+        supabase
+            .schema("rumo")
+            .from("parcelas_cartao")
+            .select(`
+                id,
+                compra_id,
+                numero_parcela,
+                valor,
+                competencia,
+                vencimento,
+                status
+            `)
+            .eq(
+                "usuario_id",
+                user.id
+            )
+            .eq(
+                "status",
+                "pendente"
+            )
+            .in(
+                "compra_id",
+                comprasAtivas.map(
+                    (item) =>
+                        item.id
+                )
+            )
+            .lte(
+                "vencimento",
+                dataIso(limite)
+            )
+            .order(
+                "vencimento",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (!incluirVencidas) {
+        query =
+            query.gte(
+                "vencimento",
+                dataIso(hoje)
+            );
+    }
+
+
+    const {
+        data: parcelas,
+        error: erroParcelas
+    } =
+        await query;
+
+
+    if (erroParcelas) {
+        throw erroParcelas;
+    }
+
+
+    const compraPorId =
+        new Map(
+            comprasAtivas.map(
+                (item) => [
+                    item.id,
+                    item
+                ]
+            )
+        );
+
+
+    const cartaoPorId =
+        new Map(
+            cartoesAtivos.map(
+                (item) => [
+                    item.id,
+                    item
+                ]
+            )
+        );
+
+
+    const faturas =
+        new Map();
+
+
+    (parcelas || [])
+        .forEach(
+            (parcela) => {
+
+                const compra =
+                    compraPorId.get(
+                        parcela.compra_id
+                    );
+
+
+                if (!compra) {
+                    return;
+                }
+
+
+                const cartao =
+                    cartaoPorId.get(
+                        compra.cartao_id
+                    );
+
+
+                if (!cartao) {
+                    return;
+                }
+
+
+                const chave =
+                    cartao.id +
+                    ":" +
+                    parcela.vencimento;
+
+
+                if (
+                    !faturas.has(
+                        chave
+                    )
+                ) {
+                    faturas.set(
+                        chave,
+                        {
+                            id:
+                                chave,
+                            cartao_id:
+                                cartao.id,
+                            vencimento:
+                                parcela.vencimento,
+                            competencia:
+                                parcela.competencia,
+                            valor:
+                                0,
+                            quantidade_parcelas:
+                                0,
+                            cartao,
+                            parcelas:
+                                []
+                        }
+                    );
+                }
+
+
+                const fatura =
+                    faturas.get(
+                        chave
+                    );
+
+
+                fatura.valor +=
+                    Number(
+                        parcela.valor ||
+                        0
+                    );
+
+                fatura.quantidade_parcelas +=
+                    1;
+
+                fatura.parcelas.push({
+                    ...parcela,
+                    compra
+                });
+
+            }
+        );
+
+
+    return Array
+        .from(
+            faturas.values()
+        )
+        .sort(
+            (a, b) =>
+                String(
+                    a.vencimento
+                ).localeCompare(
+                    String(
+                        b.vencimento
+                    )
+                )
+        );
+
+}
