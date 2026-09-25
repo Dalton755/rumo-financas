@@ -270,11 +270,23 @@ export async function atualizarAlertasCartoes() {
       lido:
         existente &&
         existente.ativo &&
-        JSON.stringify(
+        Number(
           existente.dados
+            ?.valor ||
+          0
         ) ===
-        JSON.stringify(
-          dados
+        Number(
+          dados.valor ||
+          0
+        ) &&
+        Number(
+          existente.dados
+            ?.dias_restantes ??
+          0
+        ) ===
+        Number(
+          dados.dias_restantes ??
+          0
         )
           ? existente.lido
           : false,
