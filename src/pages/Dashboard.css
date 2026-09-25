@@ -689,3 +689,371 @@
         gap: 9px;
     }
 }
+
+
+/* =========================================================
+   RUMO DE HOJE
+========================================================= */
+
+.dashboard-rumo-hoje {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto;
+
+    align-items: center;
+    gap: 18px;
+
+    margin-bottom: 8px;
+    padding: 17px 18px;
+
+    border: 1px solid #dbe7eb;
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f6fbfc,
+            #ffffff 68%
+        );
+
+    box-shadow: var(--shadow-xs);
+}
+
+.dashboard-rumo-hoje.critico {
+    border-color: #f0d4d4;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff8f8,
+            #ffffff 70%
+        );
+}
+
+.dashboard-rumo-hoje.atencao {
+    border-color: #efe0ca;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fffbf5,
+            #ffffff 70%
+        );
+}
+
+.dashboard-rumo-hoje.positivo {
+    border-color: #d7e9df;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f7fcf9,
+            #ffffff 70%
+        );
+}
+
+.dashboard-rumo-status {
+    min-width: 0;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.dashboard-rumo-icon {
+    width: 40px;
+    height: 40px;
+
+    display: grid;
+    place-items: center;
+
+    flex: 0 0 auto;
+
+    border-radius: 12px;
+
+    background: #eaf7f9;
+    color: #0b879b;
+}
+
+.dashboard-rumo-hoje.critico
+.dashboard-rumo-icon {
+    background: #fef0f0;
+    color: #c24141;
+}
+
+.dashboard-rumo-hoje.atencao
+.dashboard-rumo-icon {
+    background: #fff4df;
+    color: #b56b08;
+}
+
+.dashboard-rumo-hoje.positivo
+.dashboard-rumo-icon {
+    background: #eaf8f0;
+    color: #16844f;
+}
+
+.dashboard-rumo-copy {
+    min-width: 0;
+}
+
+.dashboard-rumo-label {
+    display: block;
+
+    color: #7b8998;
+
+    font-size: 7px;
+    font-weight: 850;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+
+.dashboard-rumo-copy h2 {
+    margin: 4px 0 0;
+
+    color: #253449;
+
+    font-size: 16px;
+    font-weight: 850;
+    line-height: 1.25;
+}
+
+.dashboard-rumo-copy p {
+    max-width: 760px;
+
+    margin: 5px 0 0;
+
+    color: #718093;
+
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.dashboard-rumo-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    flex: 0 0 auto;
+}
+
+.dashboard-rumo-primary,
+.dashboard-rumo-ai {
+    min-height: 37px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    padding: 0 11px;
+
+    border-radius: 10px;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+.dashboard-rumo-primary {
+    background: #172033;
+    color: #ffffff;
+}
+
+.dashboard-rumo-ai {
+    border: 1px solid #cfe5e9;
+
+    background: #f3fafb;
+    color: #0b7f91;
+}
+
+.dashboard-rumo-snapshot {
+    display: grid;
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    margin-bottom: 12px;
+
+    overflow: hidden;
+
+    border: 1px solid #e6ebef;
+    border-radius: 13px;
+
+    background: rgba(255,255,255,.92);
+}
+
+.dashboard-rumo-snapshot > div {
+    min-width: 0;
+
+    padding: 9px 11px;
+
+    border-right: 1px solid #edf1f4;
+}
+
+.dashboard-rumo-snapshot > div:last-child {
+    border-right: 0;
+}
+
+.dashboard-rumo-snapshot span,
+.dashboard-rumo-snapshot strong {
+    display: block;
+}
+
+.dashboard-rumo-snapshot span {
+    color: #8c98a6;
+
+    font-size: 7px;
+    font-weight: 700;
+}
+
+.dashboard-rumo-snapshot strong {
+    margin-top: 2px;
+
+    overflow: hidden;
+
+    color: #354459;
+
+    font-size: 11px;
+    font-weight: 850;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.dashboard-rumo-snapshot strong.positivo {
+    color: #16844f;
+}
+
+.dashboard-rumo-snapshot strong.negativo {
+    color: #c24141;
+}
+
+.dashboard-guidance.ai-entry {
+    border-color: #dce9ed;
+
+    background:
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(15,159,179,.10),
+            transparent 36%
+        ),
+        #ffffff;
+}
+
+@media (max-width: 900px) {
+    .dashboard-rumo-hoje {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-rumo-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .dashboard-rumo-hoje {
+        gap: 11px;
+
+        margin-bottom: 7px;
+        padding: 12px;
+
+        border-radius: 14px;
+    }
+
+    .dashboard-rumo-status {
+        gap: 9px;
+    }
+
+    .dashboard-rumo-icon {
+        width: 34px;
+        height: 34px;
+
+        border-radius: 10px;
+    }
+
+    .dashboard-rumo-icon svg {
+        width: 17px;
+        height: 17px;
+    }
+
+    .dashboard-rumo-copy h2 {
+        font-size: 12px;
+    }
+
+    .dashboard-rumo-copy p {
+        margin-top: 3px;
+
+        font-size: 8px;
+        line-height: 1.45;
+    }
+
+    .dashboard-rumo-actions {
+        display: grid;
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        width: 100%;
+    }
+
+    .dashboard-rumo-primary,
+    .dashboard-rumo-ai {
+        min-width: 0;
+        min-height: 36px;
+
+        padding: 0 8px;
+
+        font-size: 7px;
+    }
+
+    .dashboard-rumo-snapshot {
+        margin-bottom: 9px;
+        border-radius: 11px;
+    }
+
+    .dashboard-rumo-snapshot > div {
+        padding: 8px;
+    }
+
+    .dashboard-rumo-snapshot span {
+        font-size: 6.5px;
+    }
+
+    .dashboard-rumo-snapshot strong {
+        font-size: 9px;
+    }
+}
+
+
+.dashboard-upcoming-item {
+    text-decoration: none;
+}
+
+.dashboard-upcoming-type {
+    grid-column: 2;
+    width: max-content;
+
+    margin-top: -8px;
+    padding: 2px 5px;
+
+    border-radius: 999px;
+
+    background: #f2f6f8;
+    color: #8491a0;
+
+    font-size: 6px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.dashboard-upcoming-item:hover
+.dashboard-upcoming-type {
+    color: #0b7f91;
+}
+
+@media (max-width: 575.98px) {
+    .dashboard-upcoming-type {
+        margin-top: -6px;
+    }
+}

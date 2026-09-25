@@ -543,14 +543,19 @@ export async function atualizarSaldoDivida(
 
 export async function registrarPagamentoDivida(
   dividaId,
-  valorPagamento
+  valorPagamento,
+  contaId,
+  dataPagamento
 ) {
-  const user =
-    await obterUsuario();
-
   if (!dividaId) {
     throw new Error(
       "Dívida não informada."
+    );
+  }
+
+  if (!contaId) {
+    throw new Error(
+      "Selecione a conta utilizada no pagamento."
     );
   }
 
@@ -561,75 +566,24 @@ export async function registrarPagamentoDivida(
     );
 
   const {
-    data: divida,
-    error: erroBusca,
-  } = await supabase
-    .schema("rumo")
-    .from("dividas")
-    .select(`
-      id,
-      saldo_atual,
-      status
-    `)
-    .eq(
-      "id",
-      dividaId
-    )
-    .eq(
-      "usuario_id",
-      user.id
-    )
-    .single();
-
-  if (erroBusca) {
-    throw erroBusca;
-  }
-
-  if (
-    divida.status ===
-    "quitada"
-  ) {
-    throw new Error(
-      "Esta dívida já está quitada."
-    );
-  }
-
-  const saldoAtual =
-    Number(
-      divida.saldo_atual || 0
-    );
-
-  const novoSaldo =
-    Math.max(
-      0,
-      saldoAtual -
-      pagamentoNumero
-    );
-
-  const {
     data,
     error,
   } = await supabase
     .schema("rumo")
-    .from("dividas")
-    .update({
-      saldo_atual:
-        novoSaldo,
-
-      updated_at:
-        new Date()
-          .toISOString(),
-    })
-    .eq(
-      "id",
-      dividaId
-    )
-    .eq(
-      "usuario_id",
-      user.id
-    )
-    .select()
-    .single();
+    .rpc(
+      "pagar_divida_avulsa",
+      {
+        p_divida_id:
+          dividaId,
+        p_conta_id:
+          contaId,
+        p_valor:
+          pagamentoNumero,
+        p_data_pagamento:
+          dataPagamento ||
+          null,
+      }
+    );
 
   if (error) {
     throw error;
@@ -638,6 +592,84 @@ export async function registrarPagamentoDivida(
   return data;
 }
 
+
+export async function pagarParcelaPlanoQuitacao({
+  parcelaId,
+  contaId,
+  dataPagamento,
+}) {
+  if (!parcelaId) {
+    throw new Error(
+      "Parcela não informada."
+    );
+  }
+
+  if (!contaId) {
+    throw new Error(
+      "Selecione a conta utilizada no pagamento."
+    );
+  }
+
+  const {
+    data,
+    error,
+  } = await supabase
+    .schema("rumo")
+    .rpc(
+      "pagar_parcela_divida",
+      {
+        p_parcela_id:
+          parcelaId,
+        p_conta_id:
+          contaId,
+        p_data_pagamento:
+          dataPagamento ||
+          null,
+      }
+    );
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+
+export async function listarContasPagamentoDivida() {
+  const user =
+    await obterUsuario();
+
+  const {
+    data,
+    error,
+  } = await supabase
+    .schema("rumo")
+    .from("contas")
+    .select(
+      "id, nome, banco"
+    )
+    .eq(
+      "usuario_id",
+      user.id
+    )
+    .eq(
+      "ativo",
+      true
+    )
+    .order(
+      "nome",
+      {
+        ascending: true,
+      }
+    );
+
+  if (error) {
+    throw error;
+  }
+
+  return data || [];
+}
 
 export async function alterarStatusDivida(
   dividaId,
@@ -1261,3 +1293,179 @@ export function simularQuitacao({
       jurosPercentual,
   };
 }
+
+export async function listarParcelasPlanejadasDividas({
+  dias = 90,
+  incluirVencidas = true,
+} = {}) {
+  const user =
+    await obterUsuario();
+
+  const {
+    data: dividasUsuario,
+    error: erroDividas,
+  } = await supabase
+    .schema("rumo")
+    .from("dividas")
+    .select("id, nome, credor, saldo_atual, status")
+    .eq("usuario_id", user.id)
+    .neq("status", "quitada");
+
+  if (erroDividas) {
+    throw erroDividas;
+  }
+
+  const dividasAtivas =
+    dividasUsuario || [];
+
+  if (!dividasAtivas.length) {
+    return [];
+  }
+
+  const hoje =
+    new Date();
+
+  hoje.setHours(12, 0, 0, 0);
+
+  const ate =
+    new Date(hoje);
+
+  ate.setDate(
+    ate.getDate() +
+    Math.max(
+      1,
+      Number(dias) || 90
+    )
+  );
+
+  const dataIso = (data) =>
+    [
+      data.getFullYear(),
+      String(data.getMonth() + 1).padStart(2, "0"),
+      String(data.getDate()).padStart(2, "0"),
+    ].join("-");
+
+  let query =
+    supabase
+      .schema("rumo")
+      .from("plano_quitacao")
+      .select("id, divida_id, semana_referencia, valor_previsto, valor_pago, status, created_at, updated_at")
+      .in(
+        "divida_id",
+        dividasAtivas.map(
+          (item) => item.id
+        )
+      )
+      .neq("status", "pago")
+      .lte(
+        "semana_referencia",
+        dataIso(ate)
+      )
+      .order(
+        "semana_referencia",
+        {
+          ascending: true,
+        }
+      );
+
+  if (!incluirVencidas) {
+    query =
+      query.gte(
+        "semana_referencia",
+        dataIso(hoje)
+      );
+  }
+
+  const {
+    data,
+    error,
+  } = await query;
+
+  if (error) {
+    throw error;
+  }
+
+  const mapaDividas =
+    new Map(
+      dividasAtivas.map(
+        (item) => [
+          item.id,
+          item,
+        ]
+      )
+    );
+
+  const saldoRestantePorDivida =
+    new Map(
+      dividasAtivas.map(
+        (item) => [
+          item.id,
+          Number(
+            item.saldo_atual ||
+            0
+          ),
+        ]
+      )
+    );
+
+  return (data || [])
+    .map(
+      (parcela) => {
+        const divida =
+          mapaDividas.get(
+            parcela.divida_id
+          );
+
+        const restanteBruto =
+          Math.max(
+            0,
+            Number(
+              parcela.valor_previsto ||
+              0
+            ) -
+            Number(
+              parcela.valor_pago ||
+              0
+            )
+          );
+
+        const saldoDisponivel =
+          Math.max(
+            0,
+            Number(
+              saldoRestantePorDivida.get(
+                parcela.divida_id
+              ) ||
+              0
+            )
+          );
+
+        const valorRestante =
+          Math.min(
+            restanteBruto,
+            saldoDisponivel
+          );
+
+        saldoRestantePorDivida.set(
+          parcela.divida_id,
+          Math.max(
+            0,
+            saldoDisponivel -
+            valorRestante
+          )
+        );
+
+        return {
+          ...parcela,
+          valor_restante:
+            valorRestante,
+          divida,
+        };
+      }
+    )
+    .filter(
+      (item) =>
+        item.valor_restante > 0
+    );
+}
+

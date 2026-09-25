@@ -84,6 +84,35 @@ export async function atualizarAlertasCompromissos() {
 }
 
 
+export async function atualizarAlertasDividas() {
+
+  const {
+    data,
+    error
+  } = await supabase
+    .schema("rumo")
+    .rpc(
+      "atualizar_alertas_dividas"
+    );
+
+
+  if (error) {
+
+    console.error(
+      "[RUMO ALERTAS] Erro ao atualizar dívidas:",
+      error
+    );
+
+    throw error;
+
+  }
+
+
+  return data;
+
+}
+
+
 export async function listarAlertasAtivos() {
 
   const user =
@@ -165,6 +194,14 @@ export async function carregarCentralAlertas() {
    * não são movimentações financeiras realizadas.
    */
   await atualizarAlertasCompromissos();
+
+
+  /*
+   * Dívidas planejadas também são obrigações
+   * financeiras e precisam entrar na mesma
+   * central de decisão.
+   */
+  await atualizarAlertasDividas();
 
 
   /*
