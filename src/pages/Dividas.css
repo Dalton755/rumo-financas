@@ -2385,3 +2385,183 @@
     min-width: 96px;
   }
 }
+
+
+/* =========================================================
+   PAGAMENTO DE DÍVIDAS • CONTA + DATA
+========================================================= */
+
+.divida-pagamento-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, .85fr)
+    minmax(0, 1.15fr)
+    minmax(140px, .7fr)
+    auto;
+
+  align-items: end;
+  gap: 9px;
+
+  margin-top: 12px;
+}
+
+.divida-pagamento-grid label,
+.dividas-pagamento-parcela-body label {
+  min-width: 0;
+}
+
+.divida-pagamento-grid label > span,
+.dividas-pagamento-parcela-body label > span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #748193;
+
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.divida-pagamento-grid select,
+.divida-pagamento-grid input[type="date"],
+.dividas-pagamento-parcela-body select,
+.dividas-pagamento-parcela-body input[type="date"] {
+  width: 100%;
+  min-height: 40px;
+
+  padding: 0 10px;
+
+  border: 1px solid #dce4ea;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #334155;
+
+  font-size: 9px;
+  outline: none;
+}
+
+.divida-pagamento-grid > button {
+  min-height: 40px;
+
+  padding: 0 12px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: #172033;
+  color: #ffffff;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+.divida-pagamento-grid > button:disabled {
+  opacity: .55;
+}
+
+.dividas-pagamento-overlay {
+  z-index: 1320;
+}
+
+.dividas-modal-pagar-parcela {
+  width: min(100%, 470px);
+}
+
+.dividas-pagamento-parcela-body {
+  display: grid;
+  gap: 12px;
+
+  padding: 18px 22px;
+}
+
+.dividas-pagamento-parcela-valor {
+  padding: 13px 14px;
+
+  border: 1px solid #dbe9df;
+  border-radius: 13px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f5fbf7,
+      #ffffff 72%
+    );
+}
+
+.dividas-pagamento-parcela-valor span,
+.dividas-pagamento-parcela-valor strong,
+.dividas-pagamento-parcela-valor small {
+  display: block;
+}
+
+.dividas-pagamento-parcela-valor span {
+  color: #7c8b82;
+
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.dividas-pagamento-parcela-valor strong {
+  margin-top: 3px;
+
+  color: #1f6f45;
+
+  font-size: 22px;
+  font-weight: 850;
+}
+
+.dividas-pagamento-parcela-valor small {
+  margin-top: 3px;
+
+  color: #7c8795;
+
+  font-size: 8px;
+}
+
+.dividas-pagamento-parcela-body p {
+  margin: 0;
+
+  color: #718093;
+
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .divida-pagamento-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .divida-pagamento-grid > button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .divida-pagamento-grid {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .divida-pagamento-grid > button {
+    grid-column: auto;
+  }
+
+  .dividas-modal-pagar-parcela {
+    width: 100%;
+  }
+
+  .dividas-pagamento-parcela-body {
+    padding: 14px;
+  }
+
+  .dividas-pagamento-parcela-valor strong {
+    font-size: 18px;
+  }
+}
