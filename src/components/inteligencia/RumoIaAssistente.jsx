@@ -17,6 +17,10 @@ import {
 } from "../../services/compromissos";
 
 import {
+  listarParcelasPlanejadasDividas,
+} from "../../services/dividas";
+
+import {
   avaliarCompra,
   gerarResumoRumo,
   montarContextoRumoIa,
@@ -27,7 +31,8 @@ import "./RumoIaAssistente.css";
 
 const perguntasRapidas = [
   "Quanto posso gastar agora?",
-  "Quais compromissos vencem esta semana?",
+  "Quais obrigações vencem esta semana?",
+  "Tenho parcelas de dívidas próximas?",
   "Como estão meus gastos?",
   "Como estão os próximos 30 dias?",
 ];
@@ -36,6 +41,11 @@ function RumoIaAssistente({ dados }) {
   const [
     compromissos,
     setCompromissos,
+  ] = useState([]);
+
+  const [
+    parcelasDividas,
+    setParcelasDividas,
   ] = useState([]);
 
   const [
@@ -70,15 +80,29 @@ function RumoIaAssistente({ dados }) {
       try {
         setCarregandoCompromissos(true);
 
-        const resultado =
-          await listarProximosCompromissos({
-            dias: 30,
-            limite: 100,
-          });
+        const [
+          resultado,
+          dividasPlanejadas,
+        ] =
+          await Promise.all([
+            listarProximosCompromissos({
+              dias: 30,
+              limite: 100,
+            }),
+            listarParcelasPlanejadasDividas({
+              dias: 30,
+              incluirVencidas: true,
+            }),
+          ]);
 
         if (ativo) {
           setCompromissos(
             resultado || []
+          );
+
+          setParcelasDividas(
+            dividasPlanejadas ||
+            []
           );
         }
       } catch (error) {
@@ -89,6 +113,7 @@ function RumoIaAssistente({ dados }) {
 
         if (ativo) {
           setCompromissos([]);
+          setParcelasDividas([]);
         }
       } finally {
         if (ativo) {
@@ -109,11 +134,13 @@ function RumoIaAssistente({ dados }) {
       () =>
         montarContextoRumoIa(
           dados,
-          compromissos
+          compromissos,
+          parcelasDividas
         ),
       [
         dados,
         compromissos,
+        parcelasDividas,
       ]
     );
 
@@ -214,7 +241,7 @@ function RumoIaAssistente({ dados }) {
               </strong>
 
               <small>
-                Saldo, gastos, receitas, compromissos e projeções.
+                Saldo, gastos, receitas, dívidas, compromissos e projeções.
               </small>
             </div>
           </div>
