@@ -421,19 +421,49 @@ Deno.serve(
       await response.json();
 
     if (!response.ok) {
+      const openAiError =
+        payload &&
+        typeof payload === "object"
+          ? (
+              payload as {
+                error?: {
+                  type?: string;
+                  code?: string | null;
+                  message?: string;
+                  param?: string | null;
+                };
+              }
+            ).error
+          : undefined;
+
+      const safeError = {
+        error:
+          "OPENAI_ERROR",
+        status:
+          response.status,
+        openai_type:
+          openAiError?.type ||
+          null,
+        openai_code:
+          openAiError?.code ||
+          null,
+        openai_param:
+          openAiError?.param ||
+          null,
+        openai_message:
+          openAiError?.message ||
+          "A OpenAI rejeitou a requisição.",
+      };
+
       console.error(
         "[RUMO IA] OpenAI:",
-        response.status,
-        payload,
+        JSON.stringify(
+          safeError,
+        ),
       );
 
       return jsonResponse(
-        {
-          error:
-            "OPENAI_ERROR",
-          status:
-            response.status,
-        },
+        safeError,
         502,
       );
     }
