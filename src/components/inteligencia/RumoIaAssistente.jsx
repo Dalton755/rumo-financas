@@ -841,7 +841,12 @@ function RumoIaAssistente({
                             }
                           >
                             <option value="">
-                              Selecione
+                              {
+                                acaoPendente.tipo ===
+                                "compromisso_unico"
+                                  ? "Opcional"
+                                  : "Selecione"
+                              }
                             </option>
 
                             {
