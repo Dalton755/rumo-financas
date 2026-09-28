@@ -48,9 +48,14 @@ function Inteligencia() {
     carregarInteligencia();
   }, []);
 
-  async function carregarInteligencia() {
+  async function carregarInteligencia(
+    silencioso = false
+  ) {
     try {
-      setCarregando(true);
+      if (!silencioso) {
+        setCarregando(true);
+      }
+
       setErro("");
 
       const resultado =
@@ -64,7 +69,9 @@ function Inteligencia() {
         "Não foi possível carregar sua análise financeira."
       );
     } finally {
-      setCarregando(false);
+      if (!silencioso) {
+        setCarregando(false);
+      }
     }
   }
 
@@ -385,6 +392,11 @@ function Inteligencia() {
 
         <RumoIaAssistente
           dados={dados}
+          onAtualizou={() =>
+            carregarInteligencia(
+              true
+            )
+          }
         />
 
         <section className="inteligencia-painel">

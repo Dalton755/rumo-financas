@@ -295,6 +295,68 @@ export async function listarOcorrenciasCompromissos() {
 }
 
 
+export async function criarCompromissoUnico({
+    nome,
+    categoriaId = null,
+    contaId = null,
+    vencimento,
+    tipoValor = "fixo",
+    valor = null
+}) {
+
+    if (!nome?.trim()) {
+        throw new Error(
+            "Informe o nome do compromisso."
+        );
+    }
+
+    if (!vencimento) {
+        throw new Error(
+            "Informe o vencimento."
+        );
+    }
+
+    const {
+        data,
+        error
+    } = await supabase
+        .schema("rumo")
+        .rpc(
+            "criar_compromisso_unico",
+            {
+                p_nome:
+                    nome.trim(),
+
+                p_categoria_id:
+                    categoriaId || null,
+
+                p_conta_id:
+                    contaId || null,
+
+                p_vencimento:
+                    vencimento,
+
+                p_tipo_valor:
+                    tipoValor || "fixo",
+
+                p_valor:
+                    valor === "" ||
+                    valor === null ||
+                    valor === undefined
+                        ? null
+                        : Number(valor)
+            }
+        );
+
+    if (error) {
+        throw error;
+    }
+
+    return data;
+
+}
+
+
 export async function criarCompromisso({
     nome,
     categoriaId,
@@ -305,6 +367,24 @@ export async function criarCompromisso({
     valorPadrao,
     valorEstimado
 }) {
+
+    if (frequencia === "unico") {
+
+        return criarCompromissoUnico({
+            nome,
+            categoriaId,
+            contaId,
+            vencimento:
+                dataInicio,
+            tipoValor,
+            valor:
+                tipoValor === "fixo"
+                    ? valorPadrao
+                    : valorEstimado
+        });
+
+    }
+
 
     const user =
         await obterUsuario();

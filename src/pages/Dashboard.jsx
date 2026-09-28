@@ -10,6 +10,7 @@ import { useDashboard } from "../context/DashboardContext";
 import { supabase } from "../services/supabase";
 import { listarProximosCompromissos } from "../services/compromissos";
 import { listarParcelasPlanejadasDividas } from "../services/dividas";
+import { listarFaturasPendentesCartoes } from "../services/cartoes";
 import { buscarCotacaoDolar } from "../services/cambio";
 
 import MainLayout from "../layouts/MainLayout";
@@ -105,6 +106,11 @@ function Dashboard() {
     ] = useState([]);
 
     const [
+        proximasFaturas,
+        setProximasFaturas
+    ] = useState([]);
+
+    const [
         cotacaoDolar,
         setCotacaoDolar
     ] = useState(null);
@@ -161,9 +167,26 @@ function Dashboard() {
             [proximasDividas]
         );
 
+    const totalFaturasProximas =
+        useMemo(
+            () =>
+                proximasFaturas
+                    .reduce(
+                        (total, item) =>
+                            total +
+                            Number(
+                                item.valor ||
+                                0
+                            ),
+                        0
+                    ),
+            [proximasFaturas]
+        );
+
     const totalObrigacoes =
         totalProximos +
-        totalDividasProximas;
+        totalDividasProximas +
+        totalFaturasProximas;
 
     const obrigacoesProximas =
         useMemo(
@@ -210,6 +233,27 @@ function Dashboard() {
                         rota:
                             "/dividas"
                     })
+                ),
+                ...proximasFaturas.map(
+                    (item) => ({
+                        id:
+                            `fatura:${item.id}`,
+                        tipo:
+                            "Fatura",
+                        nome:
+                            item.cartao
+                                ?.nome ||
+                            "Fatura do cartão",
+                        vencimento:
+                            item.vencimento,
+                        valor:
+                            Number(
+                                item.valor ||
+                                0
+                            ),
+                        rota:
+                            "/cartoes"
+                    })
                 )
             ]
                 .sort(
@@ -228,7 +272,8 @@ function Dashboard() {
                 ),
             [
                 proximosCompromissos,
-                proximasDividas
+                proximasDividas,
+                proximasFaturas
             ]
         );
 
@@ -259,13 +304,9 @@ function Dashboard() {
             )
             : null;
 
-    const parcelaDividaPrioritaria =
-        proximasDividas?.[0] ||
-        null;
-
-    const diasParcelaDivida =
-        parcelaDividaPrioritaria
-            ?.semana_referencia
+    const diasPrimeiraObrigacao =
+        primeiraObrigacao
+            ?.vencimento
             ? (() => {
                 const hoje =
                     new Date();
@@ -279,7 +320,7 @@ function Dashboard() {
 
                 const vencimento =
                     new Date(
-                        `${parcelaDividaPrioritaria.semana_referencia}T12:00:00`
+                        `${primeiraObrigacao.vencimento}T12:00:00`
                     );
 
                 return Math.round(
@@ -296,41 +337,59 @@ function Dashboard() {
         useMemo(
             () => {
                 if (
-                    diasParcelaDivida !== null &&
-                    diasParcelaDivida <= 0
+                    primeiraObrigacao &&
+                    diasPrimeiraObrigacao !== null &&
+                    diasPrimeiraObrigacao <= 0
                 ) {
+                    const atrasada =
+                        diasPrimeiraObrigacao < 0;
+
+                    const nome =
+                        primeiraObrigacao.nome;
+
                     const valor =
                         Number(
-                            parcelaDividaPrioritaria
-                                ?.valor_restante ||
+                            primeiraObrigacao.valor ||
                             0
                         );
 
                     return {
                         status:
                             "critico",
+
                         etiqueta:
-                            diasParcelaDivida < 0
-                                ? "Dívida atrasada"
+                            atrasada
+                                ? `${primeiraObrigacao.tipo} atrasada`
                                 : "Vence hoje",
+
                         titulo:
-                            diasParcelaDivida < 0
+                            atrasada
                                 ? `Resolva ${formatarMoeda(
                                     valor
-                                )} da dívida ${parcelaDividaPrioritaria?.divida?.nome || ""}`
-                                : `Separe ${formatarMoeda(
+                                )} de ${nome}`
+                                : `Proteja ${formatarMoeda(
                                     valor
-                                )} para a dívida de hoje`,
+                                )} para ${nome}`,
+
                         descricao:
-                            diasParcelaDivida < 0
-                                ? "Essa parcela planejada já passou da data e agora entra como prioridade máxima do seu Rumo."
-                                : "Essa parcela vence hoje e já está considerada no valor que precisa ficar protegido.",
+                            atrasada
+                                ? "Essa obrigação já passou da data e agora entra como prioridade máxima do seu Rumo."
+                                : "Essa obrigação vence hoje e já está incluída no valor que precisa ficar protegido.",
+
                         acao:
-                            "Resolver dívida",
+                            primeiraObrigacao.tipo ===
+                            "Fatura"
+                                ? "Ver fatura"
+                                : primeiraObrigacao.tipo ===
+                                    "Dívida"
+                                    ? "Resolver dívida"
+                                    : "Ver compromisso",
+
                         rota:
-                            "/dividas"
+                            primeiraObrigacao.rota
                     };
                 }
+
 
                 if (
                     totalObrigacoes >
@@ -341,23 +400,29 @@ function Dashboard() {
                         saldoDisponivel;
 
                     return {
-                        status: "critico",
+                        status:
+                            "critico",
+
                         etiqueta:
                             "Ação necessária",
+
                         titulo:
                             `Garanta ${formatarMoeda(
                                 falta
                             )} para cobrir sua semana`,
+
                         descricao:
                             dataPrimeiraObrigacao
                                 ? `Suas próximas obrigações somam ${formatarMoeda(
                                     totalObrigacoes
-                                )}. O primeiro vence em ${dataPrimeiraObrigacao}.`
+                                )}. A primeira vence em ${dataPrimeiraObrigacao}.`
                                 : `Suas próximas obrigações somam ${formatarMoeda(
                                     totalObrigacoes
                                 )} e superam o saldo disponível.`,
+
                         acao:
                             "Ver obrigação",
+
                         rota:
                             primeiraObrigacao
                                 ?.rota ||
@@ -365,17 +430,22 @@ function Dashboard() {
                     };
                 }
 
+
                 if (
                     totalObrigacoes > 0
                 ) {
                     return {
-                        status: "atencao",
+                        status:
+                            "atencao",
+
                         etiqueta:
                             "Prioridade da semana",
+
                         titulo:
                             `Proteja ${formatarMoeda(
                                 totalObrigacoes
                             )} para os próximos vencimentos`,
+
                         descricao:
                             dataPrimeiraObrigacao
                                 ? `A primeira obrigação vence em ${dataPrimeiraObrigacao}. Depois de reservar tudo, ficam ${formatarMoeda(
@@ -390,61 +460,82 @@ function Dashboard() {
                                         saldoAposProximos
                                     )
                                 )} disponíveis.`,
+
                         acao:
-                            "Organizar semana",
+                            primeiraObrigacao?.tipo ===
+                            "Fatura"
+                                ? "Ver próxima fatura"
+                                : "Organizar semana",
+
                         rota:
+                            primeiraObrigacao
+                                ?.rota ||
                             "/compromissos"
                     };
                 }
+
 
                 if (
                     resultadoMes < 0
                 ) {
                     return {
-                        status: "atencao",
+                        status:
+                            "atencao",
+
                         etiqueta:
                             "Ajuste recomendado",
+
                         titulo:
                             "Revise seus gastos antes da próxima saída",
+
                         descricao:
                             `As despesas estão ${formatarMoeda(
                                 Math.abs(
                                     resultadoMes
                                 )
                             )} acima das receitas neste mês.`,
+
                         acao:
                             "Analisar gastos",
+
                         rota:
                             "/inteligencia"
                     };
                 }
 
+
                 return {
-                    status: "positivo",
+                    status:
+                        "positivo",
+
                     etiqueta:
                         "Seu rumo hoje",
+
                     titulo:
                         "Nada urgente. Use a folga para avançar.",
+
                     descricao:
                         resultadoMes > 0
                             ? `Seu mês está positivo em ${formatarMoeda(
                                 resultadoMes
-                            )} e não há compromissos pendentes nos próximos 7 dias.`
+                            )} e não há obrigações pendentes nos próximos 7 dias.`
                             : "Não há vencimentos pendentes nos próximos 7 dias. Você pode planejar o próximo objetivo.",
+
                     acao:
                         "Planejar próximo passo",
+
                     rota:
                         "/metas"
                 };
             },
             [
+                primeiraObrigacao,
+                diasPrimeiraObrigacao,
                 totalObrigacoes,
                 saldoDisponivel,
                 saldoAposProximos,
                 resultadoMes,
-                dataPrimeiraObrigacao,
-                diasParcelaDivida,
-                parcelaDividaPrioritaria
+                dataPrimeiraObrigacao
             ]
         );
 
@@ -513,7 +604,8 @@ function Dashboard() {
         try {
             const [
                 compromissos,
-                dividasPlanejadas
+                dividasPlanejadas,
+                faturasPendentes
             ] =
                 await Promise.all([
                     listarProximosCompromissos({
@@ -521,6 +613,10 @@ function Dashboard() {
                         limite: 20
                     }),
                     listarParcelasPlanejadasDividas({
+                        dias: 7,
+                        incluirVencidas: true
+                    }),
+                    listarFaturasPendentesCartoes({
                         dias: 7,
                         incluirVencidas: true
                     })
@@ -533,6 +629,10 @@ function Dashboard() {
             setProximasDividas(
                 dividasPlanejadas || []
             );
+
+            setProximasFaturas(
+                faturasPendentes || []
+            );
         } catch (error) {
             console.error(
                 "[RUMO DASHBOARD] Erro ao carregar compromissos:",
@@ -541,6 +641,7 @@ function Dashboard() {
 
             setProximosCompromissos([]);
             setProximasDividas([]);
+            setProximasFaturas([]);
         }
     }
 

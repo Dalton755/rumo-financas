@@ -103,6 +103,14 @@ function descricaoFrequencia(
 
     if (
         compromisso.frequencia ===
+        "unico"
+    ) {
+        return "Único";
+    }
+
+
+    if (
+        compromisso.frequencia ===
         "semanal"
     ) {
         return "Semanal";
@@ -451,7 +459,7 @@ function Compromissos() {
         setNovaCategoriaCor("#F97316");
 
         setFrequencia(
-            "mensal"
+            "unico"
         );
 
         setDataInicio("");
@@ -631,7 +639,9 @@ function Compromissos() {
 
             showToast(
                 "Compromisso criado",
-                "As próximas cobranças foram programadas.",
+                frequencia === "unico"
+                    ? "A obrigação foi adicionada ao seu Rumo."
+                    : "As próximas cobranças foram programadas.",
                 "success"
             );
 
@@ -1762,6 +1772,10 @@ function Compromissos() {
                                                     )
                                                 }
                                             >
+                                                <option value="unico">
+                                                    Único
+                                                </option>
+
                                                 <option value="semanal">
                                                     Semanal
                                                 </option>

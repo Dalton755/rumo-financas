@@ -36,6 +36,7 @@ import {
     listarCartoes,
     listarCategoriasDespesa,
     listarContasPagamento,
+    listarFaturasPendentesCartoes,
     listarParcelasCartao,
     pagarFaturaCartao,
     salvarCartao
@@ -183,6 +184,12 @@ function Cartoes() {
         setCarregando
     ] =
         useState(true);
+
+    const [
+        faturasPendentesResumo,
+        setFaturasPendentesResumo
+    ] =
+        useState([]);
 
 
     const [
@@ -405,6 +412,8 @@ function Cartoes() {
 
         carregarContasPagamento();
 
+        carregarFaturasPendentesResumo();
+
     }, []);
 
 
@@ -492,6 +501,58 @@ function Cartoes() {
     }
 
 
+    async function carregarFaturasPendentesResumo() {
+
+        try {
+
+            const dados =
+                await listarFaturasPendentesCartoes({
+                    dias: 30,
+                    incluirVencidas: true
+                });
+
+
+            setFaturasPendentesResumo(
+                dados || []
+            );
+
+        } catch (error) {
+
+            console.error(
+                "[RUMO CARTÕES] Resumo de faturas:",
+                error
+            );
+
+
+            setFaturasPendentesResumo([]);
+
+        }
+
+    }
+
+
+    const proximaFaturaGeral =
+        faturasPendentesResumo[0] ||
+        null;
+
+
+    const totalFaturas30 =
+        useMemo(
+            () =>
+                faturasPendentesResumo
+                    .reduce(
+                        (total, item) =>
+                            total +
+                            Number(
+                                item.valor ||
+                                0
+                            ),
+                        0
+                    ),
+            [faturasPendentesResumo]
+        );
+
+
     const resumo =
         useMemo(() => {
 
@@ -538,6 +599,7 @@ function Cartoes() {
 
     const leituraCredito =
         useMemo(() => {
+
             const percentual =
                 resumo.total > 0
                     ? (
@@ -546,54 +608,147 @@ function Cartoes() {
                     ) * 100
                     : 0;
 
+
             if (!cartoes.length) {
                 return {
                     percentual: 0,
+
                     titulo:
                         "Cadastre seu primeiro cartão",
+
                     descricao:
                         "O Rumo passa a acompanhar limite, uso e faturas em um só lugar.",
+
                     status:
-                        "Começar",
+                        "Começar"
                 };
             }
+
+
+            if (proximaFaturaGeral) {
+
+                const hoje =
+                    new Date();
+
+                hoje.setHours(
+                    12,
+                    0,
+                    0,
+                    0
+                );
+
+
+                const vencimento =
+                    new Date(
+                        `${proximaFaturaGeral.vencimento}T12:00:00`
+                    );
+
+
+                const dias =
+                    Math.round(
+                        (
+                            vencimento -
+                            hoje
+                        ) /
+                        86400000
+                    );
+
+
+                if (dias <= 1) {
+                    return {
+                        percentual,
+
+                        titulo:
+                            dias < 0
+                                ? "Há uma fatura atrasada"
+                                : dias === 0
+                                    ? "Há uma fatura vencendo hoje"
+                                    : "Há uma fatura vencendo amanhã",
+
+                        descricao:
+                            `${proximaFaturaGeral.cartao?.nome || "Cartão"} tem ${formatarMoeda(
+                                proximaFaturaGeral.valor
+                            )} pendentes. Essa fatura já participa dos alertas, projeções e do Rumo de Hoje.`,
+
+                        status:
+                            dias <= 0
+                                ? "Prioridade alta"
+                                : "Atenção"
+                    };
+                }
+
+            }
+
 
             if (percentual >= 80) {
                 return {
                     percentual,
+
                     titulo:
                         "Uso de crédito muito alto",
+
                     descricao:
                         "Seu limite está bastante comprometido. Evite novas compras até recuperar espaço.",
+
                     status:
-                        "Atenção alta",
+                        "Atenção alta"
                 };
             }
+
 
             if (percentual >= 55) {
                 return {
                     percentual,
+
                     titulo:
                         "Uso de crédito em atenção",
+
                     descricao:
                         "Mais da metade do limite já está comprometida. Vale acompanhar as próximas compras.",
+
                     status:
-                        "Atenção",
+                        "Atenção"
                 };
             }
 
+
+            if (proximaFaturaGeral) {
+                return {
+                    percentual,
+
+                    titulo:
+                        "Próxima fatura já está no seu Rumo",
+
+                    descricao:
+                        `${formatarMoeda(
+                            proximaFaturaGeral.valor
+                        )} vencem em ${formatarData(
+                            proximaFaturaGeral.vencimento
+                        )}. O valor já está protegido nas decisões e projeções do app.`,
+
+                    status:
+                        "Monitorando"
+                };
+            }
+
+
             return {
                 percentual,
+
                 titulo:
                     "Uso de crédito controlado",
+
                 descricao:
-                    "Você ainda mantém boa margem disponível no limite total cadastrado.",
+                    "Você ainda mantém boa margem disponível e não há fatura pendente nos próximos 30 dias.",
+
                 status:
-                    "Saudável",
+                    "Saudável"
             };
+
         }, [
             cartoes,
-            resumo
+            resumo,
+            proximaFaturaGeral
         ]);
 
 
@@ -946,7 +1101,10 @@ function Cartoes() {
             fecharFatura();
 
 
-            await carregarCartoes();
+            await Promise.all([
+                carregarCartoes(),
+                carregarFaturasPendentesResumo()
+            ]);
 
         } catch (error) {
 
@@ -1108,7 +1266,10 @@ function Cartoes() {
             limparCompra();
 
 
-            await carregarCartoes();
+            await Promise.all([
+                carregarCartoes(),
+                carregarFaturasPendentesResumo()
+            ]);
 
         } catch (error) {
 
@@ -1259,7 +1420,10 @@ function Cartoes() {
 
             fecharModal();
 
-            await carregarCartoes();
+            await Promise.all([
+                carregarCartoes(),
+                carregarFaturasPendentesResumo()
+            ]);
 
         } catch (error) {
 
@@ -1314,7 +1478,10 @@ function Cartoes() {
             );
 
 
-            await carregarCartoes();
+            await Promise.all([
+                carregarCartoes(),
+                carregarFaturasPendentesResumo()
+            ]);
 
         } catch (error) {
 
@@ -1473,26 +1640,24 @@ function Cartoes() {
                     </div>
 
                     <div>
-                        <span>Uso do limite</span>
+                        <span>Próxima fatura</span>
                         <strong>
                             {
-                                leituraCredito.percentual
-                                    .toLocaleString(
-                                        "pt-BR",
-                                        {
-                                            maximumFractionDigits: 1
-                                        }
+                                proximaFaturaGeral
+                                    ? formatarMoeda(
+                                        proximaFaturaGeral.valor
                                     )
-                            }%
+                                    : "R$ 0,00"
+                            }
                         </strong>
                     </div>
 
                     <div>
-                        <span>Utilizado</span>
+                        <span>Faturas em 30 dias</span>
                         <strong>
                             {
                                 formatarMoeda(
-                                    resumo.usado
+                                    totalFaturas30
                                 )
                             }
                         </strong>

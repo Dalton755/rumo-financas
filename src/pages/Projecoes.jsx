@@ -597,7 +597,7 @@ function Projecoes() {
                                         </h2>
 
                                         <p>
-                                            Receitas, despesas e parcelas de dívidas já previstas para os próximos 90 dias.
+                                            Receitas, despesas, dívidas e faturas já previstas para os próximos 90 dias.
                                         </p>
 
                                     </div>
@@ -699,7 +699,10 @@ function Projecoes() {
                                                                                     movimentacao.origem ===
                                                                                     "plano_quitacao"
                                                                                         ? "DÍVIDA PLANEJADA"
-                                                                                        : "PREVISTA"
+                                                                                        : movimentacao.origem ===
+                                                                                            "cartao_fatura_prevista"
+                                                                                            ? "FATURA PREVISTA"
+                                                                                            : "PREVISTA"
                                                                                 }
                                                                             </span>
 
@@ -721,7 +724,10 @@ function Projecoes() {
                                                                                     movimentacao.origem ===
                                                                                     "plano_quitacao"
                                                                                         ? "Plano de dívida"
-                                                                                        : "—"
+                                                                                        : movimentacao.origem ===
+                                                                                            "cartao_fatura_prevista"
+                                                                                            ? "Fatura do cartão"
+                                                                                            : "—"
                                                                                 )
                                                                             }
                                                                         </strong>
