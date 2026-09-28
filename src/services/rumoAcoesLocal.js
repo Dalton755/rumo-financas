@@ -6,6 +6,9 @@ import {
 } from "./cartoes";
 import { criarMeta } from "./metas";
 import {
+  criarCompromissoUnico,
+} from "./compromissos";
+import {
   extrairValorDaPergunta,
 } from "./rumoIaLocal";
 
@@ -172,6 +175,24 @@ function extrairData(texto) {
 }
 
 
+function temReferenciaData(texto) {
+  const normal =
+    normalizar(texto);
+
+  return (
+    /\b(hoje|ontem|amanha|domingo|segunda(?:-feira)?|terca(?:-feira)?|quarta(?:-feira)?|quinta(?:-feira)?|sexta(?:-feira)?|sabado)\b/
+      .test(normal) ||
+    /\b\d{1,2}\/\d{1,2}(?:\/\d{2,4})?\b/
+      .test(
+        String(
+          texto ||
+          ""
+        )
+      )
+  );
+}
+
+
 function extrairParcelas(texto) {
   const match =
     normalizar(texto)
@@ -202,7 +223,7 @@ function limparDescricao(
     String(texto || "");
 
   const padroes = [
-    /\b(gastei|paguei|comprei|recebi|ganhei|entrou|caiu|quero|guardar|juntar|economizar|criar uma meta|crie uma meta|quero uma meta|meta de)\b/gi,
+    /\b(tenho que pagar|preciso pagar|vou pagar|tenho para pagar|vencimento|vence|gastei|paguei|comprei|recebi|ganhei|entrou|caiu|quero|guardar|juntar|economizar|criar uma meta|crie uma meta|quero uma meta|meta de)\b/gi,
     /\b(hoje|ontem|amanhã|amanha)\b/gi,
     /\b(no|na|pelo|pela|com o|com a)\s+(cart[aã]o|cr[eé]dito)\b/gi,
     /\bem\s+\d{1,3}\s*x\b/gi,
@@ -540,13 +561,27 @@ function detectarTipo(texto) {
     return "meta";
   }
 
+  const mencionaCartao =
+    /\b(cartao|fatura|credito)\b/
+      .test(normal);
+
+  const obrigacaoFutura =
+    /\b(tenho que pagar|preciso pagar|vou pagar|tenho para pagar|vence|vencimento)\b/
+      .test(normal);
+
+  if (
+    obrigacaoFutura &&
+    !mencionaCartao
+  ) {
+    return "compromisso_unico";
+  }
+
   const compra =
     /\b(gastei|paguei|comprei|compra|pagar)\b/
       .test(normal);
 
   const cartao =
-    /\b(cartao|credito)\b/
-      .test(normal) ||
+    mencionaCartao ||
     /\b\d{1,3}\s*x\b/
       .test(normal);
 
@@ -773,6 +808,61 @@ export function interpretarAcaoRumo(
 
   if (
     tipo ===
+    "compromisso_unico"
+  ) {
+    const categoriaId =
+      sugerirCategoria(
+        texto,
+        opcoes.categorias,
+        "despesa"
+      );
+
+    const contaId =
+      sugerirConta(
+        texto,
+        opcoes.contas,
+        opcoes.historico,
+        {
+          tipo:
+            "despesa",
+          categoriaId,
+        }
+      );
+
+    return {
+      tipo,
+      rotulo:
+        "Adicionar obrigação",
+
+      descricao:
+        descricao ||
+        "Obrigação",
+
+      valor,
+
+      vencimento:
+        temReferenciaData(
+          texto
+        )
+          ? extrairData(
+              texto
+            )
+          : "",
+
+      conta_id:
+        contaId,
+
+      categoria_id:
+        categoriaId,
+
+      observacao:
+        "Criado pelo Rumo IA",
+    };
+  }
+
+
+  if (
+    tipo ===
     "compra_cartao"
   ) {
     return {
@@ -941,6 +1031,50 @@ export async function executarAcaoRumo(
           : "Despesa registrada",
     };
   }
+
+  if (
+    acao.tipo ===
+    "compromisso_unico"
+  ) {
+    if (!acao.vencimento) {
+      throw new Error(
+        "Informe o vencimento."
+      );
+    }
+
+    await criarCompromissoUnico({
+      nome:
+        acao.descricao.trim(),
+
+      categoriaId:
+        acao.categoria_id ||
+        null,
+
+      contaId:
+        acao.conta_id ||
+        null,
+
+      vencimento:
+        acao.vencimento,
+
+      tipoValor:
+        "fixo",
+
+      valor:
+        Number(
+          acao.valor
+        ),
+    });
+
+    return {
+      tipo:
+        acao.tipo,
+
+      titulo:
+        "Obrigação adicionada",
+    };
+  }
+
 
   if (
     acao.tipo ===
