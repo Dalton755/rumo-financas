@@ -35,6 +35,10 @@ import {
   listarOpcoesRumoAcoes,
 } from "../../services/rumoAcoesLocal";
 
+import {
+  interpretarComRumoIa,
+} from "../../services/rumoIaRemota";
+
 import MoneyCalculatorInput from "../ui/MoneyCalculatorInput";
 
 import {
@@ -119,6 +123,16 @@ function RumoIaAssistente({
     executandoAcao,
     setExecutandoAcao,
   ] = useState(false);
+
+  const [
+    interpretando,
+    setInterpretando,
+  ] = useState(false);
+
+  const [
+    modoInterpretacao,
+    setModoInterpretacao,
+  ] = useState("local");
 
   const [
     feedbackAcao,
@@ -352,7 +366,7 @@ function RumoIaAssistente({
   }
 
 
-  function processarEntrada(
+  async function processarEntrada(
     texto = pergunta
   ) {
     const entrada =
@@ -360,7 +374,10 @@ function RumoIaAssistente({
         texto || ""
       ).trim();
 
-    if (!entrada) {
+    if (
+      !entrada ||
+      interpretando
+    ) {
       return;
     }
 
@@ -372,36 +389,103 @@ function RumoIaAssistente({
       null
     );
 
-    const acao =
-      interpretarAcaoRumo(
-        entrada,
-        opcoesAcoes
-      );
-
-    if (acao) {
-      setAcaoPendente(
-        acao
-      );
-
-      setResposta(
-        null
-      );
-
-      return;
-    }
+    setResposta(
+      null
+    );
 
     setAcaoPendente(
       null
     );
 
-    setResposta(
-      responderPerguntaRumo(
-        entrada,
-        contexto
-      )
+    setInterpretando(
+      true
     );
-  }
 
+    try {
+      const interpretacao =
+        await interpretarComRumoIa(
+          entrada,
+          opcoesAcoes
+        );
+
+      setModoInterpretacao(
+        "openai"
+      );
+
+      if (
+        interpretacao.tipo ===
+        "clarificacao"
+      ) {
+        setResposta({
+          tipo:
+            "informacao",
+
+          titulo:
+            "Só preciso confirmar uma coisa",
+
+          resposta:
+            interpretacao.pergunta,
+        });
+
+        return;
+      }
+
+      if (
+        interpretacao.tipo ===
+        "acao" &&
+        interpretacao.acao
+      ) {
+        setAcaoPendente(
+          interpretacao.acao
+        );
+
+        return;
+      }
+
+      setResposta(
+        responderPerguntaRumo(
+          entrada,
+          contexto
+        )
+      );
+
+    } catch (error) {
+      console.warn(
+        "[RUMO IA] Interpretação remota indisponível; usando fallback local.",
+        error
+      );
+
+      setModoInterpretacao(
+        "local"
+      );
+
+      const acao =
+        interpretarAcaoRumo(
+          entrada,
+          opcoesAcoes
+        );
+
+      if (acao) {
+        setAcaoPendente(
+          acao
+        );
+
+        return;
+      }
+
+      setResposta(
+        responderPerguntaRumo(
+          entrada,
+          contexto
+        )
+      );
+
+    } finally {
+      setInterpretando(
+        false
+      );
+    }
+  }
 
   async function confirmarAcao() {
     if (
@@ -511,9 +595,18 @@ function RumoIaAssistente({
           </p>
         </div>
 
-        <span className="rumo-ia-local-badge">
+        <span
+          className={
+            `rumo-ia-local-badge ${modoInterpretacao}`
+          }
+        >
           <ShieldCheck size={14} />
-          Motor Rumo
+          {
+            modoInterpretacao ===
+            "openai"
+              ? "IA + Motor Rumo"
+              : "Motor Rumo"
+          }
         </span>
       </div>
 
@@ -606,6 +699,9 @@ function RumoIaAssistente({
                   event.target.value
                 )
               }
+              disabled={
+                interpretando
+              }
               placeholder="Ex.: Gastei R$ 50 de gasolina hoje"
               aria-label="Fale com o Rumo"
             />
@@ -613,8 +709,15 @@ function RumoIaAssistente({
             <button
               type="submit"
               aria-label="Enviar ao Rumo"
+              disabled={
+                interpretando
+              }
             >
-              <Send size={17} />
+              {
+                interpretando
+                  ? <span className="rumo-ia-thinking-dot" />
+                  : <Send size={17} />
+              }
             </button>
           </form>
 
