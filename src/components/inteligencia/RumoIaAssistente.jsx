@@ -304,6 +304,16 @@ function RumoIaAssistente({
 
         if (
           acaoPendente.tipo ===
+          "compromisso_unico"
+        ) {
+          return Boolean(
+            acaoPendente.vencimento
+          );
+        }
+
+
+        if (
+          acaoPendente.tipo ===
           "compra_cartao"
         ) {
           return Boolean(
@@ -556,7 +566,7 @@ function RumoIaAssistente({
             </span>
 
             <p>
-              “Gastei R$ 50 de gasolina hoje” • “Recebi R$ 850 da Shopee” • “Comprei R$ 600 no cartão em 3x” • “Quero guardar R$ 5.000”
+              “Gastei R$ 50 de gasolina hoje” • “Tenho que pagar R$ 310 sexta” • “Comprei R$ 600 no cartão em 3x” • “Quero guardar R$ 5.000”
             </p>
           </div>
 
@@ -697,21 +707,38 @@ function RumoIaAssistente({
                     "meta" && (
                       <label className="rumo-ia-action-field">
                         <span>
-                          Data
+                          {
+                            acaoPendente.tipo ===
+                            "compromisso_unico"
+                              ? "Vencimento"
+                              : "Data"
+                          }
                         </span>
 
                         <input
                           type="date"
                           value={
-                            acaoPendente
-                              .data ||
-                            ""
+                            acaoPendente.tipo ===
+                            "compromisso_unico"
+                              ? (
+                                  acaoPendente
+                                    .vencimento ||
+                                  ""
+                                )
+                              : (
+                                  acaoPendente
+                                    .data ||
+                                  ""
+                                )
                           }
                           onChange={(
                             event
                           ) =>
                             atualizarAcao(
-                              "data",
+                              acaoPendente.tipo ===
+                              "compromisso_unico"
+                                ? "vencimento"
+                                : "data",
                               event.target.value
                             )
                           }
@@ -726,12 +753,19 @@ function RumoIaAssistente({
                       acaoPendente.tipo ===
                       "despesa" ||
                       acaoPendente.tipo ===
-                      "receita"
+                      "receita" ||
+                      acaoPendente.tipo ===
+                      "compromisso_unico"
                     ) && (
                       <>
                         <label className="rumo-ia-action-field">
                           <span>
-                            Conta
+                            {
+                              acaoPendente.tipo ===
+                              "compromisso_unico"
+                                ? "Conta prevista"
+                                : "Conta"
+                            }
                           </span>
 
                           <select
@@ -750,7 +784,12 @@ function RumoIaAssistente({
                             }
                           >
                             <option value="">
-                              Selecione
+                              {
+                                acaoPendente.tipo ===
+                                "compromisso_unico"
+                                  ? "Opcional"
+                                  : "Selecione"
+                              }
                             </option>
 
                             {
