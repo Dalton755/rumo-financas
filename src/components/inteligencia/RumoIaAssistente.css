@@ -827,3 +827,42 @@
     text-align: left;
   }
 }
+
+
+/* =========================================================
+   RUMO IA • MODO HÍBRIDO
+========================================================= */
+
+.rumo-ia-local-badge.openai {
+  border-color: #bfe3e8;
+  background: #eefafb;
+  color: #0d8293;
+}
+
+.rumo-ia-pergunta-form button:disabled,
+.rumo-ia-pergunta-form input:disabled {
+  opacity: .68;
+}
+
+.rumo-ia-thinking-dot {
+  width: 15px;
+  height: 15px;
+
+  display: inline-block;
+
+  border: 2px solid
+    rgba(255,255,255,.42);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+
+  animation:
+    rumoIaSpin
+    .75s linear infinite;
+}
+
+@keyframes rumoIaSpin {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
