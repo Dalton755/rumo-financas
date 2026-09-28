@@ -87,6 +87,20 @@ function extrairData(texto) {
   }
 
   if (
+    /\bdepois\s+de\s+amanha\b/
+      .test(normal)
+  ) {
+    const data =
+      new Date();
+
+    data.setDate(
+      data.getDate() + 2
+    );
+
+    return dataIsoLocal(data);
+  }
+
+  if (
     normal.includes("amanha")
   ) {
     const data =
@@ -105,34 +119,54 @@ function extrairData(texto) {
     return dataIsoLocal();
   }
 
-  const dias = {
-    domingo: 0,
-    segunda: 1,
-    "segunda-feira": 1,
-    terca: 2,
-    "terca-feira": 2,
-    quarta: 3,
-    "quarta-feira": 3,
-    quinta: 4,
-    "quinta-feira": 4,
-    sexta: 5,
-    "sexta-feira": 5,
-    sabado: 6,
-  };
+  const dias = [
+    {
+      indice: 0,
+      padrao:
+        /\bdomingo(?:\s+que\s+vem)?\b/,
+    },
+    {
+      indice: 1,
+      padrao:
+        /\bsegunda(?:[-\s]+feira)?(?:\s+que\s+vem)?\b/,
+    },
+    {
+      indice: 2,
+      padrao:
+        /\bterca(?:[-\s]+feira)?(?:\s+que\s+vem)?\b/,
+    },
+    {
+      indice: 3,
+      padrao:
+        /\bquarta(?:[-\s]+feira)?(?:\s+que\s+vem)?\b/,
+    },
+    {
+      indice: 4,
+      padrao:
+        /\bquinta(?:[-\s]+feira)?(?:\s+que\s+vem)?\b/,
+    },
+    {
+      indice: 5,
+      padrao:
+        /\bsexta(?:[-\s]+feira)?(?:\s+que\s+vem)?\b/,
+    },
+    {
+      indice: 6,
+      padrao:
+        /\bsabado(?:\s+que\s+vem)?\b/,
+    },
+  ];
 
   for (
-    const [
-      nome,
-      indice,
-    ] of Object.entries(
-      dias
-    )
+    const item of dias
   ) {
     if (
-      normal.includes(nome)
+      item.padrao.test(
+        normal
+      )
     ) {
       return proximoDiaSemana(
-        indice
+        item.indice
       );
     }
   }
@@ -180,7 +214,7 @@ function temReferenciaData(texto) {
     normalizar(texto);
 
   return (
-    /\b(hoje|ontem|amanha|domingo|segunda(?:-feira)?|terca(?:-feira)?|quarta(?:-feira)?|quinta(?:-feira)?|sexta(?:-feira)?|sabado)\b/
+    /\b(hoje|ontem|amanha|domingo|segunda(?:[-\s]+feira)?|terca(?:[-\s]+feira)?|quarta(?:[-\s]+feira)?|quinta(?:[-\s]+feira)?|sexta(?:[-\s]+feira)?|sabado)\b/
       .test(normal) ||
     /\b\d{1,2}\/\d{1,2}(?:\/\d{2,4})?\b/
       .test(
@@ -224,10 +258,13 @@ function limparDescricao(
 
   const padroes = [
     /\b(tenho que pagar|preciso pagar|vou pagar|tenho para pagar|vencimento|vence|gastei|paguei|comprei|recebi|ganhei|entrou|caiu|quero|guardar|juntar|economizar|criar uma meta|crie uma meta|quero uma meta|meta de)\b/gi,
+    /\bdepois\s+de\s+amanh[ãa]\b/gi,
     /\b(hoje|ontem|amanhã|amanha)\b/gi,
+    /\b(?:segunda|terça|terca|quarta|quinta|sexta)(?:[-\s]+feira)?(?:\s+que\s+vem)?\b/gi,
+    /\b(?:sábado|sabado|domingo)(?:\s+que\s+vem)?\b/gi,
+    /\bque\s+vem\b/gi,
     /\b(no|na|pelo|pela|com o|com a)\s+(cart[aã]o|cr[eé]dito)\b/gi,
     /\bem\s+\d{1,3}\s*x\b/gi,
-    /\b(segunda(?:-feira)?|terça(?:-feira)?|terca(?:-feira)?|quarta(?:-feira)?|quinta(?:-feira)?|sexta(?:-feira)?|sábado|sabado|domingo)\b/gi,
     /\b\d{1,2}\/\d{1,2}(?:\/\d{2,4})?\b/g,
   ];
 
@@ -255,7 +292,7 @@ function limparDescricao(
   resultado =
     resultado
       .replace(
-        /\b(de|do|da|dos|das|no|na|nos|nas|em|para|por|um|uma)\b/gi,
+        /\b(de|do|da|dos|das|no|na|nos|nas|em|para|por|pro|pra|pros|pras|um|uma)\b/gi,
         " "
       )
       .replace(
