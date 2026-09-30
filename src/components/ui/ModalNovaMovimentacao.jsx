@@ -19,6 +19,11 @@ import {
     arquivarCompromisso,
     criarCompromisso,
 } from "../../services/compromissos";
+import {
+    criarDivida,
+    criarParcelaPlanoQuitacao,
+    excluirDivida,
+} from "../../services/dividas";
 import { useToast } from "../../context/ToastContext";
 
 import ModalConta from "./ModalConta";
@@ -36,6 +41,24 @@ function hojeIso() {
         String(hoje.getMonth() + 1).padStart(2, "0"),
         String(hoje.getDate()).padStart(2, "0"),
     ].join("-");
+}
+
+function normalizarTexto(valor) {
+    return String(valor || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toLowerCase();
+}
+
+function ehCategoriaEmprestimo(categoria) {
+    const nome =
+        normalizarTexto(categoria?.nome);
+
+    return (
+        nome === "emprestimo" ||
+        nome === "emprestimos"
+    );
 }
 
 function adicionarRecorrencia(dataIso, frequencia) {
@@ -137,6 +160,10 @@ export default function ModalNovaMovimentacao({
 
     const [recorrente, setRecorrente] = useState(false);
     const [frequencia, setFrequencia] = useState("mensal");
+    const [
+        dataQuitacaoEmprestimo,
+        setDataQuitacaoEmprestimo,
+    ] = useState("");
     const [salvando, setSalvando] = useState(false);
 
     const [modalContaAberto, setModalContaAberto] = useState(false);
@@ -170,6 +197,10 @@ export default function ModalNovaMovimentacao({
 
         if (proximoTipo !== "despesa") {
             setRecorrente(false);
+        }
+
+        if (proximoTipo !== "receita") {
+            setDataQuitacaoEmprestimo("");
         }
     }
 
@@ -276,6 +307,30 @@ export default function ModalNovaMovimentacao({
             return;
         }
 
+        if (
+            categoriaEmprestimo &&
+            !dataQuitacaoEmprestimo
+        ) {
+            showToast(
+                "Quando você vai devolver?",
+                "Informe a data prevista para pagar esse empréstimo.",
+                "danger"
+            );
+            return;
+        }
+
+        if (
+            categoriaEmprestimo &&
+            dataQuitacaoEmprestimo <= dataMovimento
+        ) {
+            showToast(
+                "Confira a data",
+                "A data de pagamento do empréstimo precisa ser posterior à data em que o dinheiro entrou.",
+                "danger"
+            );
+            return;
+        }
+
         const dados = {
             tipo,
             descricao: descricao.trim(),
@@ -295,6 +350,8 @@ export default function ModalNovaMovimentacao({
 
         let novaMovimentacaoId = null;
         let compromissoCriado = null;
+        let dividaCriada = null;
+        let persistenciaConcluida = false;
 
         try {
             setSalvando(true);
@@ -345,15 +402,55 @@ export default function ModalNovaMovimentacao({
                             valorEstimado: null,
                         });
                 }
+
+                if (categoriaEmprestimo) {
+                    const dataQuitacao =
+                        new Date(
+                            `${dataQuitacaoEmprestimo}T12:00:00`
+                        );
+
+                    dividaCriada =
+                        await criarDivida({
+                            nome:
+                                `Empréstimo - ${descricao.trim()}`,
+                            credor:
+                                descricao.trim(),
+                            valorOriginal:
+                                Number(valor),
+                            saldoAtual:
+                                Number(valor),
+                            jurosMensal: 0,
+                            parcelaMinima:
+                                Number(valor),
+                            vencimentoDia:
+                                dataQuitacao.getDate(),
+                            prioridade: 2,
+                        });
+
+                    await criarParcelaPlanoQuitacao(
+                        dividaCriada.id,
+                        {
+                            semanaReferencia:
+                                dataQuitacaoEmprestimo,
+                            valorPrevisto:
+                                Number(valor),
+                            valorPago: 0,
+                        }
+                    );
+                }
             }
+
+            persistenciaConcluida = true;
 
             showToast(
                 "Pronto",
                 editando
                     ? "Movimentação atualizada."
-                    : tipo === "despesa" && recorrente
-                        ? "Despesa salva e próximos pagamentos organizados automaticamente."
-                        : "Movimentação salva. O Rumo já atualizou seus números.",
+                    : categoriaEmprestimo
+                        ? "Empréstimo recebido. A entrada foi registrada e a dívida futura já entrou no seu planejamento."
+                        : tipo === "despesa" && recorrente
+                            ? "Despesa salva e próximos pagamentos organizados automaticamente."
+                            : "Movimentação salva. O Rumo já atualizou seus números.",
                 "success"
             );
 
@@ -378,9 +475,21 @@ export default function ModalNovaMovimentacao({
              */
             if (
                 !editando &&
-                recorrente &&
-                tipo === "despesa"
+                !persistenciaConcluida
             ) {
+                if (dividaCriada?.id) {
+                    try {
+                        await excluirDivida(
+                            dividaCriada.id
+                        );
+                    } catch (erroRollbackDivida) {
+                        console.error(
+                            "Erro ao desfazer dívida:",
+                            erroRollbackDivida
+                        );
+                    }
+                }
+
                 if (compromissoCriado?.id) {
                     try {
                         await arquivarCompromisso(
@@ -616,8 +725,22 @@ export default function ModalNovaMovimentacao({
         }
     }
 
+    const categoriaSelecionada =
+        categorias.find(
+            (categoria) =>
+                categoria.id === categoriaId
+        ) || null;
+
+    const categoriaEmprestimo =
+        tipo === "receita" &&
+        ehCategoriaEmprestimo(
+            categoriaSelecionada
+        );
+
     const rotuloDescricao =
-        tipo === "receita"
+        categoriaEmprestimo
+            ? "De quem você recebeu o empréstimo?"
+            : tipo === "receita"
             ? "De onde veio esse dinheiro?"
             : tipo === "despesa"
                 ? "Com o que você gastou?"
@@ -723,8 +846,10 @@ export default function ModalNovaMovimentacao({
                                         type="text"
                                         autoFocus={!editando}
                                         placeholder={
-                                            tipo === "receita"
-                                                ? "Ex.: salário, venda, Pix recebido"
+                                            categoriaEmprestimo
+                                                ? "Ex.: Banco, financeira ou pessoa"
+                                                : tipo === "receita"
+                                                    ? "Ex.: salário, venda, Pix recebido"
                                                 : tipo === "despesa"
                                                     ? "Ex.: aluguel, mercado, academia"
                                                     : "Ex.: mandar dinheiro para a poupança"
@@ -821,11 +946,31 @@ export default function ModalNovaMovimentacao({
                                     <div className="movimentacao-campo-com-acao">
                                         <select
                                             value={categoriaId}
-                                            onChange={(e) =>
+                                            onChange={(e) => {
+                                                const proximaCategoriaId =
+                                                    e.target.value;
+
                                                 setCategoriaId(
-                                                    e.target.value
-                                                )
-                                            }
+                                                    proximaCategoriaId
+                                                );
+
+                                                const proximaCategoria =
+                                                    categorias.find(
+                                                        (categoria) =>
+                                                            categoria.id ===
+                                                            proximaCategoriaId
+                                                    );
+
+                                                if (
+                                                    !ehCategoriaEmprestimo(
+                                                        proximaCategoria
+                                                    )
+                                                ) {
+                                                    setDataQuitacaoEmprestimo(
+                                                        ""
+                                                    );
+                                                }
+                                            }}
                                         >
                                             <option value="">
                                                 Qual categoria?
@@ -861,6 +1006,67 @@ export default function ModalNovaMovimentacao({
                                             + Nova
                                         </button>
                                     </div>
+                                )}
+
+                                {categoriaEmprestimo && !editando && (
+                                    <section className="movimentacao-motor-inteligente emprestimo">
+                                        <div className="movimentacao-motor-head">
+                                            <span>
+                                                <Sparkles size={18} />
+                                            </span>
+
+                                            <div>
+                                                <strong>
+                                                    O Rumo reconheceu um empréstimo
+                                                </strong>
+                                                <small>
+                                                    Esse dinheiro entra hoje, mas também cria uma obrigação futura.
+                                                </small>
+                                            </div>
+                                        </div>
+
+                                        <label className="movimentacao-data-campo">
+                                            <span>
+                                                Quando você pretende pagar esse empréstimo?
+                                            </span>
+
+                                            <input
+                                                type="date"
+                                                min={dataMovimento || hojeIso()}
+                                                value={dataQuitacaoEmprestimo}
+                                                onChange={(e) =>
+                                                    setDataQuitacaoEmprestimo(
+                                                        e.target.value
+                                                    )
+                                                }
+                                            />
+                                        </label>
+
+                                        {dataQuitacaoEmprestimo && (
+                                            <p className="movimentacao-motor-preview">
+                                                <CalendarClock size={14} />
+                                                O Rumo vai registrar uma dívida de{" "}
+                                                <strong>
+                                                    {Number(valor || 0).toLocaleString(
+                                                        "pt-BR",
+                                                        {
+                                                            style: "currency",
+                                                            currency: "BRL",
+                                                        }
+                                                    )}
+                                                </strong>{" "}
+                                                para{" "}
+                                                <strong>
+                                                    {new Date(
+                                                        `${dataQuitacaoEmprestimo}T12:00:00`
+                                                    ).toLocaleDateString(
+                                                        "pt-BR"
+                                                    )}
+                                                </strong>
+                                                .
+                                            </p>
+                                        )}
+                                    </section>
                                 )}
 
                                 <label className="movimentacao-data-campo">
@@ -1035,10 +1241,12 @@ export default function ModalNovaMovimentacao({
                                 ? "Organizando..."
                                 : editando
                                     ? "Salvar alterações"
-                                    : tipo === "despesa" &&
-                                        recorrente
-                                        ? "Salvar e organizar próximos"
-                                        : "Salvar"}
+                                    : categoriaEmprestimo
+                                        ? "Salvar entrada e criar dívida"
+                                        : tipo === "despesa" &&
+                                            recorrente
+                                            ? "Salvar e organizar próximos"
+                                            : "Salvar"}
                         </button>
                     </div>
                 </div>
