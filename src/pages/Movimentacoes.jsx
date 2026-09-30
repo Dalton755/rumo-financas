@@ -294,6 +294,21 @@ function Movimentacoes() {
 
     carregarMovimentacoes();
 
+    const atualizar =
+      () => carregarMovimentacoes();
+
+    window.addEventListener(
+      "rumo:dados-atualizados",
+      atualizar
+    );
+
+    return () => {
+      window.removeEventListener(
+        "rumo:dados-atualizados",
+        atualizar
+      );
+    };
+
   }, []);
 
 
