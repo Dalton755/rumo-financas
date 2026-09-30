@@ -39,7 +39,13 @@ function hojeIso() {
 }
 
 function adicionarRecorrencia(dataIso, frequencia) {
+    if (!dataIso) return "";
+
     const data = new Date(`${dataIso}T12:00:00`);
+
+    if (Number.isNaN(data.getTime())) {
+        return "";
+    }
 
     if (frequencia === "semanal") {
         data.setDate(data.getDate() + 7);
@@ -974,14 +980,16 @@ export default function ModalNovaMovimentacao({
                                                         />
                                                         Próximo vencimento:{" "}
                                                         <strong>
-                                                            {new Date(
-                                                                `${adicionarRecorrencia(
-                                                                    dataMovimento,
-                                                                    frequencia
-                                                                )}T12:00:00`
-                                                            ).toLocaleDateString(
-                                                                "pt-BR"
-                                                            )}
+                                                            {dataMovimento
+                                                                ? new Date(
+                                                                    `${adicionarRecorrencia(
+                                                                        dataMovimento,
+                                                                        frequencia
+                                                                    )}T12:00:00`
+                                                                ).toLocaleDateString(
+                                                                    "pt-BR"
+                                                                )
+                                                                : "defina a data acima"}
                                                         </strong>
                                                     </p>
                                                 </div>
