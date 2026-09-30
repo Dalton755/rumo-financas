@@ -409,9 +409,37 @@ export async function criarCompromisso({
     /*
      * Depois de criar o compromisso,
      * gera automaticamente as próximas
-     * ocorrências.
+     * ocorrências. Se a geração falhar,
+     * arquiva o compromisso recém-criado
+     * para não deixar uma recorrência
+     * incompleta aparecendo ao usuário.
      */
-    await gerarOcorrenciasCompromissos();
+    try {
+
+        await gerarOcorrenciasCompromissos();
+
+    } catch (erroGeracao) {
+
+        await supabase
+            .schema("rumo")
+            .from("compromissos")
+            .update({
+                ativo: false,
+                updated_at:
+                    new Date().toISOString()
+            })
+            .eq(
+                "id",
+                compromisso.id
+            )
+            .eq(
+                "usuario_id",
+                user.id
+            );
+
+        throw erroGeracao;
+
+    }
 
 
     return compromisso;
