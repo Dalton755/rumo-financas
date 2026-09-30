@@ -647,6 +647,42 @@ function Dashboard() {
         periodoSelecionado
     ]);
 
+    useEffect(() => {
+        function atualizarDados() {
+            if (
+                usuario &&
+                periodoSelecionado
+            ) {
+                carregarDashboard(
+                    usuario.id,
+                    periodoSelecionado
+                );
+
+                carregarMovimentacoes(
+                    usuario.id,
+                    periodoSelecionado
+                );
+            }
+
+            carregarProximos();
+        }
+
+        window.addEventListener(
+            "rumo:dados-atualizados",
+            atualizarDados
+        );
+
+        return () => {
+            window.removeEventListener(
+                "rumo:dados-atualizados",
+                atualizarDados
+            );
+        };
+    }, [
+        usuario,
+        periodoSelecionado
+    ]);
+
     return (
         <MainLayout>
             <PageContainer>
