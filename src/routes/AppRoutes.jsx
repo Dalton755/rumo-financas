@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
+import Landing from "../pages/Landing";
 import Login from "../pages/Login";
 import RedefinirSenha from "../pages/RedefinirSenha";
 import Dashboard from "../pages/Dashboard";
@@ -24,14 +25,23 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import RecursoRoute from "../components/RecursoRoute";
 import DonoRoute from "../components/DonoRoute";
 
-
 function AppRoutes() {
     return (
         <BrowserRouter>
             <Routes>
                 <Route
                     path="/"
+                    element={<Landing />}
+                />
+
+                <Route
+                    path="/entrar"
                     element={<Login />}
+                />
+
+                <Route
+                    path="/login"
+                    element={<Navigate to="/entrar" replace />}
                 />
 
                 <Route
