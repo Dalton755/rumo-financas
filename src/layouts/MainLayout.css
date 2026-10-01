@@ -604,3 +604,138 @@
     background: #eef8fa;
     color: #0b7f91;
 }
+
+
+/* Rumo 2.0: complexidade escondida, ações principais visíveis */
+.rumo-sidebar-new-action {
+    width: 100%;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 11px;
+    border: 1px solid #cfe7eb;
+    border-radius: 13px;
+    background: linear-gradient(135deg, #f3fbfc, #eaf7f9);
+    color: #087084;
+    text-align: left;
+    cursor: pointer;
+}
+
+.rumo-sidebar-new-action > svg {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    padding: 7px;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, .05);
+}
+
+.rumo-sidebar-new-action > span {
+    min-width: 0;
+}
+
+.rumo-sidebar-new-action strong,
+.rumo-sidebar-new-action small {
+    display: block;
+}
+
+.rumo-sidebar-new-action strong {
+    font-size: 10px;
+    font-weight: 850;
+}
+
+.rumo-sidebar-new-action small {
+    margin-top: 2px;
+    color: #6f8290;
+    font-size: 7.5px;
+}
+
+.rumo-advanced-menu {
+    border-top: 1px solid #edf1f5;
+    padding-top: 10px;
+}
+
+.rumo-advanced-menu > summary {
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 10px;
+    border-radius: 10px;
+    color: #7a8796;
+    font-size: 9px;
+    font-weight: 800;
+    cursor: pointer;
+    list-style: none;
+}
+
+.rumo-advanced-menu > summary::-webkit-details-marker {
+    display: none;
+}
+
+.rumo-advanced-menu > summary:hover {
+    background: #f7f9fb;
+    color: #526071;
+}
+
+.rumo-advanced-menu > summary svg {
+    transition: transform .2s ease;
+}
+
+.rumo-advanced-menu[open] > summary svg {
+    transform: rotate(180deg);
+}
+
+.rumo-advanced-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 10px;
+}
+
+.rumo-bottom-add {
+    min-width: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 2px;
+    padding: 0 0 3px;
+    border: 0;
+    background: transparent;
+    color: #087084;
+    font-family: inherit;
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.rumo-bottom-add > span {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    margin-top: -22px;
+    border: 4px solid #ffffff;
+    border-radius: 16px;
+    background: var(--rumo-gradient);
+    color: #ffffff;
+    box-shadow: 0 10px 24px rgba(15, 159, 179, .28);
+}
+
+.rumo-bottom-add small {
+    font-size: 7.5px;
+    font-weight: 800;
+}
+
+@media (max-width: 991.98px) {
+    .rumo-bottom-add {
+        display: flex;
+    }
+
+    .rumo-sidebar-menu {
+        gap: 14px;
+    }
+}

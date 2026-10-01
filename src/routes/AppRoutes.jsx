@@ -5,6 +5,7 @@ import RedefinirSenha from "../pages/RedefinirSenha";
 import Dashboard from "../pages/Dashboard";
 import Contas from "../pages/Contas";
 import Movimentacoes from "../pages/Movimentacoes";
+import Planejamento from "../pages/Planejamento";
 import Compromissos from "../pages/Compromissos";
 import Relatorios from "../pages/Relatorios";
 import Inteligencia from "../pages/Inteligencia";
@@ -61,6 +62,15 @@ function AppRoutes() {
                     element={
                         <ProtectedRoute>
                             <Movimentacoes />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/planejamento"
+                    element={
+                        <ProtectedRoute>
+                            <Planejamento />
                         </ProtectedRoute>
                     }
                 />
