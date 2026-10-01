@@ -214,8 +214,16 @@ export async function obterProjecoesInteligentes() {
             )
         );
 
-    const padroesSemDuplicidade =
+    const ocorrenciasFuturas =
         (ocorrenciasDetectadas || [])
+            .filter(
+                (item) =>
+                    item?.data &&
+                    String(item.data) > hojeIso
+            );
+
+    const padroesSemDuplicidade =
+        ocorrenciasFuturas
             .filter(
                 (item) =>
                     !assinaturasBase.has(
