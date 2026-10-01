@@ -1,18 +1,17 @@
 import { supabase } from "./supabase";
-
+import {
+  atualizarAlertaRiscoPadroes,
+} from "./alertasMotoresInteligentes";
 
 async function obterUsuario() {
-
   const {
     data: { user },
     error
   } = await supabase.auth.getUser();
 
-
   if (error) {
     throw error;
   }
-
 
   if (!user) {
     throw new Error(
@@ -20,14 +19,10 @@ async function obterUsuario() {
     );
   }
 
-
   return user;
-
 }
 
-
 export async function atualizarAlertasInteligentes() {
-
   const {
     data,
     error
@@ -37,26 +32,19 @@ export async function atualizarAlertasInteligentes() {
       "atualizar_alertas_inteligentes"
     );
 
-
   if (error) {
-
     console.error(
       "[RUMO ALERTAS] Erro ao atualizar alertas:",
       error
     );
 
     throw error;
-
   }
 
-
   return data;
-
 }
 
-
 export async function atualizarAlertasCompromissos() {
-
   const {
     data,
     error
@@ -66,26 +54,19 @@ export async function atualizarAlertasCompromissos() {
       "atualizar_alertas_compromissos"
     );
 
-
   if (error) {
-
     console.error(
       "[RUMO ALERTAS] Erro ao atualizar compromissos:",
       error
     );
 
     throw error;
-
   }
 
-
   return data;
-
 }
 
-
 export async function atualizarAlertasDividas() {
-
   const {
     data,
     error
@@ -95,29 +76,21 @@ export async function atualizarAlertasDividas() {
       "atualizar_alertas_dividas"
     );
 
-
   if (error) {
-
     console.error(
       "[RUMO ALERTAS] Erro ao atualizar dívidas:",
       error
     );
 
     throw error;
-
   }
 
-
   return data;
-
 }
 
-
 export async function listarAlertasAtivos() {
-
   const user =
     await obterUsuario();
-
 
   const {
     data,
@@ -162,71 +135,46 @@ export async function listarAlertasAtivos() {
       }
     );
 
-
   if (error) {
-
     console.error(
       "[RUMO ALERTAS] Erro ao listar alertas:",
       error
     );
 
     throw error;
-
   }
 
-
   return data || [];
-
 }
-
 
 export async function carregarCentralAlertas() {
-
-  /*
-   * Primeiro o motor verifica a situação
-   * financeira atual do usuário.
-   */
   await atualizarAlertasInteligentes();
-
-
-  /*
-   * Compromissos possuem seu próprio motor porque
-   * não são movimentações financeiras realizadas.
-   */
   await atualizarAlertasCompromissos();
-
-
-  /*
-   * Dívidas planejadas também são obrigações
-   * financeiras e precisam entrar na mesma
-   * central de decisão.
-   */
   await atualizarAlertasDividas();
 
+  try {
+    await atualizarAlertaRiscoPadroes();
+  } catch (error) {
+    console.warn(
+      "[RUMO ALERTAS] Motor preditivo adicional indisponível:",
+      error
+    );
+  }
 
-  /*
-   * Depois buscamos somente os alertas
-   * que continuam ativos.
-   */
   return listarAlertasAtivos();
-
 }
-
 
 export async function marcarAlertaComoLido(
   alertaId
 ) {
-
   const user =
     await obterUsuario();
-
 
   if (!alertaId) {
     throw new Error(
       "Alerta não informado."
     );
   }
-
 
   const {
     data,
@@ -250,22 +198,16 @@ export async function marcarAlertaComoLido(
     .select()
     .single();
 
-
   if (error) {
     throw error;
   }
 
-
   return data;
-
 }
 
-
 export async function marcarTodosComoLidos() {
-
   const user =
     await obterUsuario();
-
 
   const {
     data,
@@ -292,12 +234,9 @@ export async function marcarTodosComoLidos() {
     )
     .select();
 
-
   if (error) {
     throw error;
   }
 
-
   return data || [];
-
 }
