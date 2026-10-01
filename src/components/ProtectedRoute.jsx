@@ -81,7 +81,7 @@ export default function ProtectedRoute({ children }) {
 
     if (!autenticado) {
 
-        return <Navigate to="/" replace />;
+        return <Navigate to="/entrar" replace />;
 
     }
 
