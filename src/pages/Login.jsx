@@ -63,7 +63,11 @@ function Login() {
 
     const { error } = await supabase.auth.signUp({
       email: emailUsuario,
-      password: senha
+      password: senha,
+      options: {
+        emailRedirectTo:
+          `${window.location.origin}/dashboard`
+      }
     });
 
     setCarregando(false);
