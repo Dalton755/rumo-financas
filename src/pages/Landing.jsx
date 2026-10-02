@@ -4,16 +4,22 @@ import {
   FaBell,
   FaBrain,
   FaCheck,
+  FaCheckCircle,
   FaChartLine,
   FaCreditCard,
   FaHandHoldingUsd,
+  FaInfoCircle,
+  FaLock,
   FaMagic,
+  FaReceipt,
   FaShieldAlt,
+  FaSyncAlt,
   FaWallet
 } from "react-icons/fa";
 
 import Logo from "../components/Logo";
 import "./Landing.css";
+import "./LandingCommercial.css";
 
 const destaques = [
   {
@@ -59,6 +65,17 @@ const exemplos = [
   }
 ];
 
+const comparacao = [
+  ["Dashboard, contas e movimentações", true, true],
+  ["Relatórios básicos", true, true],
+  ["Inteligência financeira", false, true],
+  ["Metas e objetivos avançados", false, true],
+  ["Gestão de dívidas", false, true],
+  ["Projeções financeiras", false, true],
+  ["Orçamento por categoria", false, true],
+  ["Alertas inteligentes", false, true]
+];
+
 function Landing() {
   return (
     <div className="rumo-landing">
@@ -70,8 +87,9 @@ function Landing() {
 
           <nav className="landing-nav" aria-label="Navegação principal">
             <a href="#como-funciona">Como funciona</a>
-            <a href="#inteligencia">Inteligência</a>
             <a href="#recursos">Recursos</a>
+            <a href="#planos">Planos</a>
+            <a href="#seguranca">Segurança</a>
           </nav>
 
           <div className="landing-header-actions">
@@ -97,15 +115,15 @@ function Landing() {
                 <Link className="landing-btn" to="/entrar">
                   Começar grátis <FaArrowRight />
                 </Link>
-                <a className="landing-btn landing-btn-ghost" href="#como-funciona">
-                  Ver como funciona
+                <a className="landing-btn landing-btn-ghost" href="#planos">
+                  Ver planos e preços
                 </a>
               </div>
 
               <div className="landing-trust-row">
-                <span><FaCheck /> Comece sem custo</span>
-                <span><FaCheck /> Acesso pelo celular</span>
-                <span><FaShieldAlt /> Seus dados protegidos</span>
+                <span><FaCheck /> Plano gratuito disponível</span>
+                <span><FaCheck /> Premium a partir de R$ 19,90/mês</span>
+                <span><FaShieldAlt /> Compra via Mercado Pago</span>
               </div>
             </div>
 
@@ -162,6 +180,14 @@ function Landing() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section className="landing-commercial-bar">
+          <div className="landing-shell landing-commercial-bar-grid">
+            <div><FaCheckCircle /><span><strong>Comece grátis</strong><small>Sem precisar contratar Premium</small></span></div>
+            <div><FaReceipt /><span><strong>Preço claro</strong><small>Você vê valor e periodicidade antes de pagar</small></span></div>
+            <div><FaShieldAlt /><span><strong>Checkout protegido</strong><small>Pagamento processado pelo Mercado Pago</small></span></div>
           </div>
         </section>
 
@@ -254,12 +280,126 @@ function Landing() {
           </div>
         </section>
 
+        <section className="landing-section landing-pricing-section" id="planos">
+          <div className="landing-shell">
+            <div className="landing-section-heading landing-pricing-heading">
+              <span className="landing-eyebrow">PREÇO SEM PEGADINHA</span>
+              <h2>Comece grátis. Assine o Premium quando fizer sentido.</h2>
+              <p>
+                O Rumo não força a compra para você começar. Use o plano Gratuito e, se quiser inteligência, projeções e recursos avançados, escolha uma assinatura Premium.
+              </p>
+            </div>
+
+            <div className="landing-pricing-grid">
+              <article className="landing-price-card landing-price-free">
+                <span className="landing-plan-label">GRATUITO</span>
+                <h3>Para organizar a vida financeira</h3>
+                <div className="landing-price"><strong>R$ 0</strong><span>/ mês</span></div>
+                <p>Entre, registre e acompanhe sua rotina sem precisar contratar o Premium.</p>
+                <ul>
+                  <li><FaCheck /> Dashboard financeiro</li>
+                  <li><FaCheck /> Contas e movimentações</li>
+                  <li><FaCheck /> Relatórios básicos</li>
+                </ul>
+                <Link className="landing-btn landing-btn-ghost landing-price-button" to="/entrar">
+                  Criar conta grátis
+                </Link>
+              </article>
+
+              <article className="landing-price-card landing-price-premium">
+                <div className="landing-most-popular">PREMIUM</div>
+                <span className="landing-plan-label">MENSAL</span>
+                <h3>Para antecipar e decidir melhor</h3>
+                <div className="landing-price"><strong>R$ 19,90</strong><span>/ mês</span></div>
+                <p>Assinatura recorrente com renovação mensal até que seja encerrada.</p>
+                <ul>
+                  <li><FaCheck /> Tudo do Gratuito</li>
+                  <li><FaCheck /> Inteligência financeira</li>
+                  <li><FaCheck /> Dívidas, metas e objetivos</li>
+                  <li><FaCheck /> Projeções e orçamento</li>
+                  <li><FaCheck /> Alertas inteligentes</li>
+                </ul>
+                <Link className="landing-btn landing-price-button" to="/entrar">
+                  Entrar para assinar <FaArrowRight />
+                </Link>
+              </article>
+
+              <article className="landing-price-card landing-price-annual">
+                <span className="landing-plan-label">PREMIUM ANUAL</span>
+                <h3>O mesmo Premium, pagando menos no ano</h3>
+                <div className="landing-price"><strong>R$ 199,00</strong><span>/ ano</span></div>
+                <div className="landing-saving-badge">Economia de R$ 39,80 por ano</div>
+                <p>Assinatura recorrente com renovação a cada 12 meses.</p>
+                <ul>
+                  <li><FaCheck /> Todos os recursos Premium</li>
+                  <li><FaCheck /> Uma cobrança a cada 12 meses</li>
+                  <li><FaCheck /> Melhor custo anual</li>
+                </ul>
+                <Link className="landing-btn landing-btn-dark landing-price-button" to="/entrar">
+                  Escolher anual <FaArrowRight />
+                </Link>
+              </article>
+            </div>
+
+            <div className="landing-price-note">
+              <FaInfoCircle />
+              <span>
+                A contratação do Premium acontece depois do login. Antes de confirmar o pagamento, o checkout do Mercado Pago apresenta o valor da assinatura e a periodicidade escolhida.
+              </span>
+            </div>
+
+            <div className="landing-plan-comparison">
+              <div className="landing-plan-comparison-head">
+                <span>Recurso</span><strong>Gratuito</strong><strong>Premium</strong>
+              </div>
+              {comparacao.map(([recurso, gratuito, premium]) => (
+                <div className="landing-plan-comparison-row" key={recurso}>
+                  <span>{recurso}</span>
+                  <span className={gratuito ? "is-yes" : "is-no"}>{gratuito ? "✓" : "—"}</span>
+                  <span className={premium ? "is-yes" : "is-no"}>{premium ? "✓" : "—"}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="landing-section landing-security-section" id="seguranca">
+          <div className="landing-shell landing-security-grid">
+            <div className="landing-security-copy">
+              <span className="landing-eyebrow">COMPRA SEGURA E TRANSPARENTE</span>
+              <h2>Você sabe o que está contratando antes de pagar.</h2>
+              <p>
+                O Rumo usa o Mercado Pago para processar a assinatura. O pagamento é concluído no ambiente do provedor, sem o Rumo receber os dados completos do seu cartão.
+              </p>
+
+              <div className="landing-security-points">
+                <div><FaShieldAlt /><span><strong>Pagamento processado pelo Mercado Pago</strong><small>O checkout é aberto no ambiente do provedor de pagamento.</small></span></div>
+                <div><FaLock /><span><strong>Dados de pagamento fora do Rumo</strong><small>O app recebe o status da assinatura; os dados completos do cartão não são armazenados pelo Rumo.</small></span></div>
+                <div><FaReceipt /><span><strong>Preço e periodicidade visíveis</strong><small>Mensal: R$ 19,90. Anual: R$ 199,00. A renovação segue o período escolhido.</small></span></div>
+                <div><FaSyncAlt /><span><strong>Renovação explicada antes da compra</strong><small>Mensal renova todo mês; anual renova a cada 12 meses.</small></span></div>
+              </div>
+            </div>
+
+            <aside className="landing-payment-card">
+              <div className="landing-payment-seal"><FaShieldAlt /> PAGAMENTO PROTEGIDO</div>
+              <h3>Checkout Mercado Pago</h3>
+              <p>Os meios de pagamento disponíveis para sua conta são apresentados diretamente pelo Mercado Pago no momento da contratação.</p>
+              <div className="landing-payment-summary">
+                <div><span>Plano mensal</span><strong>R$ 19,90</strong></div>
+                <div><span>Plano anual</span><strong>R$ 199,00</strong></div>
+                <div><span>Plano gratuito</span><strong>R$ 0</strong></div>
+              </div>
+              <div className="landing-payment-foot"><FaCreditCard /> Você só paga depois de escolher um plano e confirmar no checkout.</div>
+            </aside>
+          </div>
+        </section>
+
         <section className="landing-section landing-final-cta">
           <div className="landing-shell landing-final-box">
             <div>
               <span className="landing-eyebrow">TENHA UM RUMO</span>
-              <h2>Abra o app sabendo o que fazer com seu dinheiro.</h2>
-              <p>Comece gratuitamente e transforme informação financeira em direção.</p>
+              <h2>Comece sem pagar. Evolua quando fizer sentido.</h2>
+              <p>Crie sua conta gratuita, conheça o Rumo e decida depois se os recursos Premium fazem sentido para você.</p>
             </div>
             <Link className="landing-btn landing-btn-light" to="/entrar">
               Criar minha conta <FaArrowRight />
@@ -277,6 +417,8 @@ function Landing() {
           <div className="landing-footer-links">
             <Link to="/entrar">Entrar</Link>
             <a href="#recursos">Recursos</a>
+            <a href="#planos">Planos</a>
+            <a href="#seguranca">Segurança</a>
             <span>© 2026 Nethanel Tecnologia</span>
           </div>
         </div>
