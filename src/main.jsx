@@ -6,9 +6,13 @@ import './styles/theme.css'
 import './styles/cardpadrao.css'
 
 import App from './App.jsx'
+import { isPlayStoreMode } from './utils/isPlayStoreMode'
 import { ToastProvider } from './context/ToastContext'
 import { DashboardProvider } from './context/DashboardContext'
 import { PlanoProvider } from './context/PlanoContext'
+
+// Captura o marcador de entrada da TWA antes das navegações/OAuth.
+isPlayStoreMode();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
