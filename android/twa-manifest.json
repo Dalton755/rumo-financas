@@ -1,0 +1,44 @@
+{
+  "packageId": "br.com.nethanel.rumo",
+  "host": "rumo.nethanel.com.br",
+  "name": "Rumo — Finanças Pessoais",
+  "launcherName": "Rumo",
+  "display": "standalone",
+  "themeColor": "#22c7df",
+  "themeColorDark": "#061c24",
+  "navigationColor": "#061c24",
+  "navigationColorDark": "#061c24",
+  "navigationDividerColor": "#061c24",
+  "navigationDividerColorDark": "#061c24",
+  "backgroundColor": "#ffffff",
+  "enableNotifications": true,
+  "startUrl": "/?rumo_source=play",
+  "iconUrl": "https://rumo.nethanel.com.br/icon-512.png",
+  "maskableIconUrl": "https://rumo.nethanel.com.br/maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./upload-key.jks",
+    "alias": "rumo-upload"
+  },
+  "appVersionCode": 1,
+  "appVersion": "0.1.0",
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://rumo.nethanel.com.br/manifest.webmanifest",
+  "fullScopeUrl": "https://rumo.nethanel.com.br/",
+  "fallbackType": "customtabs",
+  "features": {
+    "playBilling": {
+      "enabled": false
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "minSdkVersion": 24,
+  "orientation": "default",
+  "additionalTrustedOrigins": []
+}
