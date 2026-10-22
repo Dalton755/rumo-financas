@@ -25,3 +25,23 @@ dist-ssr
 .env
 .vercel
 .env*
+
+# Arquivos gerados da distribuicao Android
+android/.gradle/
+android/.idea/
+android/.cxx/
+android/.bubblewrap/
+android/build/
+android/app/build/
+android/gradle/
+android/gradlew
+android/gradlew.bat
+android/local.properties
+android/*.jks
+android/*.keystore
+android/*.apk
+android/*.aab
+android/*.pem
+android/android.keystore
+android/app-release*
+android/twa-manifest-checksum.txt
