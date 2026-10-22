@@ -1,7 +1,13 @@
 {
+  "id": "/",
   "name": "Rumo",
   "short_name": "Rumo",
   "description": "Veja para onde seu dinheiro está levando você.",
+  "lang": "pt-BR",
+  "categories": [
+    "finance",
+    "productivity"
+  ],
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
