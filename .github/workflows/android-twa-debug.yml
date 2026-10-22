@@ -47,8 +47,10 @@ jobs:
         shell: bash
         run: |
           test -n "${ANDROID_HOME:-}" || { echo "Android SDK nao encontrado no runner"; exit 1; }
-          sdkmanager --licenses < /dev/null || true
-          sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | head -n 1)"
+          test -n "$SDKMANAGER" || { echo "sdkmanager indisponivel"; exit 1; }
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0" "platform-tools"
 
       - name: Instalar Bubblewrap 1.25
         shell: bash
