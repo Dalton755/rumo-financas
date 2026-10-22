@@ -13,8 +13,8 @@
   "backgroundColor": "#ffffff",
   "enableNotifications": true,
   "startUrl": "/?rumo_source=play",
-  "iconUrl": "https://rumo.nethanel.com.br/icon-512.png",
-  "maskableIconUrl": "https://rumo.nethanel.com.br/maskable-512.png",
+  "iconUrl": "https://raw.githubusercontent.com/Dalton755/rumo-financas/main/public/icon-512.png",
+  "maskableIconUrl": "https://raw.githubusercontent.com/Dalton755/rumo-financas/main/public/maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "./upload-key.jks",
