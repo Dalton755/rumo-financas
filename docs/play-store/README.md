@@ -5,7 +5,9 @@ Data da auditoria: 22/10/2026 · Repositório: `Dalton755/rumo-financas` · Dom�
 ## Estratégia
 O Rumo é um React/Vite com manifesto PWA e login Supabase. Recomenda-se **Trusted Web Activity (TWA) + Bubblewrap**, preservando o aplicativo web e as contas já existentes. O Android abre a origem própria em tela cheia, sem fazer um clone de dados ou mudar banco de dados. A publicação na Google Play só acontecerá depois da homologação.
 
-**Ainda não há APK/AAB gerado nesta etapa**, nem configuração de assinatura de Android ou arquivo de associação com certificado válido. As mudanças desta branch não entram em produção sem aprovação.
+A branch contém `android/twa-manifest.json` com identificador provisório `br.com.nethanel.rumo`, integração de **compilação de APK de debug via GitHub Actions** (`.github/workflows/android-twa-debug.yml`) e sinalização de sessão Android para **ocultar o checkout Mercado Pago somente dentro da TWA**. A versão web mantém o checkout e as assinaturas existentes continuam reconhecidas pelo backend.
+
+**Até a compilação da action passar, nenhum APK está homologado.** O APK de debug pode ser testado no dispositivo, mas **não é AAB assinado para publicação**. Para ocultar a barra de endereço da TWA é necessária associação Digital Asset Links com certificado válido da versão instalada.
 
 ## Diagnóstico observado no código
 - `public/manifest.webmanifest` já define ícones 192, 512, maskable, cores e `display: standalone`. Esta branch adiciona ID estável, idioma e categorias ao manifesto.
@@ -18,7 +20,7 @@ O Rumo é um React/Vite com manifesto PWA e login Supabase. Recomenda-se **Trust
 ## Passos da homologação
 1. Confirmar conta de desenvolvedor Nethanel e o **identificador definitivo**, sugestão provisória `br.com.nethanel.rumo`. Não registrar pacote com nome incerto.
 2. Resolver **cobrança Play**, publicar **política de privacidade real**, implementar **exclusão de conta** e página de solicitação externa, e revisar **Segurança dos dados** e **Recursos financeiros** na Play Console.
-3. Gerar projeto TWA com Bubblewrap usando **HTTPS do domínio de produção**, preferencialmente num diretório de distribuição isolado. Comandos (na máquina de build com Android SDK/JDK):
+3. O CI utiliza `@bubblewrap/cli@1.25.0` (que gera `targetSdkVersion 36`). Para geração manual, criar projeto TWA com Bubblewrap usando **HTTPS do domínio de produção**, preferencialmente num diretório de distribuição isolado. Comandos (na máquina de build com Android SDK/JDK):
    ```bash
    npm install --global @bubblewrap/cli
    bubblewrap init --manifest=https://rumo.nethanel.com.br/manifest.webmanifest
@@ -39,6 +41,9 @@ O Rumo é um React/Vite com manifesto PWA e login Supabase. Recomenda-se **Trust
 
 ## Requisitos atuais para 2026
 - Novos apps móveis submetidos após 31/08/2026 precisam **targetSdk 36 (Android 16)**, salvo exceções de plataforma. Conferir target gerado pelo Bubblewrap.
+- Projetos que integram compras Google Play em TWA precisam **Play Billing Library 8+** desde 31/08/2026; para Bubblewrap usar **1.25.0+** e conferir a versão gerada do módulo `com.google.androidbrowserhelper:billing` (**1.2.0+**).
+- A compilação inicial do Rumo tem **Play Billing desabilitado** por segurança: a interface Android oculta o checkout web, mas compra de Premium no Android permanece bloqueada até a integração de pagamentos Google Play validada no backend.
+- A auditoria atual de `npm audit --audit-level=high` no GitHub encontrou **1 vulnerabilidade crítica e 4 altas** entre dependências do projeto web (incluindo `dompurify`, `vite` e dependências transitivas). **Resolver, testar regressões e passar no CI antes de qualquer lançamento.** Não fazer `npm audit fix --force` diretamente em produção.
 - Apps com conta precisam permitir solicitação de exclusão **dentro do app e por recurso web externo**, juntamente com os dados correspondentes, ressalvadas retenções legais justificadas e divulgadas.
 - Completar **Data safety** e **Financial features** na Play Console; finanças pessoais envolvem dados financeiros sensíveis e o formulário deve corresponder ao fluxo de dados real, inclusive integrações.
 - Conta **pessoal** criada depois de 13/11/2023: geralmente exige teste fechado com **12 testadores opt-in por 14 dias contínuos** antes de pedir acesso à produção. Não assumir que isso se aplica a uma conta de organização.
@@ -53,5 +58,8 @@ O Rumo é um React/Vite com manifesto PWA e login Supabase. Recomenda-se **Trust
 - Testadores: https://support.google.com/googleplay/android-developer/answer/14151465
 - TWA: https://developer.android.com/develop/ui/views/layout/webapps/guide-trusted-web-activities-version2
 - Google Play Billing em TWA: https://developer.chrome.com/docs/android/trusted-web-activity/receive-payments-play-billing
+
+## Acessar o APK de debug quando o build concluir com sucesso
+GitHub → repositório `rumo-financas` → **Actions** → **Rumo Android TWA - APK de homologacao** → execução mais recente → **Artifacts** → `rumo-android-debug-apk`. Esta versão tem assinatura de debug efêmera e nunca deve ser enviada para a Play Console.
 
 **Critério de saída:** após resolver bloqueadores e validar APK/AAB instalado, fazer PR separado de ajustes específicos para Play e publicar somente mediante autorização explícita.
