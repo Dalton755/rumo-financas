@@ -13,7 +13,19 @@
       "destination": "/index.html"
     },
     {
+      "source": "/planejamento",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/compromissos",
+      "destination": "/index.html"
+    },
+    {
       "source": "/relatorios",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/calculos",
       "destination": "/index.html"
     },
     {
@@ -58,6 +70,10 @@
     },
     {
       "source": "/cartoes",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/gerencial",
       "destination": "/index.html"
     }
   ],
