@@ -1,6 +1,12 @@
 name: Rumo Android TWA - APK de homologacao
 
 on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "android/**"
+      - ".github/workflows/android-twa-debug.yml"
   workflow_dispatch:
   push:
     branches:
