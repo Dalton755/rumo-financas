@@ -74,7 +74,9 @@ jobs:
       - name: Preparar configuracao Android
         shell: bash
         run: |
-          bubblewrap updateConfig --jdkPath="$JAVA_HOME" --androidSdkPath="$ANDROID_HOME"
+          # A configuracao inicial interativa impede builds automatizados.
+          mkdir -p "$HOME/.bubblewrap"
+          printf '{"jdkPath":"%s","androidSdkPath":"%s"}\\n' "$JAVA_HOME" "$ANDROID_HOME" > "$HOME/.bubblewrap/config.json"
           cd android
           bubblewrap update --skipVersionUpgrade
 
