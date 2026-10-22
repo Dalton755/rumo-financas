@@ -21,6 +21,21 @@ permissions:
   contents: read
 
 jobs:
+  web-preview-build:
+    name: Validar build web (sem publicar)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Compilar interface do Rumo
+        run: npm run build
+
   android-debug:
     name: Gerar APK de testes
     runs-on: ubuntu-latest
