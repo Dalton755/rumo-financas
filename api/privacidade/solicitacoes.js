@@ -116,20 +116,42 @@ async function requisitarPreapproval(token, identificador, metodo = "GET") {
   return { ok: resposta.ok, statusHttp: resposta.status, dados };
 }
 
+function resumirMensagemTecnica(valor) {
+  if (typeof valor !== "string" || !valor.trim()) return null;
+  // A resposta externa nunca é exibida sem mascarar dados privados.
+  const texto = valor
+    .replace(/Bearer\s+\S+/gi, "[credencial]")
+    .replace(/https?:\/\/\S+/gi, "[endereço]")
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[e-mail]")
+    .replace(/\b[0-9a-f]{16,}\b/gi, "[identificador]")
+    .replace(/\b\d{11,}\b/g, "[identificador]")
+    .replace(/[\r\n\t]+/g, " ").trim();
+  return texto.length > 180 ? texto.slice(0, 180) + "…" : texto;
+}
+
 function falhaSeguraMercadoPago(retorno) {
-  // Nunca repassar resposta completa do provedor: pode conter dados pessoais.
-  // Informar somente status HTTP e código técnico que respeite formato restrito.
-  const codigoBruto = retorno?.dados?.error || retorno?.dados?.code || "";
-  const codigo = typeof codigoBruto === "string" && /^[a-zA-Z0-9_.-]{1,60}$/.test(codigoBruto)
-    ? codigoBruto : null;
+  // Ler motivo e 'cause' de respostas HTTP 400. Não exibir JSON bruto nem IDs.
+  const dados = retorno?.dados && typeof retorno.dados === "object" ? retorno.dados : {};
+  const primeiraCausa = Array.isArray(dados.cause) ? dados.cause[0] : null;
+  const codigoBruto = primeiraCausa?.code ?? dados.code ?? dados.error ?? null;
+  const codigo = (typeof codigoBruto === "string" || typeof codigoBruto === "number") &&
+    /^[a-zA-Z0-9_.-]{1,60}$/.test(String(codigoBruto)) ? String(codigoBruto) : null;
+  const mensagem = resumirMensagemTecnica(
+    primeiraCausa?.description || primeiraCausa?.message || dados.message,
+  );
   const http = Number.isInteger(retorno?.statusHttp) ? retorno.statusHttp : null;
-  return {
-    error: http
-      ? `Mercado Pago recusou o cancelamento (HTTP ${http}${codigo ? `, motivo: ${codigo}` : ""}). A tentativa continua pendente; nenhum dado foi excluído.`
-      : "Mercado Pago não permitiu concluir o cancelamento. Nenhum dado foi excluído.",
+  const resumo = {
     categoria: "MERCADOPAGO_CANCELAMENTO_RECUSADO",
     httpProvedor: http,
     ...(codigo ? { codigoProvedor: codigo } : {}),
+    ...(mensagem ? { mensagemProvedor: mensagem } : {}),
+  };
+  // Log sanitizado, sem token ou referência completa, facilita diagnóstico
+  // sem obrigar novas tentativas do operador.
+  console.warn("[RUMO EXCLUSAO] Mercado Pago recusou atualização", resumo);
+  return {
+    ...resumo,
+    error: `Mercado Pago não aceitou cancelar esta tentativa (HTTP ${http || "indisponível"}).${mensagem ? " Motivo: " + mensagem + "." : ""} Nenhum dado foi excluído.`,
   };
 }
 
