@@ -92,6 +92,35 @@ export default function SolicitacoesExclusao() {
     }
   }, []);
 
+  const cancelarPendente = useCallback(async (final, pedido) => {
+    const texto = window.prompt("Digite CANCELAR " + final + " para confirmar o cancelamento do checkout (sem excluir dados):", "");
+    if (texto !== "CANCELAR " + final) return;
+    setCancelandoCheckout(true);
+    setErroAuditoria("");
+    setMensagemCancelamento("");
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error("Sessão expirada.");
+      const response = await fetch("/api/privacidade/solicitacoes?acao=cancelar-checkout", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + session.access_token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ solicitacao_id: pedido, referenciaFinal: final, confirmacao: texto }),
+        cache: "no-store",
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Cancelamento não confirmado.");
+      setMensagemCancelamento(data.mensagem || "Checkout cancelado no provedor.");
+      await verificarMercadoPago(pedido);
+    } catch (error) {
+      setErroAuditoria(error.message || "Falha no cancelamento.");
+    } finally {
+      setCancelandoCheckout(false);
+    }
+  }, [verificarMercadoPago]);
+
   return (
     <MainLayout>
       <section className="rumo-exclusao-admin">
