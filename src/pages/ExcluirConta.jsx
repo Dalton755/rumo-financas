@@ -45,15 +45,16 @@ export default function ExcluirConta() {
     supabase.schema("rumo").from("solicitacoes_exclusao")
       .select("id, status, solicitada_em")
       .eq("usuario_id", usuario.id)
-      .in("status", ["PENDENTE", "EM_ANALISE"])
-      .maybeSingle()
+      .in("status", ["PENDENTE", "EM_ANALISE", "CONCLUIDA"])
+      .order("solicitada_em", { ascending: false })
+      .limit(1)
       .then(({ data, error }) => {
         if (!vivo) return;
         if (error) {
           setErro("Não foi possível consultar o andamento da solicitação.");
           return;
         }
-        setPedido(data);
+        setPedido(data?.[0] || null);
       });
     return () => { vivo = false; };
   }, [usuario]);
@@ -109,9 +110,10 @@ export default function ExcluirConta() {
         .from("solicitacoes_exclusao")
         .select("id, status, solicitada_em")
         .eq("usuario_id", user.id)
-        .in("status", ["PENDENTE", "EM_ANALISE"])
-        .maybeSingle();
-      if (existente) setPedido(existente);
+        .in("status", ["PENDENTE", "EM_ANALISE", "CONCLUIDA"])
+        .order("solicitada_em", { ascending: false })
+        .limit(1);
+      if (existente?.[0]) setPedido(existente[0]);
       else setErro("Não foi possível registrar a solicitação. Tente novamente ou utilize o canal de contato da Nethanel.");
     } else {
       setSucesso("Solicitação registrada. Nossa equipe precisa validar os vínculos e concluir a exclusão dos dados do Rumo.");
@@ -180,8 +182,12 @@ export default function ExcluirConta() {
               <p>Você está autenticado como <strong>{usuario.email}</strong>.</p>
               {pedido ? (
                 <div className="rumo-privacidade-sucesso">
-                  Já existe uma solicitação em andamento.
-                  <br /><strong>Status: {pedido.status === "EM_ANALISE" ? "Em análise" : "Pendente"}</strong>
+                  {pedido.status === "CONCLUIDA"
+                    ? "Sua solicitação de exclusão dos dados do Rumo foi concluída."
+                    : "Já existe uma solicitação em andamento."}
+                  <br /><strong>Status: {pedido.status === "CONCLUIDA"
+                    ? "Concluída"
+                    : pedido.status === "EM_ANALISE" ? "Em análise" : "Pendente"}</strong>
                   {pedido.solicitada_em && (
                     <><br />Solicitada em {new Date(pedido.solicitada_em).toLocaleDateString("pt-BR")}</>
                   )}
