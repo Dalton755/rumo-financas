@@ -24,6 +24,8 @@ export default function SolicitacoesExclusao() {
   const [erroAuditoria, setErroAuditoria] = useState("");
   const [checagemProvedor, setChecagemProvedor] = useState(null);
   const [checandoProvedor, setChecandoProvedor] = useState("");
+  const [cancelandoCheckout, setCancelandoCheckout] = useState(false);
+  const [mensagemCancelamento, setMensagemCancelamento] = useState("");
 
   const carregar = useCallback(async () => {
     setCarregando(true);
