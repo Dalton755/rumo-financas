@@ -25,8 +25,10 @@ export default function ExcluirConta() {
       setCarregando(false);
     }
     carregar();
+    // Supabase Auth adquire um lock interno durante a emissão de eventos.
+    // Adiar getUser evita bloquear o fluxo de autenticação em alguns navegadores.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      carregar();
+      window.setTimeout(() => { if (vivo) void carregar(); }, 0);
     });
     return () => {
       vivo = false;
@@ -47,7 +49,11 @@ export default function ExcluirConta() {
       .maybeSingle()
       .then(({ data, error }) => {
         if (!vivo) return;
-        if (!error) setPedido(data);
+        if (error) {
+          setErro("Não foi possível consultar o andamento da solicitação.");
+          return;
+        }
+        setPedido(data);
       });
     return () => { vivo = false; };
   }, [usuario]);
