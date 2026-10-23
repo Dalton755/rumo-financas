@@ -50,3 +50,15 @@ O SQL `docs/play-store/sql/03_preflight_exclusao_readonly.sql` consulta, **sem e
 - **Próxima ação requerida**: cancelar a assinatura no painel/API autenticados do Mercado Pago, confirmar o status real de cancelamento e registrá-lo. Só então executar revisão final, limpeza e conferência. Não marcar `CONCLUIDA` antes.
 
 A aplicação de produção e outras contas não foram alteradas. Única alteração na base: pedido existente passou de `PENDENTE` a `EM_ANALISE`.
+
+## Diagnóstico complementar: por que a assinatura não aparece no painel Mercado Pago
+
+O proprietário verificou o e-mail no painel Mercado Pago e informou que **não existe assinatura ativa**. Rechecagem do banco:
+- `rumo.assinaturas` está **ATIVA**, mas **sem preapproval id**, sem renovação automática e com preço contratado **R$ 0,00**; esse campo local sozinho não representa uma assinatura ativa no provedor.
+- `rumo.pagamentos_assinaturas` tem uma **tentativa de checkout** criada em **13/10/2026** no valor **R$ 19,90/mês**, com `status=PENDENTE`, `metadata.mercado_pago_status=pending`, sem payment ID e sem `pago_em`. Payer email salvo coincide com a conta de teste.
+- Existe ID de preapproval no pagamento pendente; o link usa `www.mercadopago.com.br`. Isso **não comprova pagamento/assinatura ativa**, nem ausência de risco de conclusão futura do checkout.
+- Documentação oficial: assinaturas com pagamento pendente no Mercado Pago podem ser criadas antes da escolha do meio de pagamento. O estado do preapproval deve ser consultado via `GET /preapproval/{id}` com credenciais corretas, e cancelado via `PUT ... {"status":"canceled"}` quando existir e for necessário.
+- Para evitar instruir o proprietário a procurar assinaturas ativas que não existem, criado endpoint servidor `GET /api/privacidade/verificar-mercadopago?solicitacao_id=<UUID>` com acesso DONO e **somente leitura**, além do botão **Verificar Mercado Pago** no painel administrativo. `404` é inconclusivo (pode ser credencial/conta errada); não significa cancelamento automático.
+- O token é sensível e não foi exposto; essa rota será testável após deploy **autorizado** em ambiente com `MERCADOPAGO_ACCESS_TOKEN`. O processamento destrutivo permanece bloqueado. Nenhuma cobrança ou conta foi alterada.
+
+Fontes: https://www.mercadopago.com.br/developers/pt/docs/subscriptions/integration-configuration/subscription-no-associated-plan/pending-payments e https://www.mercadopago.com.br/developers/pt/reference/online-payments/subscriptions/get-preapproval/get .
