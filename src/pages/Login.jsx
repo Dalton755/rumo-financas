@@ -204,7 +204,7 @@ function Login() {
 
         options: {
           redirectTo:
-            `${window.location.origin}/dashboard`,
+            getAppRedirectUrl("/dashboard"),
 
           queryParams: {
             prompt: "select_account"
