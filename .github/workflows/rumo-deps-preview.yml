@@ -12,7 +12,7 @@ on:
       - ".github/workflows/rumo-deps-preview.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   dependencias-seguras:
@@ -34,6 +34,17 @@ jobs:
         run: npm run build
       - name: Confirmar ausencia de vulnerabilidades altas e criticas
         run: npm audit --audit-level=high
+      - name: Aplicar somente na branch de homologacao
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/rumo-play-store-preparacao-20261022'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m "fix(security): atualizar dependencias auditadas do Rumo"
+            git push origin HEAD:refs/heads/feature/rumo-play-store-preparacao-20261022
+          fi
       - name: Preparar lockfile e dependencias para revisao
         uses: actions/upload-artifact@v4
         with:
