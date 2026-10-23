@@ -12,6 +12,7 @@ import { useToast } from "../context/ToastContext";
 import { supabase } from "../services/supabase";
 
 import Logo from "../components/Logo";
+import { getAppRedirectUrl } from "../utils/isPlayStoreMode";
 import "./Login.css";
 
 
@@ -66,7 +67,7 @@ function Login() {
       password: senha,
       options: {
         emailRedirectTo:
-          `${window.location.origin}/dashboard`
+          getAppRedirectUrl("/dashboard")
       }
     });
 
@@ -160,7 +161,7 @@ function Login() {
         emailUsuario,
         {
           redirectTo:
-            `${window.location.origin}/redefinir-senha`
+            getAppRedirectUrl("/redefinir-senha")
         }
       );
 
