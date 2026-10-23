@@ -37,3 +37,16 @@ O SQL `docs/play-store/sql/03_preflight_exclusao_readonly.sql` consulta, **sem e
 - `scripts/tests/rumo-exclusao-preflight.test.mjs`: testes automatizados para 40 contagens, integrações, backup e falha segura, adicionados ao CI Android TWA.
 
 **Importante:** a contagem através do REST Supabase nos relacionamentos indiretos requer teste com solicitação/conta de homologação reais em ambiente autorizado. A configuração da branch não altera o aplicativo já publicado. Um resultado de preflight não constitui prova de exclusão efetiva.
+
+## Teste ponta a ponta iniciado em 23/10/2026 (conta de homologação)
+
+- Titular autenticado enviou o pedido pela interface `/excluir-conta`; a UI confirmou o status `PENDENTE`. Banco confirmou existência de um pedido, posteriormente atualizado para `EM_ANALISE`.
+- Usuário de teste identificado no Supabase de forma restrita; 1 configuração, 1 assinatura do Rumo e 1 pagamento.
+- `assinaturas.status=ATIVA`, sem preapproval associado à linha da assinatura, sem renovação automática; `pagamentos_assinaturas.status=PENDENTE` e preapproval externo preenchido, **sem pagamento confirmado**.
+- Sem registro de contas, movimentações ou conexões Open Finance para o titular na auditoria SQL realizada antes da solicitação. Supabase Storage tem **0 objetos** cujo `owner_id` corresponde ao usuário.
+- Encontrados vínculos legítimos em schemas `beleza` e `biblia_slides`, os quais **não podem ser apagados**.
+- O token `MERCADOPAGO_ACCESS_TOKEN` está configurado na Vercel como **sensitive** e a ferramenta disponível não permite recuperá-lo. Não foi possível consultar nem cancelar a preapproval diretamente no Mercado Pago. O status PENDENTE local **não prova** cancelamento no provedor.
+- `docs/play-store/sql/04_exclusao_teste_apos_confirmar_mercadopago.sql` preparado com transação e guardas; **não executado**. Guarda SQL de pagamentos confirma **1 impedimento**, conforme esperado.
+- **Próxima ação requerida**: cancelar a assinatura no painel/API autenticados do Mercado Pago, confirmar o status real de cancelamento e registrá-lo. Só então executar revisão final, limpeza e conferência. Não marcar `CONCLUIDA` antes.
+
+A aplicação de produção e outras contas não foram alteradas. Única alteração na base: pedido existente passou de `PENDENTE` a `EM_ANALISE`.
