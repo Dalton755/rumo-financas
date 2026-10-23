@@ -22,6 +22,8 @@ export default function SolicitacoesExclusao() {
   const [auditoria, setAuditoria] = useState(null);
   const [auditando, setAuditando] = useState("");
   const [erroAuditoria, setErroAuditoria] = useState("");
+  const [checagemProvedor, setChecagemProvedor] = useState(null);
+  const [checandoProvedor, setChecandoProvedor] = useState("");
 
   const carregar = useCallback(async () => {
     setCarregando(true);
@@ -67,6 +69,27 @@ export default function SolicitacoesExclusao() {
     }
   }, []);
 
+  const verificarMercadoPago = useCallback(async (id) => {
+    setChecandoProvedor(id);
+    setErroAuditoria("");
+    setChecagemProvedor(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error("Sessão expirada.");
+      const resp = await fetch(
+        `/api/privacidade/verificar-mercadopago?solicitacao_id=${encodeURIComponent(id)}`,
+        { headers: { Authorization: `Bearer ${session.access_token}` }, cache: "no-store" },
+      );
+      const json = await resp.json();
+      if (!resp.ok) throw new Error(json.error || "Não foi possível conferir no provedor.");
+      setChecagemProvedor(json);
+    } catch (e) {
+      setErroAuditoria(e.message || "Erro na consulta ao provedor.");
+    } finally {
+      setChecandoProvedor("");
+    }
+  }, []);
+
   return (
     <MainLayout>
       <section className="rumo-exclusao-admin">
@@ -80,8 +103,9 @@ export default function SolicitacoesExclusao() {
         <div className="rumo-exclusao-admin-aviso">
           A conclusão exige verificação de assinaturas, conexões bancárias, dados
           do Rumo, históricos e backups, respeitando retenções legais. A opção
-          "Conferir dados" apenas contabiliza registros: não exclui, não suspende
-          e não cancela nada.
+          "Conferir dados" apenas contabiliza registros. "Verificar Mercado Pago"
+          consulta o status da referência na API do provedor. Nenhuma dessas
+          opções exclui, suspende ou cancela cobranças.
           <br />
           <Link to="/gerencial">Voltar ao painel gerencial</Link>
         </div>
@@ -105,6 +129,19 @@ export default function SolicitacoesExclusao() {
             {(auditoria.alertas || []).map((aviso) => <p key={aviso}>⚠ {aviso}</p>)}
           </div>
         )}
+        {checagemProvedor && (
+          <div className="rumo-exclusao-admin-aviso" role="status">
+            <strong>Consulta ao Mercado Pago — sem cancelamento nem exclusão.</strong>
+            <p>Referências verificadas: {checagemProvedor.totalReferencias}.</p>
+            {checagemProvedor.resultados.map((r) => (
+              <p key={r.referenciaFinal}>
+                <strong>…{r.referenciaFinal}:</strong> {r.verificacao}
+                {r.status ? ` (status: ${r.status})` : ""}
+                <br />{r.orientacao}
+              </p>
+            ))}
+          </div>
+        )}
         {carregando ? <p>Consultando solicitações…</p> : (
           <div className="rumo-exclusao-admin-tabela">
             <table>
@@ -118,8 +155,16 @@ export default function SolicitacoesExclusao() {
                     <td>{formatoData(item.concluida_em)}</td>
                     <td>{["PENDENTE", "EM_ANALISE"].includes(item.status) && (
                       <button type="button" onClick={() => auditarPedido(item.id)}
-                        disabled={Boolean(auditando)}>
+                        disabled={Boolean(auditando || checandoProvedor)}>
                         {auditando === item.id ? "Conferindo…" : "Conferir dados (sem excluir)"}
+                      </button>
+                    )}
+                    {["PENDENTE", "EM_ANALISE"].includes(item.status) && (
+                      <button type="button" onClick={() => verificarMercadoPago(item.id)}
+                        disabled={Boolean(auditando || checandoProvedor)}>
+                        {checandoProvedor === item.id
+                          ? "Consultando provedor…"
+                          : "Verificar Mercado Pago"}
                       </button>
                     )}</td>
                   </tr>
