@@ -1,5 +1,12 @@
 // Este diagnóstico não executa baixa, cancelamento ou exclusão.
 // Registro local "PENDENTE" e checkout gerado NÃO significam assinatura paga.
+
+// O backend de preapproval respondeu HTTP 400 ao campo {status:'canceled'}.
+// Para a API de ASSINATURAS usamos 'cancelled' (dois Ls); o campo local
+// continua 'CANCELADO'. Não confundir com o status de outros meios de pagamento.
+export function corpoCancelamentoPreapproval() {
+  return { status: "cancelled" };
+}
 export function resumirRespostaPreapproval(httpStatus, data = {}) {
   if (httpStatus === 404) return {
     verificacao: "NAO_ENCONTRADO_NESTA_CREDENCIAL",
