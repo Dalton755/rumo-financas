@@ -40,7 +40,7 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
       - name: Testar modo Play e retorno do login Google
-        run: node --test scripts/tests/play-store-mode.test.mjs scripts/tests/rumo-exclusao-preflight.test.mjs
+        run: node --test scripts/tests/play-store-mode.test.mjs scripts/tests/rumo-exclusao-preflight.test.mjs scripts/tests/rumo-status-mercadopago.test.mjs
 
       - name: Compilar interface do Rumo
         run: npm run build
