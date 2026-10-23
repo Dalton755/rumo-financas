@@ -1,0 +1,42 @@
+name: Rumo - preparar correcao de dependencias
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/rumo-play-store-preparacao-20261022
+    paths:
+      - ".github/workflows/rumo-deps-preview.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  dependencias-seguras:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Instalar dependencias atuais
+        run: npm ci
+      - name: Atualizar Vite corrigido e transitive vulneraveis
+        run: |
+          npm install --save-dev --save-exact vite@8.3.5
+          npm audit fix || true
+      - name: Garantir compatibilidade e build web
+        run: npm run build
+      - name: Confirmar ausencia de vulnerabilidades altas e criticas
+        run: npm audit --audit-level=high
+      - name: Preparar lockfile e dependencias para revisao
+        uses: actions/upload-artifact@v4
+        with:
+          name: rumo-dependencias-corrigidas
+          path: |
+            package.json
+            package-lock.json
+          retention-days: 7
+          if-no-files-found: error
