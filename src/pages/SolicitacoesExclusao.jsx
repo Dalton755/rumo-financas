@@ -171,6 +171,17 @@ export default function SolicitacoesExclusao() {
                 <strong>…{r.referenciaFinal}:</strong> {r.verificacao}
                 {r.status ? ` (status: ${r.status})` : ""}
                 <br />{r.orientacao}
+                {r.status === "pending" &&
+                  r.pagamentoStatusLocal === "PENDENTE" &&
+                  !r.pagamentoConfirmadoLocal && (
+                    <span>
+                      <br />
+                      <button type="button" disabled={cancelandoCheckout}
+                        onClick={() => cancelarPendente(r.referenciaFinal, checagemProvedor.pedido)}>
+                        {cancelandoCheckout ? "Conferindo cancelamento…" : "Cancelar checkout pendente"}
+                      </button>
+                    </span>
+                  )}
               </p>
             ))}
           </div>
