@@ -1,6 +1,9 @@
 name: Rumo - preparar correcao de dependencias
 
 on:
+  pull_request:
+    branches: [main]
+    paths: ["package.json", "package-lock.json", ".github/workflows/rumo-deps-preview.yml"]
   workflow_dispatch:
   push:
     branches:
