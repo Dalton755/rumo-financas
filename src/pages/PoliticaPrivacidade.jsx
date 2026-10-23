@@ -87,17 +87,14 @@ export default function PoliticaPrivacidade() {
 
           <h2>7. Contato</h2>
           <p>
-            Você pode acessar os canais oficiais da Nethanel em{" "}
+            Em caso de dúvidas, solicitações relativas a dados pessoais ou
+            acompanhamento de exclusão, entre em contato pelo e-mail{" "}
+            <a href="mailto:nethanel.tec@gmail.com">nethanel.tec@gmail.com</a>,
+            ou consulte os canais da Nethanel em{" "}
             <a href="https://nethanel.com.br/" target="_blank" rel="noopener noreferrer">
               nethanel.com.br
-            </a>.
-            Esta política será revisada quando forem adicionadas integrações
-            ou funcionalidades que mudem o tratamento dos dados.
-          </p>
-          <p className="rumo-privacidade-muted">
-            Aviso de homologação: conteúdo sujeito à revisão final de
-            fornecedores, prazos de retenção e canais de atendimento
-            antes da publicação na Google Play.
+            </a>. Esta política poderá ser atualizada quando houver mudanças
+            relevantes no tratamento de dados.
           </p>
         </article>
         <footer className="rumo-privacidade-footer">
