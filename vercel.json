@@ -75,6 +75,14 @@
     {
       "source": "/gerencial",
       "destination": "/index.html"
+    },
+    {
+      "source": "/privacidade",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/excluir-conta",
+      "destination": "/index.html"
     }
   ],
   "headers": [
