@@ -132,7 +132,7 @@ async function cancelarCheckoutPendente(req, pedido, res) {
   }
   const { data: pagamentos, error: erroPagamento } = await supabaseAdmin
     .schema("rumo").from("pagamentos_assinaturas")
-    .select("id, usuario_id, status, provedor, tipo, pago_em, mercado_pago_payment_id, mercado_pago_preapproval_id, metadata")
+    .select("id, usuario_id, status, provedor, tipo, pago_em, mercado_pago_payment_id, mercado_pago_preapproval_id, mercado_pago_external_reference, metadata")
     .eq("usuario_id", pedido.usuario_id)
     .not("mercado_pago_preapproval_id", "is", null)
     .limit(15);
@@ -159,6 +159,7 @@ async function cancelarCheckoutPendente(req, pedido, res) {
   }
   const validacao = validarCancelamentoPendente({
     pagamento, dadosProvedor: consulta.dados, emailTitular, referenciaFinal: final,
+    emailCompradorTeste: process.env.MERCADOPAGO_TEST_PAYER_EMAIL,
   });
   if (!validacao.ok) return res.status(409).json({ error: validacao.motivo });
 
@@ -180,9 +181,16 @@ async function cancelarCheckoutPendente(req, pedido, res) {
   let depois;
   try { depois = await requisitarPreapproval(token, pagamento.mercado_pago_preapproval_id); }
   catch { return res.status(503).json({ error: "Cancelamento não pôde ser verificado." }); }
-  if (!depois.ok || String(depois.dados?.id || "") !== pagamento.mercado_pago_preapproval_id ||
-      !["canceled", "cancelled"].includes(String(depois.dados?.status || "").toLowerCase()) ||
-      String(depois.dados?.payer_email || "").trim().toLowerCase() !== emailTitular.trim().toLowerCase()) {
+  const validacaoFinal = depois.ok
+    ? validarCancelamentoPendente({
+      pagamento,
+      dadosProvedor: depois.dados,
+      emailTitular,
+      referenciaFinal: final,
+      emailCompradorTeste: process.env.MERCADOPAGO_TEST_PAYER_EMAIL,
+    })
+    : { ok: false };
+  if (!validacaoFinal.ok || !validacaoFinal.jaCancelada) {
     return res.status(503).json({
       error: "Status final não confirmado no provedor. Não concluir exclusão.",
     });
