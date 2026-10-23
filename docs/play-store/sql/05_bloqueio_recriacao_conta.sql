@@ -71,7 +71,7 @@ CREATE OR REPLACE FUNCTION rumo.garantir_usuario_rumo()
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = rumo, public, pg_temp
+SET search_path = pg_catalog, rumo, pg_temp
 AS $function$
 DECLARE
   v_usuario_id uuid;
