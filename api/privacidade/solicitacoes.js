@@ -295,7 +295,22 @@ export default async function handler(req, res) {
   const { data, error } = await supabaseAdmin
     .schema("rumo").from("solicitacoes_exclusao")
     .select("id, usuario_id, status, solicitada_em, concluida_em")
-    .order("solicitada_em", { ascending: false }).limit(100);
+    .order("solicitada_em", { ascending: false }).limit(30);
   if (error) return res.status(503).json({ error: "Não foi possível consultar as solicitações." });
-  return res.status(200).json({ solicitacoes: data || [] });
+  // Identificação humana apenas para DONO; a resposta nunca é pública.
+  // Limitar concorrência para não sobrecarregar o Auth compartilhado.
+  const identificadas = [];
+  for (let i = 0; i < (data || []).length; i += 5) {
+    const lote = (data || []).slice(i, i + 5);
+    const resultado = await Promise.all(lote.map(async item => {
+      try {
+        const { data: cadastro, error: erro } = await supabaseAdmin.auth.admin.getUserById(item.usuario_id);
+        return { ...item, email: erro ? null : cadastro?.user?.email || null };
+      } catch {
+        return { ...item, email: null };
+      }
+    }));
+    identificadas.push(...resultado);
+  }
+  return res.status(200).json({ solicitacoes: identificadas });
 }
