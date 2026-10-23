@@ -73,6 +73,10 @@ export default function PoliticaPrivacidade() {
             obrigações legais, prevenção de fraude ou resolução de disputas.
             Registros necessários a obrigações legais poderão ser retidos
             de forma limitada, mesmo após a solicitação de exclusão.
+            Cópias de segurança e registros técnicos mantidos pelos provedores
+            podem seguir seus ciclos de retenção antes do descarte definitivo;
+            dados que já foram excluídos da base ativa não serão restaurados
+            para reativar uma conta encerrada do Rumo.
           </p>
 
           <h2>6. Seus direitos</h2>
