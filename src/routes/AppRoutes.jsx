@@ -21,6 +21,7 @@ import Gerencial from "../pages/Gerencial";
 import Calculadoras from "../pages/Calculadoras";
 import PoliticaPrivacidade from "../pages/PoliticaPrivacidade";
 import ExcluirConta from "../pages/ExcluirConta";
+import SolicitacoesExclusao from "../pages/SolicitacoesExclusao";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 import RecursoRoute from "../components/RecursoRoute";
@@ -226,6 +227,11 @@ function AppRoutes() {
                             </RecursoRoute>
                         </ProtectedRoute>
                     }
+                />
+
+                <Route
+                    path="/gerencial/exclusoes"
+                    element={<ProtectedRoute><DonoRoute><SolicitacoesExclusao /></DonoRoute></ProtectedRoute>}
                 />
 
                 <Route
