@@ -29,7 +29,7 @@ jarsigner -keystore "$KEYSTORE" -sigalg SHA256withRSA -digestalg SHA-256 \
   -signedjar "$OUTPUT_AAB" "$INPUT_AAB" "$ALIAS"
 
 # -strict garante que a assinatura/algoritmo não apresenta avisos críticos.
-jarsigner -verify -strict "$OUTPUT_AAB"
+jarsigner -verify -strict -keystore "$KEYSTORE" "$OUTPUT_AAB"
 echo "AAB assinado: $OUTPUT_AAB"
 echo "SHA256 arquivo:"
 sha256sum "$OUTPUT_AAB"
