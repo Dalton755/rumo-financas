@@ -59,6 +59,16 @@ A branch contém `android/twa-manifest.json` com identificador provisório `br.c
 - TWA: https://developer.android.com/develop/ui/views/layout/webapps/guide-trusted-web-activities-version2
 - Google Play Billing em TWA: https://developer.chrome.com/docs/android/trusted-web-activity/receive-payments-play-billing
 
+
+## Android App Bundle de release — 23/10/2026
+O CI foi atualizado para gerar `android/app/build/outputs/bundle/release/app-release.aab` **sem assinatura** e guardar o artifact `rumo-play-aab-sem-assinatura`, sem enviar nenhuma chave ao GitHub. O primeiro build do AAB foi aprovado na execução `39918384842`.
+
+Para a entrega de homologação foi gerada **chave de upload nova**, fora do GitHub, com alias `rumo-upload` e pacote `br.com.nethanel.rumo`. O AAB foi assinado **offline** com o `jarsigner` e verificado com `jarsigner -verify -strict` usando a própria keystore como confiança; o certificado AAB coincide com a upload key. Esta é a **chave de upload** — a SHA-256 do **certificado de assinatura distribuída pelo Google Play** deverá ser obtida depois na Play Console e usada no `assetlinks.json`.
+
+O AAB assinado e a chave privada de upload foram entregues como arquivos privados ao proprietário nesta conversa e **não foram versionados**. Preservar ambos a chave e sua senha em cofre seguro. Não anexar esses segredos no PR, em issues ou em Secrets públicos. A chave deve ser a mesma nas próximas atualizações, salvo reset formal na Play Console.
+
+Apenas para futuras builds offline, o script `scripts/assinar-aab-local.sh` ajuda na assinatura sem gravar senhas no repositório. AAB compilado **não garante prontidão para submissão**: o site TWA ainda pode disponibilizar checkout web, não há assetlinks de app signing definitivo nem política de privacidade publicada.
+
 ## Acessar o APK de debug quando o build concluir com sucesso
 GitHub → repositório `rumo-financas` → **Actions** → **Rumo Android TWA - APK de homologacao** → execução mais recente → **Artifacts** → `rumo-android-debug-apk`. Esta versão tem assinatura de debug efêmera e nunca deve ser enviada para a Play Console.
 
