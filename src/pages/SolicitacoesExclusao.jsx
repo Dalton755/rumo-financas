@@ -85,6 +85,12 @@ export default function SolicitacoesExclusao() {
         informar(pedido.id, "Nenhuma referência de assinatura foi encontrada. A exclusão dos dados ainda precisa ser processada.", "info");
         return;
       }
+      if (retorno.resultados.every(r =>
+        r.status === "canceled" && r.pagamentoStatusLocal === "CANCELADO"
+      )) {
+        informar(pedido.id, "A tentativa de assinatura já foi cancelada. A exclusão dos dados do Rumo continua em análise.", "sucesso");
+        return;
+      }
       const bloqueios = retorno.resultados.filter(r =>
         !["pending", "canceled"].includes(r.status) ||
         r.pagamentoStatusLocal !== "PENDENTE" || r.pagamentoConfirmadoLocal,
