@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../services/supabase";
 import "./Privacidade.css";
+import { getAppRedirectUrl } from "../utils/isPlayStoreMode";
 
 export default function ExcluirConta() {
   const [usuario, setUsuario] = useState(null);
@@ -68,7 +69,7 @@ export default function ExcluirConta() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/excluir-conta`,
+        redirectTo: getAppRedirectUrl("/excluir-conta"),
         queryParams: { prompt: "select_account" }
       }
     });
