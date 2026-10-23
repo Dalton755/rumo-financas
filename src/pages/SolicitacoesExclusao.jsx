@@ -54,7 +54,7 @@ export default function SolicitacoesExclusao() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error("Sessão expirada.");
-      const url = `/api/privacidade/preflight?solicitacao_id=${encodeURIComponent(id)}`;
+      const url = `/api/privacidade/solicitacoes?acao=preflight&solicitacao_id=${encodeURIComponent(id)}`;
       const resp = await fetch(url, {
         headers: { Authorization: `Bearer ${session.access_token}` },
         cache: "no-store",
@@ -77,7 +77,7 @@ export default function SolicitacoesExclusao() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error("Sessão expirada.");
       const resp = await fetch(
-        `/api/privacidade/verificar-mercadopago?solicitacao_id=${encodeURIComponent(id)}`,
+        `/api/privacidade/solicitacoes?acao=mercadopago&solicitacao_id=${encodeURIComponent(id)}`,
         { headers: { Authorization: `Bearer ${session.access_token}` }, cache: "no-store" },
       );
       const json = await resp.json();
