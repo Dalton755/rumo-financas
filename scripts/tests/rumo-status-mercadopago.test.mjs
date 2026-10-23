@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { resumirRespostaPreapproval as verificar } from "../../api/_lib/rumoStatusMercadoPago.js";
+import { resumirRespostaPreapproval as verificar, corpoCancelamentoPreapproval } from "../../api/_lib/rumoStatusMercadoPago.js";
 
 test("pending é tentativa não paga, mas não é prova de cancelamento", () => {
   const r = verificar(200, { status: "pending" });
@@ -21,4 +21,8 @@ test("404, 403 e erros não viram cancelamento implícito", () => {
   assert.equal(verificar(403).verificacao, "CREDENCIAL_SEM_ACESSO");
   assert.equal(verificar(500).verificacao, "FALHA_NA_CONSULTA");
   assert.equal(verificar(200, { status: "unexpected" }).verificacao, "STATUS_DESCONHECIDO");
+});
+
+test("o PUT de preapproval usa o status cancelled (erro 400 com canceled)", () => {
+  assert.deepEqual(corpoCancelamentoPreapproval(), { status: "cancelled" });
 });
