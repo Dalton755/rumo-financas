@@ -7,7 +7,7 @@ O Rumo é um React/Vite com manifesto PWA e login Supabase. Recomenda-se **Trust
 
 A branch contém `android/twa-manifest.json` com identificador provisório `br.com.nethanel.rumo`, integração de **compilação de APK de debug via GitHub Actions** (`.github/workflows/android-twa-debug.yml`) e sinalização de sessão Android para **ocultar o checkout Mercado Pago somente dentro da TWA**. A versão web mantém o checkout e as assinaturas existentes continuam reconhecidas pelo backend.
 
-**Até a compilação da action passar, nenhum APK está homologado.** O APK de debug pode ser testado no dispositivo, mas **não é AAB assinado para publicação**. Para ocultar a barra de endereço da TWA é necessária associação Digital Asset Links com certificado válido da versão instalada.
+**O APK de debug foi compilado e instalado em aparelho real, e o usuário confirmou seu funcionamento.** Ainda não existe AAB assinado para publicação. Para ocultar a barra de endereço da TWA é necessária associação Digital Asset Links com certificado válido da versão instalada.
 
 ## Diagnóstico observado no código
 - `public/manifest.webmanifest` já define ícones 192, 512, maskable, cores e `display: standalone`. Esta branch adiciona ID estável, idioma e categorias ao manifesto.
@@ -63,3 +63,13 @@ A branch contém `android/twa-manifest.json` com identificador provisório `br.c
 GitHub → repositório `rumo-financas` → **Actions** → **Rumo Android TWA - APK de homologacao** → execução mais recente → **Artifacts** → `rumo-android-debug-apk`. Esta versão tem assinatura de debug efêmera e nunca deve ser enviada para a Play Console.
 
 **Critério de saída:** após resolver bloqueadores e validar APK/AAB instalado, fazer PR separado de ajustes específicos para Play e publicar somente mediante autorização explícita.
+
+
+## Progresso em 22/10/2026 — privacidade e segurança
+- O usuário confirmou a instalação/abertura do APK de debug no Android.
+- **Aplicado no Supabase `Dalton Pessoal`**: migration `rumo_playstore_solicitacoes_exclusao_20261022`, apenas tabela `rumo.solicitacoes_exclusao` com RLS para solicitações do próprio titular. A tabela estava vazia no teste e sem privilégios de leitura anônima ou exclusão pelo cliente.
+- A interface `/excluir-conta`, política `/privacidade` e painel admin `/gerencial/exclusoes` estão **na branch de homologação, não em produção**. O pedido não provoca exclusão automática. Procedimento: `processamento-exclusoes.md`.
+- **Falha grave preexistente encontrada e corrigida no banco:** quatro views financeiras em `public` usavam permissões de proprietário e podiam retornar registros de outros usuários, inclusive na sessão anônima. A migration `rumo_proteger_views_financeiras_20261022` aplicou `security_invoker=true` e removeu acesso do papel `anon`, preservando SELECT com RLS para usuários autenticados. Testes: `authenticated` com usuário inexistente vê zero registros; com sessão simulada válida vê somente seu próprio dashboard. **Nenhum dado foi removido.** É prudente revisar histórico de acessos/logs e funções privilegiadas restantes.
+- A correção de dependências pelo CI gerou Vite `8.3.5` e lockfile auditado. O workflow `Security checks` passou em `npm audit --audit-level=high`, lint e build na execução de referência `39878702064` (GitHub Actions), sem lançamento em produção.
+- **Política de pagamentos:** para primeira publicação, o Rumo pode ser distribuído como aplicativo de **somente consumo**, sem compras ou links de checkout no Android; assinaturas adquiridas fora da Play continuam sendo reconhecidas. A interface do app Play foi preparada para ocultar checkout do Mercado Pago. Só ativar Google Play Billing se houver produtos cadastrados, credenciais de desenvolvedor, verificação server-side e testes; não fazer cobrança in-app sem a integração.
+- As páginas web novas permanecem sem validação de acesso público no domínio até publicação autorizada.
