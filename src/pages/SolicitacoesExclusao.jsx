@@ -4,218 +4,195 @@ import MainLayout from "../layouts/MainLayout";
 import { supabase } from "../services/supabase";
 import "./SolicitacoesExclusao.css";
 
-const descricoes = {
-  PENDENTE: "Aguardando análise",
+const estados = {
+  PENDENTE: "Solicitação recebida",
   EM_ANALISE: "Em análise",
   CONCLUIDA: "Concluída",
   CANCELADA: "Cancelada",
 };
-function formatoData(valor) {
+function dataBrasileira(valor) {
   if (!valor) return "—";
   return new Date(valor).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
 }
+async function consultarApi(url, options = {}) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.access_token) throw new Error("Sessão expirada. Entre novamente no Rumo.");
+  const resposta = await fetch(url, {
+    cache: "no-store",
+    ...options,
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...options.headers,
+    },
+  });
+  let json = {};
+  try { json = await resposta.json(); } catch { /* Falha transitória */ }
+  if (!resposta.ok) throw new Error(json.error || "Não foi possível concluir a operação.");
+  return json;
+}
 
 export default function SolicitacoesExclusao() {
-  const [registros, setRegistros] = useState([]);
+  const [pedidos, setPedidos] = useState([]);
   const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState("");
-  const [auditoria, setAuditoria] = useState(null);
-  const [auditando, setAuditando] = useState("");
-  const [erroAuditoria, setErroAuditoria] = useState("");
-  const [checagemProvedor, setChecagemProvedor] = useState(null);
-  const [checandoProvedor, setChecandoProvedor] = useState("");
-  const [cancelandoCheckout, setCancelandoCheckout] = useState(false);
-  const [mensagemCancelamento, setMensagemCancelamento] = useState("");
+  const [processando, setProcessando] = useState("");
+  const [avisos, setAvisos] = useState({});
+  const [detalhes, setDetalhes] = useState({});
 
-  const carregar = useCallback(async () => {
+  const informar = useCallback((id, texto, tipo = "info") => {
+    setAvisos(anterior => ({ ...anterior, [id]: { texto, tipo } }));
+  }, []);
+
+  const atualizar = useCallback(async () => {
     setCarregando(true);
-    setErro("");
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) throw new Error("Sessão expirada.");
-      const resp = await fetch("/api/privacidade/solicitacoes", {
-        headers: { Authorization: `Bearer ${session.access_token}` },
-        cache: "no-store",
-      });
-      const json = await resp.json();
-      if (!resp.ok) throw new Error(json.error || "Falha ao carregar solicitações.");
-      setRegistros(json.solicitacoes || []);
-    } catch (e) {
-      setErro(e.message || "Erro inesperado.");
+      const json = await consultarApi("/api/privacidade/solicitacoes");
+      setPedidos(json.solicitacoes || []);
+      setAvisos(anterior => ({ ...anterior, geral: null }));
+    } catch (erro) {
+      informar("geral", erro.message || "Não foi possível listar as solicitações.", "erro");
     } finally {
       setCarregando(false);
     }
-  }, []);
+  }, [informar]);
 
-  useEffect(() => { carregar(); }, [carregar]);
+  useEffect(() => { atualizar(); }, [atualizar]);
 
-  const auditarPedido = useCallback(async (id) => {
-    setAuditando(id);
-    setErroAuditoria("");
-    setAuditoria(null);
+  const conferirDados = async (pedido) => {
+    setProcessando(pedido.id);
+    informar(pedido.id, "Conferindo dados do Rumo…");
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) throw new Error("Sessão expirada.");
-      const url = `/api/privacidade/solicitacoes?acao=preflight&solicitacao_id=${encodeURIComponent(id)}`;
-      const resp = await fetch(url, {
-        headers: { Authorization: `Bearer ${session.access_token}` },
-        cache: "no-store",
-      });
-      const json = await resp.json();
-      if (!resp.ok) throw new Error(json.error || "Falha na conferência.");
-      setAuditoria(json);
-    } catch (e) {
-      setErroAuditoria(e.message || "Falha ao conferir os dados.");
-    } finally {
-      setAuditando("");
-    }
-  }, []);
-
-  const verificarMercadoPago = useCallback(async (id) => {
-    setChecandoProvedor(id);
-    setErroAuditoria("");
-    setChecagemProvedor(null);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) throw new Error("Sessão expirada.");
-      const resp = await fetch(
-        `/api/privacidade/solicitacoes?acao=mercadopago&solicitacao_id=${encodeURIComponent(id)}`,
-        { headers: { Authorization: `Bearer ${session.access_token}` }, cache: "no-store" },
+      const retorno = await consultarApi(
+        `/api/privacidade/solicitacoes?acao=preflight&solicitacao_id=${encodeURIComponent(pedido.id)}`,
       );
-      const json = await resp.json();
-      if (!resp.ok) throw new Error(json.error || "Não foi possível conferir no provedor.");
-      setChecagemProvedor(json);
-    } catch (e) {
-      setErroAuditoria(e.message || "Erro na consulta ao provedor.");
+      setDetalhes(anterior => ({ ...anterior, [pedido.id]: retorno }));
+      informar(pedido.id, `Encontrados ${retorno.totalRegistros} registros em ${retorno.totalTabelasVerificadas} origens. Nenhum dado foi excluído.`, "info");
+    } catch (erro) {
+      informar(pedido.id, erro.message, "erro");
     } finally {
-      setChecandoProvedor("");
+      setProcessando("");
     }
-  }, []);
+  };
 
-  const cancelarPendente = useCallback(async (final, pedido) => {
-    const texto = window.prompt("Digite CANCELAR " + final + " para confirmar o cancelamento do checkout (sem excluir dados):", "");
-    if (texto !== "CANCELAR " + final) return;
-    setCancelandoCheckout(true);
-    setErroAuditoria("");
-    setMensagemCancelamento("");
+  const resolverPendencia = async (pedido) => {
+    setProcessando(pedido.id);
+    informar(pedido.id, "Conferindo pagamentos diretamente no Mercado Pago…");
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) throw new Error("Sessão expirada.");
-      const response = await fetch("/api/privacidade/solicitacoes?acao=cancelar-checkout", {
+      const retorno = await consultarApi(
+        `/api/privacidade/solicitacoes?acao=mercadopago&solicitacao_id=${encodeURIComponent(pedido.id)}`,
+      );
+      if (retorno.totalReferencias === 0) {
+        informar(pedido.id, "Nenhuma referência de assinatura foi encontrada. A exclusão dos dados ainda precisa ser processada.", "info");
+        return;
+      }
+      const bloqueios = retorno.resultados.filter(r =>
+        !["pending", "canceled"].includes(r.status) ||
+        r.pagamentoStatusLocal !== "PENDENTE" || r.pagamentoConfirmadoLocal,
+      );
+      if (retorno.resultados.length !== 1 || bloqueios.length) {
+        informar(pedido.id, "Este pedido exige revisão de pagamentos. Nenhuma cobrança ou dado foi alterado.", "erro");
+        return;
+      }
+      const referencia = retorno.resultados[0].referenciaFinal;
+      const confirmou = window.confirm(
+        `O Mercado Pago identificou uma tentativa de assinatura ainda não paga (final ${referencia}).\n\nCancelar essa tentativa agora?\n\nOs dados da conta NÃO serão excluídos nesta etapa.`,
+      );
+      if (!confirmou) {
+        informar(pedido.id, "Operação interrompida. Nenhuma alteração realizada.");
+        return;
+      }
+      informar(pedido.id, "Cancelando e conferindo o resultado no Mercado Pago…");
+      const resultado = await consultarApi("/api/privacidade/solicitacoes?acao=cancelar-checkout", {
         method: "POST",
-        headers: {
-          Authorization: "Bearer " + session.access_token,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ solicitacao_id: pedido, referenciaFinal: final, confirmacao: texto }),
-        cache: "no-store",
+        body: JSON.stringify({
+          solicitacao_id: pedido.id,
+          referenciaFinal: referencia,
+          confirmacao: `CANCELAR ${referencia}`,
+        }),
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Cancelamento não confirmado.");
-      setMensagemCancelamento(data.mensagem || "Checkout cancelado no provedor.");
-      await verificarMercadoPago(pedido);
-    } catch (error) {
-      setErroAuditoria(error.message || "Falha no cancelamento.");
+      informar(pedido.id, resultado.mensagem || "Tentativa cancelada. A exclusão de dados ainda está pendente.", "sucesso");
+    } catch (erro) {
+      informar(pedido.id, erro.message || "Não foi possível resolver a pendência.", "erro");
     } finally {
-      setCancelandoCheckout(false);
+      setProcessando("");
     }
-  }, [verificarMercadoPago]);
+  };
 
   return (
     <MainLayout>
       <section className="rumo-exclusao-admin">
         <div className="rumo-exclusao-admin-header">
-          <div><small>PAINEL GERENCIAL · PRIVACIDADE</small><h1>Solicitações de exclusão</h1>
-            <p>Acompanhe os pedidos de remoção de dados financeiros do Rumo.</p></div>
-          <button type="button" onClick={carregar} disabled={carregando}>
+          <div>
+            <small>PAINEL GERENCIAL · PRIVACIDADE</small>
+            <h1>Exclusão de contas</h1>
+            <p>Acompanhe os pedidos e resolva as pendências em um único lugar.</p>
+          </div>
+          <button type="button" onClick={atualizar} disabled={carregando || Boolean(processando)}>
             {carregando ? "Atualizando…" : "Atualizar"}
           </button>
         </div>
+
         <div className="rumo-exclusao-admin-aviso">
-          A conclusão exige verificação de assinaturas, conexões bancárias, dados
-          do Rumo, históricos e backups, respeitando retenções legais. A opção
-          "Conferir dados" apenas contabiliza registros. "Verificar Mercado Pago"
-          consulta o status da referência na API do provedor. O cancelamento
-          de uma tentativa pendente é uma ação separada, com confirmação explícita.
-          Essas ações não excluem dados da conta.
-          <br />
-          <Link to="/gerencial">Voltar ao painel gerencial</Link>
+          <strong>Processamento protegido.</strong> O sistema confere o pagamento antes de qualquer cancelamento.
+          A exclusão de dados ainda não é automática e será concluída separadamente, após a validação.
+          <br /><Link to="/gerencial">Voltar ao painel gerencial</Link>
         </div>
-        {erro && <p role="alert">{erro}</p>}
-        {erroAuditoria && <p role="alert">{erroAuditoria}</p>}
-        {mensagemCancelamento && <p role="status">{mensagemCancelamento}</p>}
-        {auditoria && (
-          <div className="rumo-exclusao-admin-aviso" role="status">
-            <strong>Auditoria somente leitura — nenhuma exclusão realizada.</strong>
-            <p>{auditoria.totalRegistros} registros associados ao pedido,
-              distribuídos por {auditoria.totalTabelasVerificadas} origens
-              ({auditoria.totalBackups} em backups históricos).</p>
-            <p>Esta conferência não comprova exclusão nem substitui a análise
-              de contratos, retenção legal e integrações externas.</p>
-            <details><summary>Contagem detalhada de registros</summary>
-              <ul>
-                {Object.entries(auditoria.contagens || {})
-                  .filter(([, quantidade]) => quantidade > 0)
-                  .map(([nome, quantidade]) => <li key={nome}>{nome}: {quantidade}</li>)}
-              </ul>
-            </details>
-            {(auditoria.alertas || []).map((aviso) => <p key={aviso}>⚠ {aviso}</p>)}
-          </div>
-        )}
-        {checagemProvedor && (
-          <div className="rumo-exclusao-admin-aviso" role="status">
-            <strong>Consulta ao Mercado Pago — sem cancelamento nem exclusão.</strong>
-            <p>Referências verificadas: {checagemProvedor.totalReferencias}.</p>
-            {checagemProvedor.resultados.map((r) => (
-              <p key={r.referenciaFinal}>
-                <strong>…{r.referenciaFinal}:</strong> {r.verificacao}
-                {r.status ? ` (status: ${r.status})` : ""}
-                <br />{r.orientacao}
-                {r.status === "pending" &&
-                  r.pagamentoStatusLocal === "PENDENTE" &&
-                  !r.pagamentoConfirmadoLocal && (
-                    <span>
-                      <br />
-                      <button type="button" disabled={cancelandoCheckout}
-                        onClick={() => cancelarPendente(r.referenciaFinal, checagemProvedor.pedido)}>
-                        {cancelandoCheckout ? "Conferindo cancelamento…" : "Cancelar checkout pendente"}
-                      </button>
-                    </span>
+        {avisos.geral && <p className="rumo-exclusao-admin-erro" role="alert">{avisos.geral.texto}</p>}
+        {carregando && <p>Consultando solicitações…</p>}
+        {!carregando && !pedidos.length && <p className="rumo-exclusao-admin-vazio">Nenhuma solicitação encontrada.</p>}
+        {!carregando && (
+          <div className="rumo-exclusao-admin-lista">
+            {pedidos.map(pedido => {
+              const pendente = ["PENDENTE", "EM_ANALISE"].includes(pedido.status);
+              const ocupado = Boolean(processando);
+              const aviso = avisos[pedido.id];
+              const detalhe = detalhes[pedido.id];
+              return (
+                <article className="rumo-exclusao-admin-card" key={pedido.id}>
+                  <div className="rumo-exclusao-admin-card-topo">
+                    <div>
+                      <small>CONTA</small>
+                      <h2>{pedido.email || "Usuário do Rumo"}</h2>
+                      <p>Solicitado em {dataBrasileira(pedido.solicitada_em)}</p>
+                    </div>
+                    <span className="rumo-exclusao-admin-badge">{estados[pedido.status] || pedido.status}</span>
+                  </div>
+                  {aviso && (
+                    <div className={`rumo-exclusao-admin-feedback ${aviso.tipo}`}
+                      role={aviso.tipo === "erro" ? "alert" : "status"}>{aviso.texto}</div>
                   )}
-              </p>
-            ))}
-          </div>
-        )}
-        {carregando ? <p>Consultando solicitações…</p> : (
-          <div className="rumo-exclusao-admin-tabela">
-            <table>
-              <thead><tr><th>Solicitada em</th><th>Status</th><th>ID do usuário</th><th>Concluída em</th><th>Conferência</th></tr></thead>
-              <tbody>
-                {registros.map((item) => (
-                  <tr key={item.id}>
-                    <td>{formatoData(item.solicitada_em)}</td>
-                    <td><span className="rumo-exclusao-admin-badge">{descricoes[item.status] || item.status}</span></td>
-                    <td className="rumo-exclusao-admin-uuid">{item.usuario_id}</td>
-                    <td>{formatoData(item.concluida_em)}</td>
-                    <td>{["PENDENTE", "EM_ANALISE"].includes(item.status) && (
-                      <button type="button" onClick={() => auditarPedido(item.id)}
-                        disabled={Boolean(auditando || checandoProvedor)}>
-                        {auditando === item.id ? "Conferindo…" : "Conferir dados (sem excluir)"}
+                  {pendente && (
+                    <div className="rumo-exclusao-admin-acoes">
+                      <button type="button" className="primario" disabled={ocupado}
+                        onClick={() => resolverPendencia(pedido)}>
+                        {processando === pedido.id ? "Verificando…" : "Resolver pendência de pagamento"}
                       </button>
-                    )}
-                    {["PENDENTE", "EM_ANALISE"].includes(item.status) && (
-                      <button type="button" onClick={() => verificarMercadoPago(item.id)}
-                        disabled={Boolean(auditando || checandoProvedor)}>
-                        {checandoProvedor === item.id
-                          ? "Consultando provedor…"
-                          : "Verificar Mercado Pago"}
+                      <button type="button" disabled={ocupado} onClick={() => conferirDados(pedido)}>
+                        Conferir dados
                       </button>
-                    )}</td>
-                  </tr>
-                ))}
-                {!registros.length && <tr><td colSpan={5}>Nenhuma solicitação encontrada.</td></tr>}
-              </tbody>
-            </table>
+                    </div>
+                  )}
+                  {detalhe && (
+                    <details className="rumo-exclusao-admin-detalhes">
+                      <summary>Detalhes da auditoria — {detalhe.totalRegistros} registros</summary>
+                      <p>Nenhum registro foi excluído por esta auditoria.</p>
+                      {(detalhe.alertas || []).map(alerta => <p key={alerta}>⚠ {alerta}</p>)}
+                      <ul>
+                        {Object.entries(detalhe.contagens || {})
+                          .filter(([,total]) => total > 0)
+                          .map(([nome,total]) => <li key={nome}>{nome}: {total}</li>)}
+                      </ul>
+                    </details>
+                  )}
+                  <details className="rumo-exclusao-admin-detalhes">
+                    <summary>Informações técnicas</summary>
+                    <p>ID de conta: <code>{pedido.usuario_id}</code></p>
+                    <p>ID da solicitação: <code>{pedido.id}</code></p>
+                    {pedido.concluida_em && <p>Concluída em {dataBrasileira(pedido.concluida_em)}</p>}
+                  </details>
+                </article>
+              );
+            })}
           </div>
         )}
       </section>
