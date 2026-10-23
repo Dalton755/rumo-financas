@@ -135,13 +135,15 @@ export default function SolicitacoesExclusao() {
           A conclusão exige verificação de assinaturas, conexões bancárias, dados
           do Rumo, históricos e backups, respeitando retenções legais. A opção
           "Conferir dados" apenas contabiliza registros. "Verificar Mercado Pago"
-          consulta o status da referência na API do provedor. Nenhuma dessas
-          opções exclui, suspende ou cancela cobranças.
+          consulta o status da referência na API do provedor. O cancelamento
+          de uma tentativa pendente é uma ação separada, com confirmação explícita.
+          Essas ações não excluem dados da conta.
           <br />
           <Link to="/gerencial">Voltar ao painel gerencial</Link>
         </div>
         {erro && <p role="alert">{erro}</p>}
         {erroAuditoria && <p role="alert">{erroAuditoria}</p>}
+        {mensagemCancelamento && <p role="status">{mensagemCancelamento}</p>}
         {auditoria && (
           <div className="rumo-exclusao-admin-aviso" role="status">
             <strong>Auditoria somente leitura — nenhuma exclusão realizada.</strong>
