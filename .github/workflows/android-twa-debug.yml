@@ -105,3 +105,18 @@ jobs:
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 7
+
+      # Um AAB ainda sem assinatura; o upload key NÃO fica no GitHub.
+      # Assinatura deve ser aplicada offline por jarsigner antes do envio à Play.
+      - name: Compilar Android App Bundle para homologação
+        working-directory: android
+        shell: bash
+        run: ./gradlew --no-daemon --stacktrace bundleRelease
+
+      - name: Guardar AAB não assinado
+        uses: actions/upload-artifact@v4
+        with:
+          name: rumo-play-aab-sem-assinatura
+          path: android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+          retention-days: 7
