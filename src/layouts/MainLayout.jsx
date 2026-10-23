@@ -360,6 +360,16 @@ function MainLayout({ children }) {
           </NavLink>
           {dono && (
             <NavLink
+              to="/gerencial/exclusoes"
+              onClick={fecharMenuMobile}
+              className="rumo-owner-panel-link"
+            >
+              <span className="rumo-owner-panel-icon"><ShieldCheck size={17} /></span>
+              <span><strong>Pedidos de exclusão</strong><small>Privacidade dos usuários</small></span>
+            </NavLink>
+          )}
+          {dono && (
+            <NavLink
               to="/gerencial"
               onClick={fecharMenuMobile}
               className="rumo-owner-panel-link"
