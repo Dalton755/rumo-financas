@@ -32,3 +32,14 @@ export function isPlayStoreMode() {
     return false;
   }
 }
+
+/**
+ * Preserva o sinalizador da TWA após o login Google e a troca de página.
+ * Evita reexibir pagamento web dentro do app Android após OAuth.
+ */
+export function getAppRedirectUrl(caminho) {
+  if (typeof window === "undefined") return caminho;
+  const url = new URL(caminho, window.location.origin);
+  if (isPlayStoreMode()) url.searchParams.set("rumo_source", "play");
+  return url.toString();
+}
