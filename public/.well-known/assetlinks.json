@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "br.com.nethanel.rumo",
+      "sha256_cert_fingerprints": [
+        "AB:D8:B7:31:BB:F3:4A:C6:30:51:A2:E8:A9:FC:FE:1B:03:41:05:6A:C9:C0:FF:3D:06:16:9A:15:DF:50:90:BE"
+      ]
+    }
+  }
+]

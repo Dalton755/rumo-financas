@@ -19,6 +19,9 @@ import Projecoes from "../pages/Projecoes";
 import Alertas from "../pages/Alertas";
 import Gerencial from "../pages/Gerencial";
 import Calculadoras from "../pages/Calculadoras";
+import PoliticaPrivacidade from "../pages/PoliticaPrivacidade";
+import ExcluirConta from "../pages/ExcluirConta";
+import SolicitacoesExclusao from "../pages/SolicitacoesExclusao";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 import RecursoRoute from "../components/RecursoRoute";
@@ -33,6 +36,9 @@ function AppRoutes() {
                     path="/"
                     element={<Login />}
                 />
+
+                <Route path="/privacidade" element={<PoliticaPrivacidade />} />
+                <Route path="/excluir-conta" element={<ExcluirConta />} />
 
                 <Route
                     path="/redefinir-senha"
@@ -221,6 +227,11 @@ function AppRoutes() {
                             </RecursoRoute>
                         </ProtectedRoute>
                     }
+                />
+
+                <Route
+                    path="/gerencial/exclusoes"
+                    element={<ProtectedRoute><DonoRoute><SolicitacoesExclusao /></DonoRoute></ProtectedRoute>}
                 />
 
                 <Route

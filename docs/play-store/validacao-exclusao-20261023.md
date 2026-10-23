@@ -1,0 +1,76 @@
+# Rumo — verificação segura do fluxo de exclusão (23/10/2026)
+
+**Status: PARCIAL / sem exclusão real executada.** Auditoria feita diretamente no projeto Supabase compartilhado `Dalton Pessoal` (`sxghzubovthsvmfqncch`) por consultas de leitura. Nenhuma conta, linha, arquivo ou pagamento foi excluído, e não houve alteração de schema/deploy.
+
+## Verificações realizadas
+
+1. `rumo.solicitacoes_exclusao` **existe** e tem RLS. As policies `SELECT` e `INSERT` limitam ao titular `auth.uid() = usuario_id`; cliente autenticado não tem permissões para `UPDATE` ou `DELETE`. `anotacao_interna` não tem permissão de leitura via cliente. `anon` não possui acesso de leitura.
+2. Consulta SQL em transação `BEGIN ... SET LOCAL ROLE authenticated ... ROLLBACK`, simulando um UUID de sessão que não corresponde a conta existente, retornou **zero solicitações** sem alterar dados. Esse é um teste de isolamento de leitura, **não** substitui teste real de criação/execução de exclusão.
+3. No momento da consulta, havia **zero solicitações de exclusão**, portanto ainda não há evidência de um pedido ponta a ponta nem de operação de limpeza.
+4. Foram examinadas as foreign keys do schema `rumo`: há entidades sem `usuario_id` (notadamente `aportes_objetivos` e `plano_quitacao`) que devem ser removidas por relação aos respectivos objetivos/dívidas. Exclusão de entidades-pai antes de dependentes pode falhar por chaves estrangeiras.
+5. Existem múltiplas tabelas históricas `rumo.bkp_*` com `usuario_id`. Não ignorar essas cópias ao definir retenção/deleção e documentação de auditoria.
+6. O endpoint `GET /api/privacidade/solicitacoes` **apenas lista pedidos** para perfil `DONO`. O formulário público **registra um pedido**. Atualmente não há processador que revogue Pluggy/Mercado Pago e apague todos os dados do Rumo ao marcar concluído.
+7. Os usuários do Supabase/Auth são compartilhados com outros produtos: `auth.users` e `public.profiles` **não devem ser excluídos genericamente** ao apagar dados do Rumo. É necessário definir como impedir acesso ou recriação de dados do Rumo após encerramento da conta específica, preservando legitimamente outros aplicativos se aplicável.
+
+## Ferramenta de preflight
+
+O SQL `docs/play-store/sql/03_preflight_exclusao_readonly.sql` consulta, **sem escrita**, a quantidade de registros associados a um usuário em **40 origens**: tabelas do Rumo, backups e tabelas dependentes. O script foi executado no banco com UUID sintético e retornou 0 para as 40 origens, conforme esperado. Isso valida a execução da consulta e mostra as localizações que precisam ser verificadas; **não confirma exclusão de uma conta existente**.
+
+## Critérios para aprovação da exclusão (ainda não atendidos)
+
+- [ ] Conta de teste exclusiva criada no app com autenticação por e-mail/senha e valores totalmente fictícios.
+- [ ] Pedido enviado por `/excluir-conta` e exibido no painel `/gerencial/exclusoes` como `PENDENTE`, sem pedir senha ao operador.
+- [ ] Solicitação ligada ao titular real e nenhum acesso a pedidos de terceiros.
+- [ ] Processador operacional implementado e testado, com duas etapas e auditoria, capaz de tratar assinatura Mercado Pago e conexões Pluggy antes de excluir os dados do Rumo.
+- [ ] Execução limitada à conta de teste, sem apagar `auth.users` ou `public.profiles` compartilhados; registros de outros aplicativos intactos.
+- [ ] Preflight após o processamento demonstra ausência dos dados apagáveis em **todas as origens aplicáveis**, incluídas as tabelas relacionadas e cópias; retenções legais justificadas e períodos documentados.
+- [ ] Bloqueio de reimportação/sincronização, comunicação ao titular e status `CONCLUIDA` somente após verificação.
+- [ ] Revisão de arquivo/storage, logs, backups do provedor, políticas e prazo de resposta.
+
+**Conclusão:** a **entrada do pedido** e seus controles de acesso estão tecnicamente presentes, porém a **exclusão efetiva da conta e dados** continua como pendência de conformidade para lançamento público. Não declarar "exclusão validada" ou marcar pedido como `CONCLUIDA` sem execução e provas. Não usar contas de produção para teste.
+
+## Implementação adicional (em homologação, sem deploy)
+
+- `api/_lib/rumoExclusaoPreflight.js` calcula contagens por usuário em 40 fontes, incluindo 14 backups históricos e 2 tabelas dependentes; falha fechada quando alguma contagem é incompleta. Retorna somente contagens, sem dados pessoais das movimentações. Inclui alertas de pagamentos e conexões financeiras.
+- `GET /api/privacidade/preflight?solicitacao_id=<UUID>` exige token válido, privilégio `DONO` validado no servidor e solicitação aberta; é **somente leitura** e não executa exclusão.
+- `src/pages/SolicitacoesExclusao.jsx`: botão **Conferir dados (sem excluir)** com totais e bloqueadores. Nenhum botão destrutivo foi liberado.
+- `scripts/tests/rumo-exclusao-preflight.test.mjs`: testes automatizados para 40 contagens, integrações, backup e falha segura, adicionados ao CI Android TWA.
+
+**Importante:** a contagem através do REST Supabase nos relacionamentos indiretos requer teste com solicitação/conta de homologação reais em ambiente autorizado. A configuração da branch não altera o aplicativo já publicado. Um resultado de preflight não constitui prova de exclusão efetiva.
+
+## Teste ponta a ponta iniciado em 23/10/2026 (conta de homologação)
+
+- Titular autenticado enviou o pedido pela interface `/excluir-conta`; a UI confirmou o status `PENDENTE`. Banco confirmou existência de um pedido, posteriormente atualizado para `EM_ANALISE`.
+- Usuário de teste identificado no Supabase de forma restrita; 1 configuração, 1 assinatura do Rumo e 1 pagamento.
+- `assinaturas.status=ATIVA`, sem preapproval associado à linha da assinatura, sem renovação automática; `pagamentos_assinaturas.status=PENDENTE` e preapproval externo preenchido, **sem pagamento confirmado**.
+- Sem registro de contas, movimentações ou conexões Open Finance para o titular na auditoria SQL realizada antes da solicitação. Supabase Storage tem **0 objetos** cujo `owner_id` corresponde ao usuário.
+- Encontrados vínculos legítimos em schemas `beleza` e `biblia_slides`, os quais **não podem ser apagados**.
+- O token `MERCADOPAGO_ACCESS_TOKEN` está configurado na Vercel como **sensitive** e a ferramenta disponível não permite recuperá-lo. Não foi possível consultar nem cancelar a preapproval diretamente no Mercado Pago. O status PENDENTE local **não prova** cancelamento no provedor.
+- `docs/play-store/sql/04_exclusao_teste_apos_confirmar_mercadopago.sql` preparado com transação e guardas; **não executado**. Guarda SQL de pagamentos confirma **1 impedimento**, conforme esperado.
+- **Próxima ação requerida**: cancelar a assinatura no painel/API autenticados do Mercado Pago, confirmar o status real de cancelamento e registrá-lo. Só então executar revisão final, limpeza e conferência. Não marcar `CONCLUIDA` antes.
+
+A aplicação de produção e outras contas não foram alteradas. Única alteração na base: pedido existente passou de `PENDENTE` a `EM_ANALISE`.
+
+## Diagnóstico complementar: por que a assinatura não aparece no painel Mercado Pago
+
+O proprietário verificou o e-mail no painel Mercado Pago e informou que **não existe assinatura ativa**. Rechecagem do banco:
+- `rumo.assinaturas` está **ATIVA**, mas **sem preapproval id**, sem renovação automática e com preço contratado **R$ 0,00**; esse campo local sozinho não representa uma assinatura ativa no provedor.
+- `rumo.pagamentos_assinaturas` tem uma **tentativa de checkout** criada em **13/10/2026** no valor **R$ 19,90/mês**, com `status=PENDENTE`, `metadata.mercado_pago_status=pending`, sem payment ID e sem `pago_em`. Payer email salvo coincide com a conta de teste.
+- Existe ID de preapproval no pagamento pendente; o link usa `www.mercadopago.com.br`. Isso **não comprova pagamento/assinatura ativa**, nem ausência de risco de conclusão futura do checkout.
+- Documentação oficial: assinaturas com pagamento pendente no Mercado Pago podem ser criadas antes da escolha do meio de pagamento. O estado do preapproval deve ser consultado via `GET /preapproval/{id}` com credenciais corretas, e cancelado via `PUT ... {"status":"canceled"}` quando existir e for necessário.
+- Para evitar instruir o proprietário a procurar assinaturas ativas que não existem, criado endpoint servidor `GET /api/privacidade/verificar-mercadopago?solicitacao_id=<UUID>` com acesso DONO e **somente leitura**, além do botão **Verificar Mercado Pago** no painel administrativo. `404` é inconclusivo (pode ser credencial/conta errada); não significa cancelamento automático.
+- O token é sensível e não foi exposto; essa rota será testável após deploy **autorizado** em ambiente com `MERCADOPAGO_ACCESS_TOKEN`. O processamento destrutivo permanece bloqueado. Nenhuma cobrança ou conta foi alterada.
+
+Fontes: https://www.mercadopago.com.br/developers/pt/docs/subscriptions/integration-configuration/subscription-no-associated-plan/pending-payments e https://www.mercadopago.com.br/developers/pt/reference/online-payments/subscriptions/get-preapproval/get .
+
+## Resultado da execução efetiva — 23/10/2026
+
+**Teste administrativo autorizado concluído, limitado ao schema do Rumo para a conta de homologação.**
+
+- O operador confirmou o cancelamento da tentativa de assinatura. Banco passou a `pagamentos_assinaturas.status=CANCELADO`, com metadados `mercado_pago_status=canceled`, `checkout_cancelado_motivo=EXCLUSAO_DADOS_RUMO`, sem pagamento aprovado. Este status local foi definido pelo endpoint após nova leitura no Mercado Pago.
+- Executado em transação SQL o procedimento documentado em `docs/play-store/sql/04_exclusao_teste_apos_confirmar_mercadopago.sql`, que checa identidade do titular, status `EM_ANALISE`, cancelamento, ausência de conexões Pluggy, objetos Storage e privilégios. A consulta SQL concluiu sem erros.
+- **Verificação posterior: 40 origens auditadas, 39 com zero registros, e somente `rumo.solicitacoes_exclusao` com 1 registro mínimo de auditoria.** Status do pedido agora `CONCLUIDA`, com `concluida_em` preenchido.
+- O vínculo `auth.users` permanece intacto, pois é compartilhado com outros apps, assim como o registro de `beleza.customer_profiles` (1 antes/1 depois). Nenhuma tabela dos outros aplicativos foi apagada.
+- **Pendência estrutural antes de liberar Google Play:** impedir que uma conta que tenha pedido `CONCLUIDA` recrie dados do Rumo ao entrar novamente, sem bloquear o login compartilhado de outros aplicativos; validar tratamento de sessões/cache e dados de backups gerenciados pelo provedor segundo prazo documentado. A exclusão da base do Rumo foi confirmada, mas o encerramento irreversível de acesso específico ao Rumo requer esse guard adicional.
+
+**Não foi feito deploy nem publicação na Play Store nesta etapa; somente o cancelamento da tentativa no provedor (via app) e a exclusão de dados da conta de teste no Supabase.**

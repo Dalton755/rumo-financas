@@ -13,7 +13,19 @@
       "destination": "/index.html"
     },
     {
+      "source": "/planejamento",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/compromissos",
+      "destination": "/index.html"
+    },
+    {
       "source": "/relatorios",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/calculos",
       "destination": "/index.html"
     },
     {
@@ -59,9 +71,38 @@
     {
       "source": "/cartoes",
       "destination": "/index.html"
+    },
+    {
+      "source": "/gerencial",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/privacidade",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/excluir-conta",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/gerencial/exclusoes",
+      "destination": "/index.html"
     }
   ],
   "headers": [
+    {
+      "source": "/.well-known/assetlinks.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=300"
+        }
+      ]
+    },
     {
       "source": "/api/(.*)",
       "headers": [

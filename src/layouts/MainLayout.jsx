@@ -342,6 +342,32 @@ function MainLayout({ children }) {
         </nav>
 
         <div className="rumo-sidebar-footer">
+          <NavLink
+            to="/privacidade"
+            onClick={fecharMenuMobile}
+            className="rumo-sidebar-logout"
+          >
+            <ShieldCheck size={17} />
+            <span>Privacidade e meus dados</span>
+          </NavLink>
+          <NavLink
+            to="/excluir-conta"
+            onClick={fecharMenuMobile}
+            className="rumo-sidebar-logout"
+          >
+            <LockKeyhole size={17} />
+            <span>Excluir minha conta Rumo</span>
+          </NavLink>
+          {dono && (
+            <NavLink
+              to="/gerencial/exclusoes"
+              onClick={fecharMenuMobile}
+              className="rumo-owner-panel-link"
+            >
+              <span className="rumo-owner-panel-icon"><ShieldCheck size={17} /></span>
+              <span><strong>Pedidos de exclusão</strong><small>Privacidade dos usuários</small></span>
+            </NavLink>
+          )}
           {dono && (
             <NavLink
               to="/gerencial"

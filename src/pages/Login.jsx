@@ -7,11 +7,12 @@ import {
   FaGoogle
 } from "react-icons/fa";
 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
 import { supabase } from "../services/supabase";
 
 import Logo from "../components/Logo";
+import { getAppRedirectUrl } from "../utils/isPlayStoreMode";
 import "./Login.css";
 
 
@@ -66,7 +67,7 @@ function Login() {
       password: senha,
       options: {
         emailRedirectTo:
-          `${window.location.origin}/dashboard`
+          getAppRedirectUrl("/dashboard")
       }
     });
 
@@ -160,7 +161,7 @@ function Login() {
         emailUsuario,
         {
           redirectTo:
-            `${window.location.origin}/redefinir-senha`
+            getAppRedirectUrl("/redefinir-senha")
         }
       );
 
@@ -203,7 +204,7 @@ function Login() {
 
         options: {
           redirectTo:
-            `${window.location.origin}/dashboard`,
+            getAppRedirectUrl("/dashboard"),
 
           queryParams: {
             prompt: "select_account"
@@ -406,6 +407,10 @@ function Login() {
 
         <div className="login-footer">
           Planeje. Economize. Conquiste.
+          <div style={{marginTop: 12, display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap"}}>
+            <Link to="/privacidade">Privacidade</Link>
+            <Link to="/excluir-conta">Excluir conta</Link>
+          </div>
         </div>
 
       </div>

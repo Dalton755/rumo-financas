@@ -23,6 +23,7 @@ import { usePlano } from "../context/PlanoContext";
 import { supabase } from "../services/supabase";
 
 import "./Premium.css";
+import { isPlayStoreMode } from "../utils/isPlayStoreMode";
 
 const recursos = [
   {
@@ -126,6 +127,7 @@ const comparacao = [
 
 function Premium() {
   const { premium } = usePlano();
+  const [modoPlayStore] = useState(() => isPlayStoreMode());
 
   const [checkoutCarregando, setCheckoutCarregando] =
     useState(null);
@@ -134,6 +136,13 @@ function Premium() {
     useState("");
 
   async function contratarPremium(periodo) {
+    // A venda de recursos digitais dentro da Play exige Google Play Billing.
+    // Enquanto a integração não for homologada, o checkout web é exclusivo do site.
+    if (modoPlayStore) {
+      setErroCheckout("As assinaturas ainda não estão disponíveis no app Android.");
+      return;
+    }
+
     try {
       setErroCheckout("");
       setCheckoutCarregando(periodo);
@@ -230,6 +239,10 @@ function Premium() {
                 <div className="premium-page-ja-premium">
                   <Check size={19} />
                   Você já possui o Rumo Premium
+                </div>
+              ) : modoPlayStore ? (
+                <div className="premium-page-ja-premium">
+                  As assinaturas ainda não estão disponíveis nesta versão Android. Você pode continuar no plano gratuito ou entrar com sua conta Premium existente.
                 </div>
               ) : (
                 <>
@@ -506,7 +519,7 @@ function Premium() {
                 de decidir pela assinatura.
               </p>
 
-              <div className="premium-page-hero-actions">
+              {!modoPlayStore && <div className="premium-page-hero-actions">
                 <button
                   type="button"
                   className="premium-page-cta"
@@ -548,7 +561,10 @@ function Premium() {
 
                   <ChevronRight size={19} />
                 </button>
-              </div>
+              </div>}
+              {modoPlayStore && (
+                <p>As contratações pelo aplicativo Android ainda não estão disponíveis. O acesso gratuito e os planos Premium ativos continuam funcionando normalmente.</p>
+              )}
             </>
           )}
         </section>
