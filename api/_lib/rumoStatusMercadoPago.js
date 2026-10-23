@@ -29,7 +29,7 @@ export function resumirRespostaPreapproval(httpStatus, data = {}) {
     orientacao: cancelada
       ? "Referência retornou status cancelado. Conferir transações e demais referências antes de excluir."
       : status === "pending"
-        ? "Tentativa de assinatura ainda pendente. Não há confirmação de pagamento; porém o checkout poderá ser concluído.",
-    ...(!cancelada && status !== "pending" ? { orientacao: "Referência existente no Mercado Pago; revisar cobranças antes da exclusão." } : {}),
+        ? "Tentativa de assinatura ainda pendente. Não há confirmação de pagamento; porém o checkout poderá ser concluído."
+        : "Referência existente no Mercado Pago; revisar cobranças antes da exclusão.",
   };
 }
