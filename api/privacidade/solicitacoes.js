@@ -1,7 +1,7 @@
 import { supabaseAdmin } from "../_lib/supabaseAdmin.js";
 import { autenticarUsuario } from "../_lib/autenticarUsuario.js";
 import { prepararPreflightExclusao } from "../_lib/rumoExclusaoPreflight.js";
-import { resumirRespostaPreapproval } from "../_lib/rumoStatusMercadoPago.js";
+import { resumirRespostaPreapproval, corpoCancelamentoPreapproval } from "../_lib/rumoStatusMercadoPago.js";
 import { validarCancelamentoPendente } from "../_lib/rumoCancelarCheckoutPendente.js";
 
 // Reúne consultas de privacidade em uma função para atender o limite Hobby da Vercel.
@@ -107,7 +107,7 @@ async function requisitarPreapproval(token, identificador, metodo = "GET") {
         Accept: "application/json",
         ...(metodo === "PUT" ? { "Content-Type": "application/json" } : {}),
       },
-      ...(metodo === "PUT" ? { body: JSON.stringify({ status: "canceled" }) } : {}),
+      ...(metodo === "PUT" ? { body: JSON.stringify(corpoCancelamentoPreapproval()) } : {}),
       signal: AbortSignal.timeout(8000),
     },
   );
