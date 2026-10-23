@@ -1,0 +1,25 @@
+.rumo-privacidade{min-height:100vh;background:#f4f9fa;color:#17323b;padding:20px 14px 60px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.rumo-privacidade-container{max-width:860px;margin:0 auto}
+.rumo-privacidade-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:15px 0 24px}
+.rumo-privacidade-brand{color:#0a899e;font-size:1.25rem;font-weight:800;text-decoration:none}
+.rumo-privacidade-nav{color:#127f91;text-decoration:none;font-weight:600}
+.rumo-privacidade-card{background:white;border:1px solid #dce9ec;border-radius:20px;padding:clamp(22px,5vw,46px);box-shadow:0 12px 35px #12333a0c}
+.rumo-privacidade-eyebrow{color:#108fa4;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;font-weight:750}
+.rumo-privacidade h1{font-size:clamp(1.65rem,4vw,2.45rem);line-height:1.15;font-weight:800;margin:12px 0 18px}
+.rumo-privacidade h2{font-size:1.15rem;margin:30px 0 10px;font-weight:750}
+.rumo-privacidade p{line-height:1.67;margin:12px 0}
+.rumo-privacidade a{color:#087f95}
+.rumo-privacidade-muted{color:#637780;font-size:.89rem}
+.rumo-privacidade-cta,.rumo-privacidade-form button[type="submit"]{display:inline-flex;align-items:center;justify-content:center;text-align:center;padding:13px 18px;background:#087f95;color:#fff!important;border:0;border-radius:10px;font-weight:750;text-decoration:none;cursor:pointer}
+.rumo-privacidade-form{max-width:460px;display:flex;flex-direction:column;gap:16px;margin:20px 0}
+.rumo-privacidade-form label{display:flex;flex-direction:column;gap:7px;font-weight:650}
+.rumo-privacidade-form input:not([type="checkbox"]){padding:12px 13px;border-radius:9px;border:1px solid #a4c1c9;width:100%;max-width:100%;font:inherit}
+.rumo-privacidade-form button[disabled],.rumo-privacidade-secundario:disabled{cursor:not-allowed;opacity:.65}
+.rumo-privacidade-check{display:flex!important;flex-direction:row!important;align-items:flex-start;gap:11px!important;font-weight:500!important;line-height:1.45}
+.rumo-privacidade-check input{flex:0 0 auto;width:19px;height:19px;margin-top:2px}
+.rumo-privacidade-secundario{padding:12px 18px;background:white;border:1px solid #278da0;border-radius:10px;color:#087f95;font-weight:750;cursor:pointer}
+.rumo-privacidade-alerta{border-left:4px solid #0890a6;background:#eff8fa;padding:16px 20px;border-radius:7px;margin:20px 0}
+.rumo-privacidade-alerta p{font-size:.94rem}
+.rumo-privacidade-erro{background:#fff0f0;color:#9e2525;border-radius:8px;padding:10px}
+.rumo-privacidade-sucesso{background:#e7f7ed;color:#235b36;border-radius:8px;padding:12px;margin:14px 0}
+.rumo-privacidade-footer{padding:24px 0}
