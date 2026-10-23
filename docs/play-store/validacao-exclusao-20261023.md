@@ -28,3 +28,12 @@ O SQL `docs/play-store/sql/03_preflight_exclusao_readonly.sql` consulta, **sem e
 - [ ] Revisão de arquivo/storage, logs, backups do provedor, políticas e prazo de resposta.
 
 **Conclusão:** a **entrada do pedido** e seus controles de acesso estão tecnicamente presentes, porém a **exclusão efetiva da conta e dados** continua como pendência de conformidade para lançamento público. Não declarar "exclusão validada" ou marcar pedido como `CONCLUIDA` sem execução e provas. Não usar contas de produção para teste.
+
+## Implementação adicional (em homologação, sem deploy)
+
+- `api/_lib/rumoExclusaoPreflight.js` calcula contagens por usuário em 40 fontes, incluindo 14 backups históricos e 2 tabelas dependentes; falha fechada quando alguma contagem é incompleta. Retorna somente contagens, sem dados pessoais das movimentações. Inclui alertas de pagamentos e conexões financeiras.
+- `GET /api/privacidade/preflight?solicitacao_id=<UUID>` exige token válido, privilégio `DONO` validado no servidor e solicitação aberta; é **somente leitura** e não executa exclusão.
+- `src/pages/SolicitacoesExclusao.jsx`: botão **Conferir dados (sem excluir)** com totais e bloqueadores. Nenhum botão destrutivo foi liberado.
+- `scripts/tests/rumo-exclusao-preflight.test.mjs`: testes automatizados para 40 contagens, integrações, backup e falha segura, adicionados ao CI Android TWA.
+
+**Importante:** a contagem através do REST Supabase nos relacionamentos indiretos requer teste com solicitação/conta de homologação reais em ambiente autorizado. A configuração da branch não altera o aplicativo já publicado. Um resultado de preflight não constitui prova de exclusão efetiva.
