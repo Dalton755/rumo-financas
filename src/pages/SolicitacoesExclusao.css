@@ -1,0 +1,12 @@
+.rumo-exclusao-admin{max-width:1100px;margin:0 auto;padding:28px 16px 80px;color:#123840}
+.rumo-exclusao-admin-header{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.rumo-exclusao-admin-header h1{font-size:clamp(1.6rem,4vw,2.2rem);font-weight:800}
+.rumo-exclusao-admin-header small{font-size:.76rem;color:#08849c;font-weight:800;letter-spacing:.08em}
+.rumo-exclusao-admin-header button{background:#128fa6;border:0;border-radius:11px;padding:11px 18px;color:#fff;font-weight:700}
+.rumo-exclusao-admin-aviso{background:#e4f5f8;padding:16px 20px;border-radius:12px;margin:20px 0;line-height:1.65}
+.rumo-exclusao-admin-tabela{overflow-x:auto;border-radius:12px;border:1px solid #d5e8ed;background:#fff}
+.rumo-exclusao-admin table{width:100%;border-collapse:collapse}
+.rumo-exclusao-admin th,.rumo-exclusao-admin td{text-align:left;padding:16px;border-bottom:1px solid #e9f0f2}
+.rumo-exclusao-admin th{background:#f1fafb}
+.rumo-exclusao-admin-uuid{font-family:monospace;font-size:.85rem;white-space:nowrap}
+.rumo-exclusao-admin-badge{background:#fff3d6;color:#72510d;font-size:.82rem;font-weight:700;padding:5px 8px;border-radius:7px;white-space:nowrap}
