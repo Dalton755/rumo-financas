@@ -83,6 +83,10 @@
     {
       "source": "/excluir-conta",
       "destination": "/index.html"
+    },
+    {
+      "source": "/gerencial/exclusoes",
+      "destination": "/index.html"
     }
   ],
   "headers": [
