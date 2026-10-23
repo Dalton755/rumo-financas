@@ -62,3 +62,15 @@ O proprietário verificou o e-mail no painel Mercado Pago e informou que **não 
 - O token é sensível e não foi exposto; essa rota será testável após deploy **autorizado** em ambiente com `MERCADOPAGO_ACCESS_TOKEN`. O processamento destrutivo permanece bloqueado. Nenhuma cobrança ou conta foi alterada.
 
 Fontes: https://www.mercadopago.com.br/developers/pt/docs/subscriptions/integration-configuration/subscription-no-associated-plan/pending-payments e https://www.mercadopago.com.br/developers/pt/reference/online-payments/subscriptions/get-preapproval/get .
+
+## Resultado da execução efetiva — 23/10/2026
+
+**Teste administrativo autorizado concluído, limitado ao schema do Rumo para a conta de homologação.**
+
+- O operador confirmou o cancelamento da tentativa de assinatura. Banco passou a `pagamentos_assinaturas.status=CANCELADO`, com metadados `mercado_pago_status=canceled`, `checkout_cancelado_motivo=EXCLUSAO_DADOS_RUMO`, sem pagamento aprovado. Este status local foi definido pelo endpoint após nova leitura no Mercado Pago.
+- Executado em transação SQL o procedimento documentado em `docs/play-store/sql/04_exclusao_teste_apos_confirmar_mercadopago.sql`, que checa identidade do titular, status `EM_ANALISE`, cancelamento, ausência de conexões Pluggy, objetos Storage e privilégios. A consulta SQL concluiu sem erros.
+- **Verificação posterior: 40 origens auditadas, 39 com zero registros, e somente `rumo.solicitacoes_exclusao` com 1 registro mínimo de auditoria.** Status do pedido agora `CONCLUIDA`, com `concluida_em` preenchido.
+- O vínculo `auth.users` permanece intacto, pois é compartilhado com outros apps, assim como o registro de `beleza.customer_profiles` (1 antes/1 depois). Nenhuma tabela dos outros aplicativos foi apagada.
+- **Pendência estrutural antes de liberar Google Play:** impedir que uma conta que tenha pedido `CONCLUIDA` recrie dados do Rumo ao entrar novamente, sem bloquear o login compartilhado de outros aplicativos; validar tratamento de sessões/cache e dados de backups gerenciados pelo provedor segundo prazo documentado. A exclusão da base do Rumo foi confirmada, mas o encerramento irreversível de acesso específico ao Rumo requer esse guard adicional.
+
+**Não foi feito deploy nem publicação na Play Store nesta etapa; somente o cancelamento da tentativa no provedor (via app) e a exclusão de dados da conta de teste no Supabase.**
