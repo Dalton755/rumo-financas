@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - "android/**"
+      - "src/**"
+      - "vercel.json"
+      - "public/manifest.webmanifest"
       - ".github/workflows/android-twa-debug.yml"
   workflow_dispatch:
   push:
@@ -13,6 +16,9 @@ on:
       - feature/rumo-play-store-preparacao-20261022
     paths:
       - "android/**"
+      - "src/**"
+      - "vercel.json"
+      - "public/manifest.webmanifest"
       - ".github/workflows/android-twa-debug.yml"
       - "public/icon-512.png"
       - "public/maskable-512.png"
