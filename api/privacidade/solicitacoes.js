@@ -116,6 +116,23 @@ async function requisitarPreapproval(token, identificador, metodo = "GET") {
   return { ok: resposta.ok, statusHttp: resposta.status, dados };
 }
 
+function falhaSeguraMercadoPago(retorno) {
+  // Nunca repassar resposta completa do provedor: pode conter dados pessoais.
+  // Informar somente status HTTP e código técnico que respeite formato restrito.
+  const codigoBruto = retorno?.dados?.error || retorno?.dados?.code || "";
+  const codigo = typeof codigoBruto === "string" && /^[a-zA-Z0-9_.-]{1,60}$/.test(codigoBruto)
+    ? codigoBruto : null;
+  const http = Number.isInteger(retorno?.statusHttp) ? retorno.statusHttp : null;
+  return {
+    error: http
+      ? `Mercado Pago recusou o cancelamento (HTTP ${http}${codigo ? `, motivo: ${codigo}` : ""}). A tentativa continua pendente; nenhum dado foi excluído.`
+      : "Mercado Pago não permitiu concluir o cancelamento. Nenhum dado foi excluído.",
+    categoria: "MERCADOPAGO_CANCELAMENTO_RECUSADO",
+    httpProvedor: http,
+    ...(codigo ? { codigoProvedor: codigo } : {}),
+  };
+}
+
 async function cancelarCheckoutPendente(req, pedido, res) {
   // Jamais cancelar diretamente por ID apresentado pelo cliente. O ID remoto
   // é recuperado do pedido autenticado e de seu pagamento no banco.
@@ -173,7 +190,7 @@ async function cancelarCheckoutPendente(req, pedido, res) {
       });
     }
     if (!alteracao.ok) {
-      return res.status(503).json({ error: "Mercado Pago não confirmou o cancelamento." });
+      return res.status(502).json(falhaSeguraMercadoPago(alteracao));
     }
   }
 
