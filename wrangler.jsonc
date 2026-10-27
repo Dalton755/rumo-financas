@@ -1,3 +1,4 @@
+// Cloudflare Worker: React/Vite SPA routes including Google OAuth return to /dashboard.
 {
   "name": "rumo-financas",
   "compatibility_date": "2026-10-26",
