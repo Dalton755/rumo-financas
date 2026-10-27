@@ -1,4 +1,4 @@
-// Cloudflare Worker: React/Vite SPA routes including Google OAuth return to /dashboard.
+// Rumo production: Cloudflare Worker serves React/Vite SPA routes including Google OAuth /dashboard callback.
 {
   "name": "rumo-financas",
   "compatibility_date": "2026-10-26",
