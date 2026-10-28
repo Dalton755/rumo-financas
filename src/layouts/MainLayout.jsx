@@ -342,6 +342,14 @@ function MainLayout({ children }) {
         </nav>
 
         <div className="rumo-sidebar-footer">
+          <NavLink to="/privacidade" onClick={fecharMenuMobile} className="rumo-sidebar-logout">
+            <ShieldCheck size={17} />
+            <span>Política de Privacidade</span>
+          </NavLink>
+          <NavLink to="/excluir-conta" onClick={fecharMenuMobile} className="rumo-sidebar-logout">
+            <ShieldCheck size={17} />
+            <span>Excluir conta Rumo</span>
+          </NavLink>
           {dono && (
             <NavLink
               to="/gerencial"
