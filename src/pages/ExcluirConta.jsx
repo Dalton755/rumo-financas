@@ -129,7 +129,7 @@ export default function ExcluirConta() {
       <div className="rumo-privacidade-container">
         <header className="rumo-privacidade-header">
           <Link to="/" className="rumo-privacidade-brand">↗ Rumo</Link>
-          <Link to="/privacidade" className="rumo-privacidade-nav">Política de privacidade</Link>
+          <a href="/privacidade.html" className="rumo-privacidade-nav">Política de privacidade</a>
         </header>
         <section className="rumo-privacidade-card">
           <span className="rumo-privacidade-eyebrow">Controle da sua conta</span>
