@@ -7,7 +7,7 @@ import {
   FaGoogle
 } from "react-icons/fa";
 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
 import { supabase } from "../services/supabase";
 
@@ -406,6 +406,10 @@ function Login() {
 
         <div className="login-footer">
           Planeje. Economize. Conquiste.
+          <div style={{marginTop:12,display:"flex",justifyContent:"center",gap:12,flexWrap:"wrap"}}>
+            <a href="/privacidade.html">Política de Privacidade</a>
+            <Link to="/excluir-conta">Excluir conta Rumo</Link>
+          </div>
         </div>
 
       </div>
