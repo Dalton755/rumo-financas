@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "../pages/Login";
+import PoliticaPrivacidade from "../pages/PoliticaPrivacidade";
+import ExcluirConta from "../pages/ExcluirConta";
 import RedefinirSenha from "../pages/RedefinirSenha";
 import Dashboard from "../pages/Dashboard";
 import Contas from "../pages/Contas";
@@ -33,6 +35,9 @@ function AppRoutes() {
                     path="/"
                     element={<Login />}
                 />
+
+                <Route path="/privacidade" element={<PoliticaPrivacidade />} />
+                <Route path="/excluir-conta" element={<ExcluirConta />} />
 
                 <Route
                     path="/redefinir-senha"
