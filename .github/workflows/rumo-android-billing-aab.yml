@@ -55,15 +55,24 @@ jobs:
           grep -R -nE 'com.android.vending.BILLING|DelegationService|com.google.androidbrowserhelper' android/app/src/main || true
           echo "::endgroup::"
           grep -Eq 'targetSdkVersion 36|targetSdk 36' android/app/build.gradle || { echo "::error::target SDK 36 ausente"; exit 1; }
-          grep -Rq 'com.android.vending.BILLING' android/app/src/main || { echo "::error::Manifest Android sem permissao BILLING"; exit 1; }
           grep -Rq 'DelegationService' android/app/src/main || { echo "::error::DelegationService nao gerado"; exit 1; }
-          echo "Permissao de pagamento e DelegationService presentes."
+          grep -Eq 'com.google.androidbrowserhelper:billing:1.2.0' android/app/build.gradle || { echo "::error::Biblioteca billing 1.2.0 ausente"; exit 1; }
+          echo "Biblioteca de pagamentos e DelegationService presentes. A permissao será verificada no APK compilado."
       - name: Compilar APK debug para teste
         shell: bash
         working-directory: android
         run: |
           chmod +x ./gradlew
           ./gradlew --no-daemon --stacktrace assembleDebug
+      - name: Conferir permissao BILLING e versao no APK compilado
+        shell: bash
+        run: |
+          AAPT="$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -n 1)"
+          test -n "$AAPT" || { echo "::error::aapt ausente"; exit 1; }
+          "$AAPT" dump permissions android/app/build/outputs/apk/debug/app-debug.apk | tee /tmp/rumo-permissions.txt
+          grep -q 'com.android.vending.BILLING' /tmp/rumo-permissions.txt || { echo "::error::Permissao BILLING ausente no APK compilado"; exit 1; }
+          "$AAPT" dump badging android/app/build/outputs/apk/debug/app-debug.apk | grep -E "^package:|sdkVersion|targetSdkVersion"
+          "$AAPT" dump badging android/app/build/outputs/apk/debug/app-debug.apk | grep -q "versionCode='4'" || { echo "::error::versionCode diferente de 4"; exit 1; }
       - name: Compilar AAB de release (sem chave privada)
         shell: bash
         working-directory: android
