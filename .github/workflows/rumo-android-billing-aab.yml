@@ -1,0 +1,80 @@
+name: RUMO Google Play Billing - AAB de teste
+on:
+  pull_request:
+    paths:
+      - 'android/**'
+      - '.github/workflows/rumo-android-billing-aab.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-billing:
+    name: Compilar Android TWA + Billing (AAB sem assinatura)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Obter código do RUMO
+        uses: actions/checkout@v4
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Configurar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Preparar Android SDK API 36
+        shell: bash
+        run: |
+          test -n "${ANDROID_HOME:-}" || { echo 'Android SDK ausente'; exit 1; }
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | head -n 1)"
+          test -n "$SDKMANAGER" || { echo 'sdkmanager ausente'; exit 1; }
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0" "platform-tools"
+      - name: Instalar Bubblewrap 1.25
+        shell: bash
+        run: npm install --global @bubblewrap/cli@1.25.0
+      - name: Preparar TWA com Play Billing
+        shell: bash
+        run: |
+          mkdir -p "$HOME/.bubblewrap"
+          printf '{"jdkPath":"%s","androidSdkPath":"%s"}' "$JAVA_HOME" "$ANDROID_HOME" > "$HOME/.bubblewrap/config.json"
+          node --input-type=module -e "import fs from 'node:fs'; const m=JSON.parse(fs.readFileSync('android/twa-manifest.json')); if(m.packageId!=='br.com.nethanel.rumo'||m.appVersionCode!==4||m.features?.playBilling?.enabled!==true) process.exit(1);"
+          cd android
+          bubblewrap update --skipVersionUpgrade
+      - name: Validar Google Play Billing no Android gerado
+        shell: bash
+        run: |
+          grep -Eq 'targetSdkVersion 36|targetSdk 36' android/app/build.gradle
+          grep -Rq 'com.android.vending.BILLING' android/app/src/main
+          grep -Eq 'com.google.androidbrowserhelper:billing:1.2.0' android/app/build.gradle
+          grep -Rq 'DelegationService' android/app/src/main
+          grep -q 'versionCode 4' android/app/build.gradle || grep -q 'versionCode = 4' android/app/build.gradle
+          echo 'Permissão, biblioteca 1.2.0 e serviço de pagamentos presentes.'
+      - name: Compilar APK debug para teste
+        shell: bash
+        working-directory: android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --no-daemon --stacktrace assembleDebug
+      - name: Compilar AAB de release (sem chave privada)
+        shell: bash
+        working-directory: android
+        run: ./gradlew --no-daemon --stacktrace bundleRelease
+      - name: Guardar pacote AAB sem assinatura
+        uses: actions/upload-artifact@v4
+        with:
+          name: rumo-play-billing-0.4.0-aab-sem-assinatura
+          path: android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+          retention-days: 14
+      - name: Guardar APK de debug para validar interface
+        uses: actions/upload-artifact@v4
+        with:
+          name: rumo-play-billing-0.4.0-apk-debug
+          path: android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
