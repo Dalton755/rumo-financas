@@ -181,7 +181,7 @@ Deno.serve(async (req) => {
       status: state, expiry,
     });
   } catch (error) {
-    console.error("Rumo Play: falha ao validar/confirmar", String(error?.message || error).slice(0, 180));
+    console.error("Rumo Play: falha ao validar/confirmar", (error instanceof Error ? error.message : String(error)).slice(0, 180));
     return reply(503, { error: true, message: "Não foi possível validar a assinatura agora. Tente Restaurar assinatura." });
   }
 });
