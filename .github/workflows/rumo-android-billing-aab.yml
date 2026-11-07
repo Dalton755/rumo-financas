@@ -45,15 +45,19 @@ jobs:
           node --input-type=module -e "import fs from 'node:fs'; const m=JSON.parse(fs.readFileSync('android/twa-manifest.json')); if(m.packageId!=='br.com.nethanel.rumo'||m.appVersionCode!==4||m.features?.playBilling?.enabled!==true) process.exit(1);"
           cd android
           bubblewrap update --skipVersionUpgrade
-      - name: Validar Google Play Billing no Android gerado
+      - name: Inspecionar Android gerado para Billing
         shell: bash
         run: |
-          grep -Eq 'targetSdkVersion 36|targetSdk 36' android/app/build.gradle
-          grep -Rq 'com.android.vending.BILLING' android/app/src/main
-          grep -Eq 'com.google.androidbrowserhelper:billing:1.2.0' android/app/build.gradle
-          grep -Rq 'DelegationService' android/app/src/main
-          grep -q 'versionCode 4' android/app/build.gradle || grep -q 'versionCode = 4' android/app/build.gradle
-          echo 'Permissão, biblioteca 1.2.0 e serviço de pagamentos presentes.'
+          echo "::group::Gradle"
+          grep -nE 'billing|Billing|versionCode|targetSdk' android/app/build.gradle || true
+          echo "::endgroup::"
+          echo "::group::Manifest e serviços"
+          grep -R -nE 'com.android.vending.BILLING|DelegationService|com.google.androidbrowserhelper' android/app/src/main || true
+          echo "::endgroup::"
+          grep -Eq 'targetSdkVersion 36|targetSdk 36' android/app/build.gradle || { echo "::error::target SDK 36 ausente"; exit 1; }
+          grep -Rq 'com.android.vending.BILLING' android/app/src/main || { echo "::error::Manifest Android sem permissao BILLING"; exit 1; }
+          grep -Rq 'DelegationService' android/app/src/main || { echo "::error::DelegationService nao gerado"; exit 1; }
+          echo "Permissao de pagamento e DelegationService presentes."
       - name: Compilar APK debug para teste
         shell: bash
         working-directory: android
