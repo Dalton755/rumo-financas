@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -21,6 +21,14 @@ import MainLayout from "../layouts/MainLayout";
 import PageContainer from "../components/ui/PageContainer";
 import { usePlano } from "../context/PlanoContext";
 import { supabase } from "../services/supabase";
+import {
+  PLAY_PRODUCTS,
+  isGooglePlayChannel,
+  connectGooglePlay,
+  purchaseGooglePlay,
+  restoreGooglePlay,
+  manageGooglePlaySubscription,
+} from "../services/googlePlayBilling";
 
 import "./Premium.css";
 
@@ -125,7 +133,50 @@ const comparacao = [
 ];
 
 function Premium() {
-  const { premium } = usePlano();
+  const { premium, recarregarPlano } = usePlano();
+  const [canalPlay] = useState(isGooglePlayChannel);
+  const [playService, setPlayService] = useState(null);
+  const [playPrices, setPlayPrices] = useState({});
+  const [playErro, setPlayErro] = useState("");
+  const [playAtualizando, setPlayAtualizando] = useState(false);
+  const [playTentativa, setPlayTentativa] = useState(0);
+
+  useEffect(() => {
+    if (!canalPlay) return;
+    let ativo = true;
+    setPlayErro("");
+    connectGooglePlay()
+      .then(({ service, products }) => {
+        if (!ativo) return;
+        setPlayService(service);
+        setPlayPrices(products);
+        if (!Object.keys(products).length) {
+          setPlayErro("Cadastre e ative os planos do Rumo na Play Store.");
+        }
+      })
+      .catch((error) => { if (ativo) setPlayErro(error.message); });
+    return () => { ativo = false; };
+  }, [canalPlay, playTentativa]);
+
+  const precoExibido = (periodo) => canalPlay
+    ? (playPrices[PLAY_PRODUCTS[periodo]] || "preço indisponível")
+    : (periodo === "MENSAL" ? "R$ 19,90" : "R$ 199,00");
+
+  const compraDesabilitada = (periodo) => Boolean(checkoutCarregando) ||
+    (canalPlay && (!playService || !playPrices[PLAY_PRODUCTS[periodo]]));
+
+  async function restaurarCompra() {
+    setPlayAtualizando(true);
+    setErroCheckout("");
+    try {
+      const status = await restoreGooglePlay(playService);
+      await recarregarPlano();
+      if (!status?.active) setErroCheckout("Nenhuma assinatura Google Play ativa foi localizada.");
+    } catch (error) {
+      setErroCheckout(error.message || "Falha ao restaurar assinatura.");
+    } finally { setPlayAtualizando(false); }
+  }
+
 
   const [checkoutCarregando, setCheckoutCarregando] =
     useState(null);
@@ -137,6 +188,13 @@ function Premium() {
     try {
       setErroCheckout("");
       setCheckoutCarregando(periodo);
+
+      if (canalPlay) {
+        const resultado = await purchaseGooglePlay(playService, periodo);
+        if (!resultado.active) throw new Error("Assinatura ainda não confirmada.");
+        await recarregarPlano();
+        return;
+      }
 
       const {
         data: { session },
@@ -190,7 +248,7 @@ function Premium() {
 
     } catch (error) {
       console.error(
-        "[RUMO PREMIUM] Erro ao criar checkout:",
+        "[RUMO PREMIUM] Erro no checkout:",
         error
       );
 
@@ -236,7 +294,7 @@ function Premium() {
                   <button
                     type="button"
                     className="premium-page-cta"
-                    disabled={Boolean(checkoutCarregando)}
+                    disabled={compraDesabilitada("MENSAL")}
                     onClick={() =>
                       contratarPremium("MENSAL")
                     }
@@ -244,8 +302,8 @@ function Premium() {
                     <Sparkles size={19} />
 
                     {checkoutCarregando === "MENSAL"
-                      ? "Abrindo checkout..."
-                      : "Assinar Mensal — R$ 19,90"}
+                      ? (canalPlay ? "Validando na Google Play..." : "Abrindo checkout...")
+                      : `Assinar Mensal — ${precoExibido("MENSAL")}`}
 
                     <ChevronRight size={19} />
                   </button>
@@ -253,7 +311,7 @@ function Premium() {
                   <button
                     type="button"
                     className="premium-page-cta"
-                    disabled={Boolean(checkoutCarregando)}
+                    disabled={compraDesabilitada("ANUAL")}
                     onClick={() =>
                       contratarPremium("ANUAL")
                     }
@@ -261,20 +319,41 @@ function Premium() {
                     <Crown size={19} />
 
                     {checkoutCarregando === "ANUAL"
-                      ? "Abrindo checkout..."
+                      ? (canalPlay ? "Validando na Google Play..." : "Abrindo checkout...")
                       : (
                         <span className="premium-page-plano-anual-texto">
-                          <span>Assinar Anual — R$ 199,00</span>
+                          <span>Assinar Anual — {precoExibido("ANUAL")}</span>
 
-                          <span className="premium-page-economia">
+                          {!canalPlay && <span className="premium-page-economia">
                             Economize R$ 39,80 por ano
-                          </span>
+                          </span>}
                         </span>
                       )}
 
                     <ChevronRight size={19} />
                   </button>
                 </>
+              )}
+
+              {canalPlay && premium && (
+                <button type="button" className="premium-page-voltar" onClick={manageGooglePlaySubscription}>
+                  Gerenciar assinaturas na Google Play
+                </button>
+              )}
+
+              {canalPlay && !premium && (
+                <div style={{maxWidth: 500, width: "100%", marginTop: 14}}>
+                  <p style={{fontSize: 13, marginBottom: 8}}>
+                    Pagamento exclusivo pela Google Play. Nenhum checkout externo será aberto neste aplicativo.
+                  </p>
+                  {playErro && <p role="alert">{playErro}</p>}
+                  {playErro && <button type="button" className="premium-page-voltar" onClick={() => setPlayTentativa(n => n + 1)}>
+                    Verificar conexão com Google Play
+                  </button>}
+                  <button type="button" className="premium-page-voltar" disabled={!playService || playAtualizando} onClick={restaurarCompra}>
+                    {playAtualizando ? "Restaurando..." : "Restaurar assinatura Google Play"}
+                  </button>
+                </div>
               )}
 
               <Link
@@ -510,7 +589,7 @@ function Premium() {
                 <button
                   type="button"
                   className="premium-page-cta"
-                  disabled={Boolean(checkoutCarregando)}
+                  disabled={compraDesabilitada("MENSAL")}
                   onClick={() =>
                     contratarPremium("MENSAL")
                   }
@@ -518,8 +597,8 @@ function Premium() {
                   <Sparkles size={19} />
 
                   {checkoutCarregando === "MENSAL"
-                    ? "Abrindo checkout..."
-                    : "Mensal — R$ 19,90"}
+                    ? (canalPlay ? "Validando na Google Play..." : "Abrindo checkout...")
+                    : `Mensal — ${precoExibido("MENSAL")}`}
 
                   <ChevronRight size={19} />
                 </button>
@@ -527,7 +606,7 @@ function Premium() {
                 <button
                   type="button"
                   className="premium-page-cta"
-                  disabled={Boolean(checkoutCarregando)}
+                  disabled={compraDesabilitada("ANUAL")}
                   onClick={() =>
                     contratarPremium("ANUAL")
                   }
@@ -535,14 +614,14 @@ function Premium() {
                   <Crown size={19} />
 
                   {checkoutCarregando === "ANUAL"
-                    ? "Abrindo checkout..."
+                    ? (canalPlay ? "Validando na Google Play..." : "Abrindo checkout...")
                     : (
                       <span className="premium-page-plano-anual-texto">
-                        <span>Anual — R$ 199,00</span>
+                        <span>Anual — {precoExibido("ANUAL")}</span>
 
-                        <span className="premium-page-economia">
+                        {!canalPlay && <span className="premium-page-economia">
                           Economize R$ 39,80 por ano
-                        </span>
+                        </span>}
                       </span>
                     )}
 

@@ -10,6 +10,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
 import { supabase } from "../services/supabase";
+import { isGooglePlayChannel } from "../services/googlePlayBilling";
 
 import Logo from "../components/Logo";
 import "./Login.css";
@@ -203,7 +204,7 @@ function Login() {
 
         options: {
           redirectTo:
-            `${window.location.origin}/dashboard`,
+            `${window.location.origin}/dashboard${isGooglePlayChannel() ? "?platform=googleplay" : ""}`,
 
           queryParams: {
             prompt: "select_account"
