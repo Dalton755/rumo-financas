@@ -38,13 +38,13 @@
 
 ## App Android (obrigatório criar novo AAB)
 
-Este repositório contém o frontend React/Vite e **não inclui o código-fonte Android/TWA que gerou a versão publicada**. Portanto a alteração do React, sozinha, **não habilita** o Google Play Billing no aplicativo já instalado.
+O manifesto TWA original foi recuperado na branch de homologação da PR #17 e copiado para esta PR em `android/twa-manifest.json`. O Google Play Billing está **ativado** e o novo pacote é `br.com.nethanel.rumo`, versão **0.4.0 (versionCode 4)**. O GitHub Actions `.github/workflows/rumo-android-billing-aab.yml` compila um AAB **sem assinatura** e um APK debug para validação. A assinatura privada original foi entregue em outra conversa e não está nesta sessão; ela não deve ser versionada.
 
-Recuperar o projeto Android original do RUMO e:
-- Se for Bubblewrap: configurar `features.playBilling.enabled=true` no `twa-manifest.json`; atualizar Bubblewrap (`@bubblewrap/cli@1.25.0` ou versão compatível atual), regenerar/compilar e validar a biblioteca Android Browser Helper de Billing **1.2.0+** (Play Billing Library 8.3.0+).
-- Se for Android Studio: integrar Android Browser Helper `com.google.androidbrowserhelper:billing:1.2.0`, `DelegationService` e manifesto conforme exemplo oficial.
+Projeto Android recuperado no GitHub. Para concluir o lançamento:
+- No Bubblewrap: `features.playBilling.enabled=true` já está configurado no `twa-manifest.json`; o CI usa `@bubblewrap/cli@1.25.0` e verifica a biblioteca Android Browser Helper de Billing **1.2.0+** após gerar o Android.
+- A TWA é gerada automaticamente pela pipeline GitHub Actions, sem precisar de Android Studio no computador.
 - Verificar `assetlinks.json` e certificado de assinatura da Play. Incluir `?platform=googleplay` na URL inicial da TWA para sinalização explícita de canal.
-- Assinar novo **AAB** com chave de upload correta, incrementar o `versionCode`, subir **somente em teste interno** e validar com conta de teste.
+- Assinar novo **AAB** com chave de upload original (`Rumo-Play-Upload-Key.jks`, alias `rumo-upload`) caso esteja disponível, ou solicitar reset da upload key à Play Console caso esteja perdida. O `versionCode` foi incrementado para **4**. Enviar **somente em teste interno** e validar com conta de teste.
 
 **Biblioteca exigida:** desde 31/08/2026, Google Play requer Play Billing Library 8+ em novas publicações/atualizações que usam faturamento.
 
