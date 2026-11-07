@@ -27,6 +27,7 @@ import {
   connectGooglePlay,
   purchaseGooglePlay,
   restoreGooglePlay,
+  manageGooglePlaySubscription,
 } from "../services/googlePlayBilling";
 
 import "./Premium.css";
@@ -332,6 +333,12 @@ function Premium() {
                     <ChevronRight size={19} />
                   </button>
                 </>
+              )}
+
+              {canalPlay && premium && (
+                <button type="button" className="premium-page-voltar" onClick={manageGooglePlaySubscription}>
+                  Gerenciar assinaturas na Google Play
+                </button>
               )}
 
               {canalPlay && !premium && (
